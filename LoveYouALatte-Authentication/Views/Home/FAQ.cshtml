@@ -1,0 +1,84 @@
+﻿@{
+    ViewData["Title"] = "FAQ";
+}
+<head>
+<h1>@ViewData["Title"]</h1>
+
+
+
+<h2>About Love You A Latte!</h2>
+
+<p>The world's first and leading Vegan Non-GMO Gluten Free coffee.</p>
+
+<style>
+    .accordion {
+        background-color: #eee;
+        color: #444;
+        cursor: pointer;
+        padding: 18px;
+        width: 100%;
+        border: none;
+        text-align: left;
+        outline: none;
+        font-size: 15px;
+        transition: 0.4s;
+    }
+
+        .active, .accordion:hover {
+            background-color: #ccc;
+        }
+
+    .panel {
+        padding: 0 18px;
+        display: none;
+        background-color: white;
+        overflow: hidden;
+    }
+</style>
+</head>
+<body>
+
+    <h2>What makes our latte THEE latte</h2>
+
+    <button class="accordion">Our Story</button>
+    <div class="panel">
+        <p>Our first store was started with a mission to spread 'A Latte' of love by providing an inexpensive, sustainable and healthy alternative for coffee with our proprietary blend that not only will make customers feel better but also our world!</p>
+    </div>
+
+    <button class="accordion">Decaf and Cold Brews</button>
+    <div class="panel">
+        <p>We have cold brews and Decaf coffee just ask you're barista and they will be more than happy to accomodate your request</p>
+    </div>
+
+    <button class="accordion">Our Values</button>
+    <div class="panel">
+        <p>Here at Love You A Latte we have deep values on tegridy. We believe without co-operation with tegridy farms we wouldn't have integrity.</p>
+    </div>
+
+    <button class="accordion">Frequently Asked Questions</button>
+    <div class="panel">
+        <p>What is our store hours?.</p>
+        <p>Our cafes are open Mondays through Sundays from 9:00am to 5:00pm</p>
+        <p>Who are our Suppliers?</p>
+        <p>All ingredients are sustainably sourced from local farmers like: Astro farms, Buckeye farms and Nature's dairy</p>
+        <p>What is our return policy?</p>
+        <p>If you dont love your latte for any reason, you can return for a full refund or replacement, no questions asked!</p>
+    </div>
+
+    <script>
+        var acc = document.getElementsByClassName("accordion");
+        var i;
+
+        for (i = 0; i < acc.length; i++) {
+            acc[i].addEventListener("click", function () {
+                this.classList.toggle("active");
+                var panel = this.nextElementSibling;
+                if (panel.style.display === "block") {
+                    panel.style.display = "none";
+                } else {
+                    panel.style.display = "block";
+                }
+            });
+        }
+    </script>
+</body>

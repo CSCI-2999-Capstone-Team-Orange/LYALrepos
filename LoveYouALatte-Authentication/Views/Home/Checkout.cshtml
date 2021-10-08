@@ -1,0 +1,80 @@
+﻿@model LatteModel
+
+@{
+    ViewData["Title"] = "Checkout";
+}
+<h1>@ViewData["Title"]<i class="fa fa-shopping-cart"></i></h1>
+
+
+<h1>Your Cart: </h1>
+
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Item Name</th>
+                <th scope="col">Item Description</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Size</th>
+                <th scope="col">Price</th>
+                <th scope="col">Total Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                @*Filler Text can be removed once cart table is set up*@
+                <td>1</td>
+                <td>Brewed Coffee</td>
+                <td>Our twist on the classic brewed coffee. Made with love.</td>
+                <td>2</td>
+                <td>Medium</td>
+                <td>$4.00</td>
+                <td>$8.00</td>
+            </tr>
+            <tr>
+                @*Filler Text can be removed once cart table is set up*@
+                <td>2</td>
+                <td>Brewed Coffee</td>
+                <td>Our twist on the classic brewed coffee. Made with love.</td>
+                <td>2</td>
+                <td>Medium</td>
+                <td>$4.00</td>
+                <td>$8.00</td>
+            </tr>
+            <tr>
+                @*Filler Text can be removed once cart table is set up*@
+                <td>3</td>
+                <td>Brewed Coffee</td>
+                <td>Our twist on the classic brewed coffee. Made with love.</td>
+                <td>2</td>
+                <td>Medium</td>
+                <td>$4.00</td>
+                <td>$8.00</td>
+            </tr>
+            <tr>
+                @*Filler Text can be removed once cart table is set up*@
+                <td>4</td>
+                <td>Brewed Coffee</td>
+                <td>Our twist on the classic brewed coffee. Made with love.</td>
+                <td>2</td>
+                <td>Medium</td>
+                <td>$4.00</td>
+                <td>$8.00</td>
+            </tr>
+
+            <tr>
+                <td colspan="5"></td>
+                <td colspan="1">Total: </td>
+                <td colspan="1">$24.00</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+
+@using (Html.BeginForm())
+{
+    @Html.TextBoxFor(m => m.Price)
+    <input type="submit" value="Latte Price">
+}

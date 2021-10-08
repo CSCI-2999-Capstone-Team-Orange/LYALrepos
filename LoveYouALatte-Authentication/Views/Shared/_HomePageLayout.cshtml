@@ -1,0 +1,46 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - LoveYouALatte</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/HomePage.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/font-awesome-4.7.0/font-awesome-4.7.0/css/font-awesome.min.css" />
+</head>
+<body class="home-background background-layer">
+    <div class="myNavbar">
+        <a asp-area="" asp-controller="Home" asp-action="HomePage">Home Page</a>
+
+        @*<a asp-area="" asp-controller="Home" asp-action="Index">Index</a>*@
+
+        <a asp-area="" asp-controller="Home" asp-action="FAQ">FAQ</a>
+
+        @*<a><img src="~/images/LYAL_Logo_100.jpg" alt="LYAL Logo" style="width: 20px;"></a>*@
+
+        <a asp-area="" asp-controller="Home" asp-action="ContactUs">Contact Us</a>
+
+        <a asp-area="" asp-controller="Home" asp-action="Menu">Menu</a>
+
+        <a asp-area="" asp-controller="Home" asp-action="Checkout"><i class="fa fa-shopping-cart"></i></a>
+
+        <partial name="_LoginPartial" />
+    </div>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    @*<footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2021 - LoveYouALatte - <a asp-area="" asp-controller="Home" asp-action="FAQ">FAQ</a>
+        </div>
+    </footer>*@
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
