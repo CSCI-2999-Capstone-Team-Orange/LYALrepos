@@ -13,8 +13,8 @@ namespace LoveYouALatte.Data.Entities
         }
 
         public int IdDrinks { get; set; }
-        public string CoffeeName { get; set; }
-        public string Description { get; set; }
+        public string DrinkName { get; set; }
+        public string DrinkDescription { get; set; }
 
         public virtual ICollection<Product> Products { get; set; }
     }

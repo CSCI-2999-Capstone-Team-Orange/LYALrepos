@@ -8,12 +8,13 @@ namespace LoveYouALatte.Data.Entities
     public partial class OrderHistory
     {
         public int IdOrderHistory { get; set; }
+        public string IdUser { get; set; }
         public int IdCartTable { get; set; }
-        public int IdUser { get; set; }
-        public byte Purchased { get; set; }
-        public DateTime Time { get; set; }
-        public int CartTableIdCartTable { get; set; }
-        public int CartTableIdProduct { get; set; }
-        public int CartTableIdUser { get; set; }
+        public decimal Tax { get; set; }
+        public decimal TotalCost { get; set; }
+        public DateTime PurchaseTime { get; set; }
+
+        public virtual CartTable IdCartTableNavigation { get; set; }
+        public virtual AspNetUser IdUserNavigation { get; set; }
     }
 }
