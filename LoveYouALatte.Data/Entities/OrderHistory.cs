@@ -7,10 +7,13 @@ namespace LoveYouALatte.Data.Entities
 {
     public partial class OrderHistory
     {
-        public int OrderId { get; set; }
-        public double CartId { get; set; }
-        public double UserId { get; set; }
-        public string ItemName { get; set; }
-        public string Size { get; set; }
+        public int IdOrderHistory { get; set; }
+        public int IdCartTable { get; set; }
+        public int IdUser { get; set; }
+        public byte Purchased { get; set; }
+        public DateTime Time { get; set; }
+        public int CartTableIdCartTable { get; set; }
+        public int CartTableIdProduct { get; set; }
+        public int CartTableIdUser { get; set; }
     }
 }

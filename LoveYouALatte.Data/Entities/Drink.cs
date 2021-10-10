@@ -9,13 +9,13 @@ namespace LoveYouALatte.Data.Entities
     {
         public Drink()
         {
-            ProductTables = new HashSet<ProductTable>();
+            Products = new HashSet<Product>();
         }
 
-        public int DrinkId { get; set; }
-        public string Name { get; set; }
+        public int IdDrinks { get; set; }
+        public string CoffeeName { get; set; }
         public string Description { get; set; }
 
-        public virtual ICollection<ProductTable> ProductTables { get; set; }
+        public virtual ICollection<Product> Products { get; set; }
     }
 }

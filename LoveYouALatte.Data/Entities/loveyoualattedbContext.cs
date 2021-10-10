@@ -24,16 +24,12 @@ namespace LoveYouALatte.Data.Entities
         public virtual DbSet<AspNetUserLogin> AspNetUserLogins { get; set; }
         public virtual DbSet<AspNetUserRole> AspNetUserRoles { get; set; }
         public virtual DbSet<AspNetUserToken> AspNetUserTokens { get; set; }
-        public virtual DbSet<Cart> Carts { get; set; }
-        public virtual DbSet<Coffee> Coffees { get; set; }
+        public virtual DbSet<CartTable> CartTables { get; set; }
         public virtual DbSet<Drink> Drinks { get; set; }
         public virtual DbSet<EfmigrationsHistory> EfmigrationsHistories { get; set; }
-        public virtual DbSet<LogTime> LogTimes { get; set; }
         public virtual DbSet<OrderHistory> OrderHistories { get; set; }
-        public virtual DbSet<Price> Prices { get; set; }
-        public virtual DbSet<ProductTable> ProductTables { get; set; }
+        public virtual DbSet<Product> Products { get; set; }
         public virtual DbSet<Size> Sizes { get; set; }
-        public virtual DbSet<Size1> Size1s { get; set; }
         public virtual DbSet<User> Users { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -183,77 +179,67 @@ namespace LoveYouALatte.Data.Entities
                     .HasForeignKey(d => d.UserId);
             });
 
-            modelBuilder.Entity<Cart>(entity =>
+            modelBuilder.Entity<CartTable>(entity =>
             {
-                entity.ToTable("Cart");
-
-                entity.HasIndex(e => e.DrinkName, "DrinkName_idx");
-
-                entity.HasIndex(e => e.Price, "Price_idx");
-
-                entity.HasIndex(e => e.IdProduct, "ProductID_idx");
-
-                entity.HasIndex(e => e.SizeName, "SizeName_idx");
-
-                entity.HasIndex(e => e.IdUser, "UserID_idx");
-
-                entity.Property(e => e.CartId).HasColumnName("CartID");
-
-                entity.Property(e => e.DrinkName)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
-                entity.Property(e => e.IdProduct).HasColumnName("id_Product");
-
-                entity.Property(e => e.IdUser).HasColumnName("id_User");
-
-                entity.Property(e => e.Price).HasColumnType("decimal(5,2)");
-
-                entity.Property(e => e.SizeName)
-                    .IsRequired()
-                    .HasMaxLength(10);
-
-                entity.HasOne(d => d.IdProductNavigation)
-                    .WithMany(p => p.Carts)
-                    .HasForeignKey(d => d.IdProduct)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("ProductID");
-
-                entity.HasOne(d => d.IdUserNavigation)
-                    .WithMany(p => p.Carts)
-                    .HasForeignKey(d => d.IdUser)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("UserID");
-            });
-
-            modelBuilder.Entity<Coffee>(entity =>
-            {
-                entity.HasKey(e => e.IdCoffee)
+                entity.HasKey(e => new { e.IdCartTable, e.IdProduct, e.IdUser, e.UserIdUser, e.ProductIdProduct, e.ProductIdDrinks, e.ProductIdSize, e.ProductSizeIdSize, e.ProductDrinksIdDrinks })
                     .HasName("PRIMARY");
 
-                entity.ToTable("Coffee");
+                entity.ToTable("CartTable");
 
-                entity.Property(e => e.IdCoffee).HasColumnName("id_Coffee");
+                entity.HasIndex(e => new { e.ProductIdProduct, e.ProductIdDrinks, e.ProductIdSize, e.ProductSizeIdSize, e.ProductDrinksIdDrinks }, "fk_CartTable_Product1_idx");
 
-                entity.Property(e => e.CoffeeName)
-                    .IsRequired()
-                    .HasMaxLength(25);
+                entity.HasIndex(e => e.UserIdUser, "fk_CartTable_User1_idx");
+
+                entity.Property(e => e.IdCartTable).HasColumnName("idCartTable");
+
+                entity.Property(e => e.IdProduct).HasColumnName("idProduct");
+
+                entity.Property(e => e.IdUser).HasColumnName("idUser");
+
+                entity.Property(e => e.UserIdUser).HasColumnName("User_idUser");
+
+                entity.Property(e => e.ProductIdProduct).HasColumnName("Product_idProduct");
+
+                entity.Property(e => e.ProductIdDrinks).HasColumnName("Product_idDrinks");
+
+                entity.Property(e => e.ProductIdSize).HasColumnName("Product_idSize");
+
+                entity.Property(e => e.ProductSizeIdSize).HasColumnName("Product_Size_idSize");
+
+                entity.Property(e => e.ProductDrinksIdDrinks).HasColumnName("Product_Drinks_idDrinks");
+
+                entity.Property(e => e.Purchased).HasColumnType("tinyint");
+
+                entity.Property(e => e.TotalCost).HasColumnName("Total Cost");
+
+                entity.HasOne(d => d.UserIdUserNavigation)
+                    .WithMany(p => p.CartTables)
+                    .HasForeignKey(d => d.UserIdUser)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("fk_CartTable_User1");
+
+                entity.HasOne(d => d.Product)
+                    .WithMany(p => p.CartTables)
+                    .HasForeignKey(d => new { d.ProductIdProduct, d.ProductIdDrinks, d.ProductIdSize, d.ProductSizeIdSize, d.ProductDrinksIdDrinks })
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("fk_CartTable_Product1");
             });
 
             modelBuilder.Entity<Drink>(entity =>
             {
-                entity.HasIndex(e => e.Name, "Name_idx");
+                entity.HasKey(e => e.IdDrinks)
+                    .HasName("PRIMARY");
 
-                entity.Property(e => e.DrinkId).HasColumnName("DrinkID");
+                entity.Property(e => e.IdDrinks).HasColumnName("idDrinks");
+
+                entity.Property(e => e.CoffeeName)
+                    .IsRequired()
+                    .HasMaxLength(45)
+                    .HasColumnName("Coffee Name");
 
                 entity.Property(e => e.Description)
                     .IsRequired()
-                    .HasMaxLength(60)
-                    .HasColumnName("description");
-
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(50);
+                    .HasMaxLength(45);
             });
 
             modelBuilder.Entity<EfmigrationsHistory>(entity =>
@@ -270,111 +256,74 @@ namespace LoveYouALatte.Data.Entities
                     .HasMaxLength(32);
             });
 
-            modelBuilder.Entity<LogTime>(entity =>
-            {
-                entity.ToTable("log_time");
-
-                entity.Property(e => e.LogTimeId)
-                    .HasColumnType("int unsigned")
-                    .HasColumnName("log_time_id");
-
-                entity.Property(e => e.LogTime1).HasColumnName("log_time");
-            });
-
             modelBuilder.Entity<OrderHistory>(entity =>
             {
-                entity.HasKey(e => e.OrderId)
+                entity.HasKey(e => new { e.IdOrderHistory, e.IdCartTable, e.IdUser, e.CartTableIdCartTable, e.CartTableIdProduct, e.CartTableIdUser })
                     .HasName("PRIMARY");
 
-                entity.ToTable("Order_History");
+                entity.ToTable("Order History");
 
-                entity.Property(e => e.OrderId).HasColumnName("Order_ID");
+                entity.HasIndex(e => new { e.CartTableIdCartTable, e.CartTableIdProduct, e.CartTableIdUser }, "fk_Order History_CartTable1_idx");
 
-                entity.Property(e => e.CartId).HasColumnName("Cart_ID");
+                entity.Property(e => e.IdOrderHistory).HasColumnName("idOrder History");
 
-                entity.Property(e => e.ItemName)
-                    .IsRequired()
-                    .HasMaxLength(45)
-                    .HasColumnName("Item_name");
+                entity.Property(e => e.IdCartTable).HasColumnName("idCartTable");
 
-                entity.Property(e => e.Size)
-                    .IsRequired()
-                    .HasMaxLength(20);
+                entity.Property(e => e.IdUser).HasColumnName("idUser");
 
-                entity.Property(e => e.UserId).HasColumnName("User_ID");
+                entity.Property(e => e.CartTableIdCartTable).HasColumnName("CartTable_idCartTable");
+
+                entity.Property(e => e.CartTableIdProduct).HasColumnName("CartTable_idProduct");
+
+                entity.Property(e => e.CartTableIdUser).HasColumnName("CartTable_idUser");
+
+                entity.Property(e => e.Purchased).HasColumnType("tinyint");
             });
 
-            modelBuilder.Entity<Price>(entity =>
+            modelBuilder.Entity<Product>(entity =>
             {
-                entity.HasKey(e => e.IdPrice)
+                entity.HasKey(e => new { e.IdProduct, e.IdDrinks, e.IdSize, e.SizeIdSize, e.DrinksIdDrinks })
                     .HasName("PRIMARY");
 
-                entity.ToTable("Price");
+                entity.ToTable("Product");
 
-                entity.Property(e => e.IdPrice).HasColumnName("id_Price");
+                entity.HasIndex(e => e.DrinksIdDrinks, "fk_Product_Drinks1_idx");
 
-                entity.Property(e => e.Price1).HasColumnName("Price");
-            });
+                entity.HasIndex(e => e.SizeIdSize, "fk_Product_Size1_idx");
 
-            modelBuilder.Entity<ProductTable>(entity =>
-            {
-                entity.ToTable("product_table");
+                entity.Property(e => e.IdProduct).HasColumnName("idProduct");
 
-                entity.HasIndex(e => e.DrinkId, "DrinkID_idx");
+                entity.Property(e => e.IdDrinks).HasColumnName("idDrinks");
 
-                entity.HasIndex(e => e.Price, "Price_idx");
+                entity.Property(e => e.IdSize).HasColumnName("idSize");
 
-                entity.HasIndex(e => e.SizeId, "SizeID_idx");
+                entity.Property(e => e.SizeIdSize).HasColumnName("Size_idSize");
 
-                entity.Property(e => e.Id).HasColumnName("ID");
+                entity.Property(e => e.DrinksIdDrinks).HasColumnName("Drinks_idDrinks");
 
-                entity.Property(e => e.DrinkId).HasColumnName("DrinkID");
-
-                entity.Property(e => e.Price).HasColumnType("decimal(5,2)");
-
-                entity.Property(e => e.SizeId).HasColumnName("SizeID");
-
-                entity.HasOne(d => d.Drink)
-                    .WithMany(p => p.ProductTables)
-                    .HasForeignKey(d => d.DrinkId)
+                entity.HasOne(d => d.DrinksIdDrinksNavigation)
+                    .WithMany(p => p.Products)
+                    .HasForeignKey(d => d.DrinksIdDrinks)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("DrinkID");
+                    .HasConstraintName("fk_Product_Drinks1");
 
-                entity.HasOne(d => d.Size)
-                    .WithMany(p => p.ProductTables)
-                    .HasForeignKey(d => d.SizeId)
+                entity.HasOne(d => d.SizeIdSizeNavigation)
+                    .WithMany(p => p.Products)
+                    .HasForeignKey(d => d.SizeIdSize)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("SizeID");
+                    .HasConstraintName("fk_Product_Size1");
             });
 
             modelBuilder.Entity<Size>(entity =>
             {
-                entity.ToTable("Size");
-
-                entity.HasIndex(e => e.Description, "description_idx");
-
-                entity.Property(e => e.Id).HasColumnName("ID");
-
-                entity.Property(e => e.Description)
-                    .IsRequired()
-                    .HasMaxLength(10)
-                    .HasColumnName("description");
-            });
-
-            modelBuilder.Entity<Size1>(entity =>
-            {
                 entity.HasKey(e => e.IdSize)
                     .HasName("PRIMARY");
 
-                entity.ToTable("Size.1");
+                entity.ToTable("Size");
 
-                entity.HasComment("Item size");
+                entity.Property(e => e.IdSize).HasColumnName("idSize");
 
-                entity.Property(e => e.IdSize).HasColumnName("id.Size");
-
-                entity.Property(e => e.Size)
-                    .IsRequired()
-                    .HasMaxLength(6);
+                entity.Property(e => e.Size1).HasColumnName("Size");
             });
 
             modelBuilder.Entity<User>(entity =>
@@ -384,19 +333,21 @@ namespace LoveYouALatte.Data.Entities
 
                 entity.ToTable("User");
 
-                entity.Property(e => e.IdUser).HasColumnName("id_User");
+                entity.Property(e => e.IdUser).HasColumnName("idUser");
 
                 entity.Property(e => e.Password)
                     .IsRequired()
-                    .HasMaxLength(12);
+                    .HasMaxLength(45);
 
                 entity.Property(e => e.UserEmail)
                     .IsRequired()
-                    .HasMaxLength(45);
+                    .HasMaxLength(45)
+                    .HasColumnName("User Email");
 
-                entity.Property(e => e.Username)
+                entity.Property(e => e.UserName)
                     .IsRequired()
-                    .HasMaxLength(45);
+                    .HasMaxLength(45)
+                    .HasColumnName("User Name");
             });
 
             OnModelCreatingPartial(modelBuilder);

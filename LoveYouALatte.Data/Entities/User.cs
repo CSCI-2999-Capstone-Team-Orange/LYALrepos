@@ -9,14 +9,14 @@ namespace LoveYouALatte.Data.Entities
     {
         public User()
         {
-            Carts = new HashSet<Cart>();
+            CartTables = new HashSet<CartTable>();
         }
 
         public int IdUser { get; set; }
-        public string Username { get; set; }
+        public string UserName { get; set; }
         public string UserEmail { get; set; }
         public string Password { get; set; }
 
-        public virtual ICollection<Cart> Carts { get; set; }
+        public virtual ICollection<CartTable> CartTables { get; set; }
     }
 }
