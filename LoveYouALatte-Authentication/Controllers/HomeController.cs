@@ -51,16 +51,10 @@ namespace LoveYouALatte_Authentication.Controllers
         [Authorize]
         public IActionResult Checkout()
         {
-            LatteModel latteTest = new LatteModel();
-            using (var context = new loveyoualattedbContext())
-            {
-                var lattePriceQuery = context.Products.Where(s => s.ProductsId == 1).FirstOrDefault();
-                latteTest.products_id = lattePriceQuery.ProductsId;
-                latteTest.product_name = lattePriceQuery.ProductName;
-                latteTest.Price = (decimal)lattePriceQuery.Price;
-            }
+           
+            
 
-            return View(latteTest);
+            return View();
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
