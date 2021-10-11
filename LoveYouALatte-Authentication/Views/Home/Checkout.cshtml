@@ -1,10 +1,11 @@
-﻿@model LatteModel
-
+﻿@model Carts
 @{
     ViewData["Title"] = "Checkout";
+    var cart = Model.CartsList.GroupBy(x => new { x.CartId, x.DrinkName, x.IdProduct, x.IdUser, x.Price, x.Quantity, x.SizeName });//where userid == userid
+    var totalCart = cart.Sum(x => x.Key.Price * x.Key.Quantity);
+
 }
 <h1>@ViewData["Title"]<i class="fa fa-shopping-cart"></i></h1>
-
 
 <h1>Your Cart: </h1>
 
@@ -12,9 +13,7 @@
     <table class="table table-striped">
         <thead>
             <tr>
-                <th scope="col">#</th>
                 <th scope="col">Item Name</th>
-                <th scope="col">Item Description</th>
                 <th scope="col">Quantity</th>
                 <th scope="col">Size</th>
                 <th scope="col">Price</th>
@@ -22,65 +21,23 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
-                @*Filler Text can be removed once cart table is set up*@
-                <td>1</td>
-                <td>Brewed Coffee</td>
-                <td>Our twist on the classic brewed coffee. Made with love.</td>
-                <td>2</td>
-                <td>Medium</td>
-                <td>$4.00</td>
-                <td>$8.00</td>
-            </tr>
-            <tr>
-                @*Filler Text can be removed once cart table is set up*@
-                <td>2</td>
-                <td>Brewed Coffee</td>
-                <td>Our twist on the classic brewed coffee. Made with love.</td>
-                <td>2</td>
-                <td>Medium</td>
-                <td>$4.00</td>
-                <td>$8.00</td>
-            </tr>
-            <tr>
-                @*Filler Text can be removed once cart table is set up*@
-                <td>3</td>
-                <td>Brewed Coffee</td>
-                <td>Our twist on the classic brewed coffee. Made with love.</td>
-                <td>2</td>
-                <td>Medium</td>
-                <td>$4.00</td>
-                <td>$8.00</td>
-            </tr>
-            <tr>
-                @*Filler Text can be removed once cart table is set up*@
-                <td>4</td>
-                <td>Brewed Coffee</td>
-                <td>Our twist on the classic brewed coffee. Made with love.</td>
-                <td>2</td>
-                <td>Medium</td>
-                <td>$4.00</td>
-                <td>$8.00</td>
-            </tr>
+
+            @foreach (var item in cart)
+            {
+                <tr>
+                    <td>@item.Key.DrinkName</td>
+                    <td>@item.Key.Quantity</td>
+                    <td>@item.Key.SizeName</td>
+                    <td>@item.Key.Price</td>
+                    <td>(@item.Key.Quantity * @item.Key.Price)</td>
+                </tr>
+            }
 
             <tr>
                 <td colspan="5"></td>
                 <td colspan="1">Total: </td>
-                <td colspan="1">$24.00</td>
+                <td colspan="1">@totalCart</td>
             </tr>
         </tbody>
     </table>
 </div>
-
-<form>
-    <div class="controls">
-
-        
-
-        <input type="reset" value="Clear Cart">
-
-    </div>
-</form>
-
-
-

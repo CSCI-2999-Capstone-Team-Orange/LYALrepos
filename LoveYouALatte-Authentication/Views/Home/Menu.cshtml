@@ -1,50 +1,24 @@
-﻿@{
+﻿@model ProductTable
+@{
     ViewData["Title"] = "Menu";
+    var products = Model.ProductsList.GroupBy(x => new { x.ProductId, x.DrinkId, x.SizeId, x.Price});
+
 }
 <h1>@ViewData["Title"]</h1>
 
-<p>Menu page</p>
-
 <div class="card-group">
+    @foreach (var prod in products)
+    {
         <div class="card">
-            <img class="card-img-top" src="~/Images/BrewedCoffee.jpg" alt="Brewed Coffee" />
+            <img class="card-img-top" src="~/Images/@*@(Model.DrinkName)*@.jpg" alt="@*@(Model.DrinkName)*@" />
             <div class="card-body">
-                <h5 class="card-text">Brewed Coffee &emsp; $4.00</h5>
-                <p class="card-text">Our twist on the classic brewed coffee. Made with love.</p>
-                <button class="btn btn-orange">Small <i class="fa fa-coffee fa-xs"></i></button>
-                <button class="btn btn-orange">Medium <i class="fa fa-coffee"></i></button>
-                <button class="btn btn-orange">Large <i class="fa fa-coffee fa-lg"></i></button>
-                
+                <h5 class="card-text">@*@(Model.SizeName) @(Model.DrinkName)*@</h5>
+                <h3>@(Model.Price)</h3>
+                <p class="card-text">@*@(Model.DrinkDescription)*@</p>
+            </div>
+            <div class="card-footer">
+                <button data-id-product class="btn btn-orange">Order<i class="fa fa-coffee"></i></button>
             </div>
         </div>
-        <div class="card">
-            <img class="card-img-top" src="~/Images/Cappuccino.jpg" alt="Brewed Coffee" />
-            <div class="card-body">
-                <h5 class="card-text">Cappuccino &emsp; $5.00</h5>
-                <p class="card-text">Another classic, the cappuccino. Request fancy cappuccino art and our barristas will try their best to make it happen. Made with love.</p>
-                <button class="btn btn-orange">Small <i class="fa fa-coffee fa-xs"></i></button>
-                <button class="btn btn-orange">Medium <i class="fa fa-coffee"></i></button>
-                <button class="btn btn-orange">Large <i class="fa fa-coffee fa-lg"></i></button>
-            </div>
-        </div>
-        <div class="card">
-            <img class="card-img-top" src="~/Images/Latte.jpg" alt="Brewed Coffee" />
-            <div class="card-body">
-                <h5 class="card-text">Latte &emsp; $5.00</h5>
-                <p class="card-text">Our signature drink and perfect for a cold day. Also available in pumpkin spice. Made with love.</p>
-                <button class="btn btn-orange">Small <i class="fa fa-coffee fa-xs"></i></button>
-                <button class="btn btn-orange">Medium <i class="fa fa-coffee"></i></button>
-                <button class="btn btn-orange">Large <i class="fa fa-coffee fa-lg"></i></button>
-            </div>
-        </div>
-        <div class="card">
-            <img class="card-img-top" src="~/Images/Espresso.jpg" alt="Brewed Coffee" />
-            <div class="card-body">
-                <h5 class="card-text">Espresso &emsp; $2.00</h5>
-                <p class="card-text">For when a cup of joe isn't enough. Pronounced with an 's' not an 'x'. Made with love.</p>
-                <button class="btn btn-orange">Small <i class="fa fa-coffee fa-xs"></i></button>
-                <button class="btn btn-orange">Medium <i class="fa fa-coffee"></i></button>
-                <button class="btn btn-orange">Large <i class="fa fa-coffee fa-lg"></i></button>
-            </div>
-        </div>
+    }
 </div>

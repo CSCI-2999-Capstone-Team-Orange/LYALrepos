@@ -48,7 +48,7 @@ namespace LoveYouALatte_Authentication.Controllers
             return View();
         }
 
-        [Authorize]
+        //[Authorize]
         public IActionResult Checkout()
         {
            
