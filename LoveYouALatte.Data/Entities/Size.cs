@@ -13,7 +13,7 @@ namespace LoveYouALatte.Data.Entities
         }
 
         public int IdSize { get; set; }
-        public int Size1 { get; set; }
+        public string Size1 { get; set; }
 
         public virtual ICollection<Product> Products { get; set; }
     }

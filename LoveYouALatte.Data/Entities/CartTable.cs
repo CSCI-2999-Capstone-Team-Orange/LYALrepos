@@ -7,20 +7,18 @@ namespace LoveYouALatte.Data.Entities
 {
     public partial class CartTable
     {
-        public int IdCartTable { get; set; }
-        public int IdProduct { get; set; }
-        public int IdUser { get; set; }
-        public int Quantity { get; set; }
-        public double TotalCost { get; set; }
-        public byte Purchased { get; set; }
-        public int UserIdUser { get; set; }
-        public int ProductIdProduct { get; set; }
-        public int ProductIdDrinks { get; set; }
-        public int ProductIdSize { get; set; }
-        public int ProductSizeIdSize { get; set; }
-        public int ProductDrinksIdDrinks { get; set; }
+        public CartTable()
+        {
+            OrderHistories = new HashSet<OrderHistory>();
+        }
 
-        public virtual Product Product { get; set; }
-        public virtual User UserIdUserNavigation { get; set; }
+        public int IdCartTable { get; set; }
+        public string IdUser { get; set; }
+        public int IdProduct { get; set; }
+        public int Quantity { get; set; }
+
+        public virtual Product IdProductNavigation { get; set; }
+        public virtual AspNetUser IdUserNavigation { get; set; }
+        public virtual ICollection<OrderHistory> OrderHistories { get; set; }
     }
 }
