@@ -85,7 +85,7 @@ body {
     color: white;
     text-decoration: none;
     font-size: 17px;
-    width: 16.66%; /* Four equal-width links. If you have two links, use 50%, and 33.33% for three links, etc.. */
+    width: 14.2857143%; /* Four equal-width links. If you have two links, use 50%, and 33.33% for three links, etc.. */
     text-align: center; /* If you want the text to be centered */
 }
 

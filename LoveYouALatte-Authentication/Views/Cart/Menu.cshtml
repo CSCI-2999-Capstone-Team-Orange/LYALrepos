@@ -1,0 +1,70 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+@model MenuViewModel
+@{
+    var products = Model.Products.GroupBy(x => new { x.DrinkName, x.DrinkDescription });
+
+}
+<h1>@ViewData["Title"]</h1>
+
+
+<div class="card-deck">
+    @foreach (var prod in products)
+    {
+    <div class="card">
+        <img class="card-img-top" src="~/Images/@(prod.Key.DrinkName).jpg" alt="@(prod.Key.DrinkName)" />
+        <div class="card-body">
+            <h4>@(prod.Key.DrinkName)</h4>
+            <p>@(prod.Key.DrinkDescription)</p>
+        </div>
+
+        <ul class="list-group list-group-flush">
+            @foreach (var item in prod)
+            {
+                <li class="list-group-item text-center">
+                    <h5>@(item.SizeName): $@(item.Price)</h5>
+
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                        <label for="quantity_@item.ProductId">Quantity: <input type="number" class="w-50 quanityNum" id="quantity_@item.ProductId" oninput="validity.valid||(value='');"  name="quantity_@item.ProductId" min="1" max="10" step="1" size="2" /></label>
+                        <button data-productid="@item.ProductId" class="btn btn-orange btn-add">Add To Cart<i class="fa fa-coffee"></i></button>
+                        <br />
+                    }
+                    else //redirect
+                    {
+
+                    }
+                </li>
+            }
+        </ul>
+    </div>
+    }
+</div>
+    <script>
+    $(document).ready(function () {
+
+    });
+
+    $('.btn-add').click(function () {
+
+        var ID = $(this).data('productid');
+        $.ajax({
+
+        contentType: "application/json; charset=utf-8",
+        url: '@Url.Action("AddToCart", "Cart")',
+        data: {
+            productid: ID,
+            quantity: $('#quantity_' + ID).val()
+        },
+        success: function () {
+            alert("Succesfully added to cart!");
+
+        },
+        error: function (data) {
+            alert('Error: ' + data.statusText);
+        }
+        });
+    });
+
+    </script>

@@ -7,10 +7,11 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/Site.css" />
     <link rel="stylesheet" href="~/font-awesome-4.7.0/font-awesome-4.7.0/css/font-awesome.min.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
 </head>
 <body>
     <div class="myNavbar">
-        <a asp-area="" asp-controller="Home" asp-action="HomePage">Home Page</a>
+        <a asp-area="" asp-controller="Home" asp-action="HomePage">Home</a>
 
         @*<a asp-area="" asp-controller="Home" asp-action="Index">Index</a>*@
 
@@ -20,9 +21,9 @@
 
         <a asp-area="" asp-controller="Home" asp-action="ContactUs">Contact Us</a>
 
-        <a asp-area="" asp-controller="Home" asp-action="Menu">Menu</a>
+        <a asp-area="" asp-controller="Cart" asp-action="Menu">Menu</a>
 
-        <a asp-area="" asp-controller="Home" asp-action="Checkout"><i class="fa fa-shopping-cart"></i></a>
+        <a asp-area="" asp-controller="Cart" asp-action="Checkout"><i class="fa fa-shopping-cart"></i></a>
 
         <partial name="_LoginPartial" />
 

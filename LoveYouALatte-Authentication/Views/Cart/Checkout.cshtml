@@ -1,8 +1,7 @@
-﻿@model Carts
+﻿@model CheckoutViewModel
 @{
     ViewData["Title"] = "Checkout";
-    var cart = Model.CartsList.GroupBy(x => new { x.CartId, x.DrinkName, x.IdProduct, x.IdUser, x.Price, x.Quantity, x.SizeName });//where userid == userid
-    var totalCart = cart.Sum(x => x.Key.Price * x.Key.Quantity);
+    var totalCart = Model.Carts.Sum(x => x.Price * x.Quantity);
 
 }
 <h1>@ViewData["Title"]<i class="fa fa-shopping-cart"></i></h1>
@@ -22,19 +21,19 @@
         </thead>
         <tbody>
 
-            @foreach (var item in cart)
+            @foreach (var cartItem in Model.Carts)
             {
                 <tr>
-                    <td>@item.Key.DrinkName</td>
-                    <td>@item.Key.Quantity</td>
-                    <td>@item.Key.SizeName</td>
-                    <td>@item.Key.Price</td>
-                    <td>(@item.Key.Quantity * @item.Key.Price)</td>
+                    <td>@cartItem.DrinkName</td>
+                    <td>@cartItem.Quantity</td>
+                    <td>@cartItem.SizeName</td>
+                    <td>@cartItem.Price</td>
+                    <td>@(cartItem.Quantity * cartItem.Price)</td>
                 </tr>
             }
 
             <tr>
-                <td colspan="5"></td>
+                <td colspan="3"></td>
                 <td colspan="1">Total: </td>
                 <td colspan="1">@totalCart</td>
             </tr>
