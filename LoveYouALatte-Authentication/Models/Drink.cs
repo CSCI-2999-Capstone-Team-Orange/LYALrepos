@@ -9,13 +9,13 @@ namespace LoveYouALatte_Authentication.Models
     {
         public Drink()
         {
-            ProductTables = new HashSet<ProductTable>();
+            ProductTables = new HashSet<Product>();
         }
 
         public int DrinkId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
 
-        public virtual ICollection<ProductTable> ProductTables { get; set; }
+        public virtual ICollection<Product> ProductTables { get; set; }
     }
 }

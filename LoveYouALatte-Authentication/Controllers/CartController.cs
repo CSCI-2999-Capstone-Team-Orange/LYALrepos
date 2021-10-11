@@ -25,7 +25,7 @@ namespace LoveYouALatte_Authentication.Controllers
         }
 
 
-        public List<Cart> GetCart(int UserID)
+        public List<Cart> GetCart(string UserID)
         {
             var cartQuery = new List<Cart>();
             using (var context = new loveyoualattedbContext())
@@ -42,15 +42,15 @@ namespace LoveYouALatte_Authentication.Controllers
             return cartQuery;
         }
 
-        public List<ProductTable> GetProducts()
+        public List<Models.Product> GetProducts()
         {
-            var productQuery = new List<ProductTable>();
+            var productQuery = new List<Models.Product>();
             //cart info passed to list
             using (var context = new loveyoualattedbContext())
             {
-                productQuery = context.Products.Select(x => new ProductTable
+                productQuery = context.Products.Select(x => new Models.Product
                 {
-                    DrinkId = x.IdDrinks,
+                    DrinkId = x.IdDrink,
                     ProductId = x.IdProduct,
                     Price = x.Price,
                     SizeId = x.IdSize

@@ -8,7 +8,7 @@ namespace LoveYouALatte_Authentication.Models
     public class Cart
     {
         public int CartId { get; set; }
-        public int IdUser { get; set; }
+        public string IdUser { get; set; }
         public int IdProduct { get; set; }
         public string DrinkName { get; set; }
         public string SizeName { get; set; }

@@ -1,19 +1,19 @@
-﻿@model ProductTable
+﻿@model Product
 @{
     ViewData["Title"] = "Menu";
-    var products = Model.ProductsList.GroupBy(x => new { x.ProductId, x.DrinkId, x.SizeId, x.Price});
+    //var products = Model.ProductsList.GroupBy(x => new { x.ProductId, x.DrinkId, x.SizeId, x.Price});
 
 }
 <h1>@ViewData["Title"]</h1>
 
 <div class="card-group">
-    @foreach (var prod in products)
+    @*@foreach (var prod in products)*@
     {
         <div class="card">
             <img class="card-img-top" src="~/Images/@*@(Model.DrinkName)*@.jpg" alt="@*@(Model.DrinkName)*@" />
             <div class="card-body">
                 <h5 class="card-text">@*@(Model.SizeName) @(Model.DrinkName)*@</h5>
-                <h3>@(Model.Price)</h3>
+                @*<h3>@(Model.Price)</h3>*@
                 <p class="card-text">@*@(Model.DrinkDescription)*@</p>
             </div>
             <div class="card-footer">
