@@ -12,6 +12,7 @@ using MySql.Data.MySqlClient;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 
+
 namespace LoveYouALatte_Authentication.Controllers
 {
     public class CartController : Controller
@@ -137,13 +138,19 @@ namespace LoveYouALatte_Authentication.Controllers
             var UserID = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var orderId = 0;
 
+            var timeUtc = DateTime.UtcNow;
+            var easternZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
+            var today = TimeZoneInfo.ConvertTimeFromUtc(timeUtc, easternZone);
+
+
             using (var dbContext = new loveyoualattedbContext())
             {
                 var dbCart = dbContext.CartTables.Where(s => s.IdUser == UserID).ToList();
                 var newUserOrder = new UserOrder()
                 {
+                    
                     UserId = UserID,
-                    OrderDate = DateTime.Now
+                    OrderDate = today
                 };
 
                 var products = dbContext.Products.ToList();
