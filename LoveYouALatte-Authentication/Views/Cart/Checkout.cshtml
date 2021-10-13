@@ -1,7 +1,7 @@
 ﻿@model CheckoutViewModel
 @{
     ViewData["Title"] = "Checkout";
-    var totalCart = Model.Carts.Sum(x => x.Price * x.Quantity);
+    var totalCart = Model.Carts.Sum(x => (0.075m * x.TotalPrice) + x.TotalPrice);
 
 }
 <h1>@ViewData["Title"]<i class="fa fa-shopping-cart"></i></h1>
@@ -16,7 +16,9 @@
                 <th scope="col">Quantity</th>
                 <th scope="col">Size</th>
                 <th scope="col">Price</th>
-                <th scope="col">Total Price</th>
+                <th scope="col">Line Price</th>
+                <th scope="col">Tax Amount</th>
+                <th scope="col">Subtotal</th>
             </tr>
         </thead>
         <tbody>
@@ -28,22 +30,47 @@
                     <td>@cartItem.Quantity</td>
                     <td>@cartItem.SizeName</td>
                     <td>@cartItem.Price</td>
-                    <td>@(cartItem.Quantity * cartItem.Price)</td>
+                    <td>@cartItem.TotalPrice</td>
+                    <td>@(0.075m * cartItem.TotalPrice)</td>
+                    <td>@((0.075m * cartItem.TotalPrice) + cartItem.TotalPrice)</td>
                 </tr>
             }
 
             <tr>
-                <td colspan="3"></td>
+                <td colspan="5"></td>
                 <td colspan="1">Total: </td>
-                <td colspan="1">@totalCart</td>
+                <td colspan="1" id="totalCost">@totalCart</td>
             </tr>
         </tbody>
     </table>
 </div>
 
+<input type="submit" value="Purchase" name="purchase" class=" btn btn-orange btn-purchase" />
+
 <form action="" method="post">
-    <input type="submit" value="Purchase" name="asp-controller="Checkout" 
-   asp-action="Purchase" />
-    <input type="submit" value="Clear Cart" name="asp-controller="Checkout" 
-   asp-action="ClearCart" />
+    <input type="submit" value="Clear Cart" name="clear" asp-controller="Checkout"
+           asp-action="ClearCart" />
 </form>
+
+<script>
+    $('.btn-purchase').click(function () {
+        var totalPrice = $('#totalCost').text();
+        alert(totalPrice);
+
+        $.ajax({
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            url: '@Url.Action("Purchase", "Cart")',
+            data: {
+                totalPrice: totalPrice
+            },
+            success: function (data) {
+                window.location.href = data;
+            },
+            error: function (data) {
+                alert('Error: ' + data.statusText);
+            }
+        });
+    });
+
+</script>

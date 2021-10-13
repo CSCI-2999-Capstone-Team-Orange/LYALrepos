@@ -20,12 +20,10 @@ namespace LoveYouALatte_Authentication.Controllers
         string connectionString = "server=authtest.cjiyeakoxxft.us-east-1.rds.amazonaws.com; port=3306; database=loveyoualattedb; uid=test; pwd=orange1234;";
 
         [HttpGet]
-        public ActionResult AddToCart(int productid, int quantity, decimal price)
+        public ActionResult AddToCart(int productid, int quantity, decimal totalPrice)
         {
+            //userId of the user that is currently logged in
             var UserID = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            //pass info from menu into cart table
-            //insert params into cart table
-            //return menu page
 
             MenuViewModel vm = new MenuViewModel();
 
@@ -33,7 +31,7 @@ namespace LoveYouALatte_Authentication.Controllers
             using (MySqlConnection conn = db.Connection)
             {
                 var cmd = conn.CreateCommand() as MySqlCommand;
-                cmd.CommandText = @"INSERT INTO loveyoualattedb.CartTable(idUser, idProduct, quantity, lineItemCost) VALUES ('" + UserID + "', " + productid + ", " + quantity + ", " + price + ")";
+                cmd.CommandText = @"INSERT INTO loveyoualattedb.CartTable(idUser, idProduct, quantity, lineItemCost) VALUES ('" + UserID + "', " + productid + ", " + quantity + ", " + totalPrice + ")";
                 int result = cmd.ExecuteNonQuery();
 
                 if (result > 0)
@@ -103,7 +101,7 @@ namespace LoveYouALatte_Authentication.Controllers
             {
                 var cmd = conn.CreateCommand() as MySqlCommand;
                 cmd.CommandText = @"
-                    SELECT idCartTable, idUser, prod.idProduct, quantity, prod.price, size.size, drink.drink_name FROM loveyoualattedb.CartTable cart
+                    SELECT idCartTable, idUser, prod.idProduct, quantity, prod.price, lineItemCost, size.size, drink.drink_name FROM loveyoualattedb.CartTable cart
                     Inner JOIN loveyoualattedb.product prod ON cart.idProduct = prod.idProduct
                     INNER JOIN loveyoualattedb.drinks drink ON prod.idDrink = drink.idDrinks
                     INNER JOIN loveyoualattedb.size size ON prod.idSize = size.idSize
@@ -120,6 +118,7 @@ namespace LoveYouALatte_Authentication.Controllers
                         cart.IdProduct = dr["idProduct"] as int? ?? default(int);
                         cart.Quantity = dr["quantity"] as int? ?? default(int);
                         cart.Price = dr["price"] as decimal? ?? default(decimal);
+                        cart.TotalPrice = dr["lineItemCost"] as decimal? ?? default(decimal);
                         cart.SizeName = dr["size"] as String ?? string.Empty;
                         cart.DrinkName = dr["drink_name"] as String ?? string.Empty;
 
@@ -133,7 +132,7 @@ namespace LoveYouALatte_Authentication.Controllers
 
         [HttpPost]
         [Authorize]
-        public ActionResult Purchase()
+        public ActionResult Purchase(decimal totalPrice)
         {
             var UserID = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var orderId = 0;
@@ -159,9 +158,9 @@ namespace LoveYouALatte_Authentication.Controllers
                 {
                     // TODO: remove this hack when lineItemCost is being set correctly
                     var product = products.Single(p => p.IdProduct == cartItem.IdProduct);
-                    decimal subTotal = product.Price * (decimal)cartItem.Quantity;
-                    decimal tax = 0.075m * subTotal;
-                    decimal total = subTotal + tax;
+                    //decimal subTotal = product.Price * (decimal)cartItem.Quantity;
+                    //decimal tax = 0.075m * subTotal;
+                    //decimal total = subTotal + tax;
 
                     newUserOrder.OrderItems.Add(
                         new OrderItem()
@@ -169,8 +168,7 @@ namespace LoveYouALatte_Authentication.Controllers
                             ProductId = cartItem.IdProduct,
                             Quantity = cartItem.Quantity,
                             LineItemCost = product.Price,
-                            Tax = tax,
-                            TotalCost = total
+                            TotalCost = totalPrice
                         });
                 }
 
@@ -188,7 +186,7 @@ namespace LoveYouALatte_Authentication.Controllers
                 dbContext.SaveChanges();
             }
 
-            return RedirectToAction("Receipt", new { id = orderId });
+            return Json(Url.Action("Receipt", new { id = orderId }));
         }
 
         [HttpPost]
