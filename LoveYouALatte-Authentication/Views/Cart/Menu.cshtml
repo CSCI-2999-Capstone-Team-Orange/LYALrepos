@@ -10,52 +10,73 @@
 
 
 <div class="card-deck">
-    @foreach (var prod in products)
-    {
-    <div class="card">
-        <img class="card-img-top" src="~/Images/@(prod.Key.DrinkName).jpg" alt="@(prod.Key.DrinkName)" />
-        <div class="card-body">
-            <h4>@(prod.Key.DrinkName)</h4>
-            <p>@(prod.Key.DrinkDescription)</p>
-        </div>
+    <div class="row">
+        @foreach (var prod in products)
+        {
+            <div class="col-lg-6">
+                <div class="card mb-2">
+                    <img class="card-img-top" src="~/Images/@(prod.Key.DrinkName).jpg" alt="@(prod.Key.DrinkName)" />
+                    <div class="card-img-overlay">
+                        <h4 class="card-title">@(prod.Key.DrinkName)</h4>
+                    </div>
+                        <h6 class="card-text text-center">@(prod.Key.DrinkDescription)</h6>
+                    
 
-        <ul class="list-group list-group-flush">
-            @foreach (var item in prod)
-            {
-                <li class="list-group-item text-center">
-                    <h5>@(item.SizeName): $@(item.Price)</h5>
+                    <ul class="list-group list-group-flush">
+                        @foreach (var item in prod)
+                        {
+                            <li class="list-group-item text-center">
+                                <h5>@(item.SizeName): $@(item.Price)</h5>
+                                <p hidden id="price_@item.ProductId">@(item.Price)</p>
 
-                    @if (SignInManager.IsSignedIn(User))
-                    {
-                        <label for="quantity_@item.ProductId">Quantity: <input type="number" class="w-50 quanityNum" id="quantity_@item.ProductId" oninput="validity.valid||(value='');"  name="quantity_@item.ProductId" min="1" max="10" step="1" size="2" /></label>
-                        <button data-productid="@item.ProductId" class="btn btn-orange btn-add">Add To Cart<i class="fa fa-coffee"></i></button>
-                        <br />
-                    }
-                    else //redirect
-                    {
+                                @if (SignInManager.IsSignedIn(User))
+                                {
+                                    <label for="quantity_@item.ProductId">Quantity: <input data-productid="@item.ProductId" type="number" class="w-50 quantityNum" id="quantity_@item.ProductId" oninput="validity.valid||(value='');" name="quantity_@item.ProductId" min="1" max="10" step="1" size="2" /></label>
+                                    <button disabled data-productid="@item.ProductId" class="btn btn-orange btn-add" id="btn_add_@item.ProductId">Add To Cart<i class="fa fa-coffee"></i></button>
+                                    <br />
+                                }
+                                else //redirect
+                                {
 
-                    }
-                </li>
-            }
-        </ul>
+                                }
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        }
     </div>
-    }
 </div>
     <script>
     $(document).ready(function () {
 
     });
 
-    $('.btn-add').click(function () {
-
+    $('.quantityNum').on('input change mouseup keyup', function () {
         var ID = $(this).data('productid');
+
+        var quantity = $('#quantity_' + ID).val();
+        if (quantity == "") {
+            $("#btn_add_" + ID).prop("disabled", true);
+        }
+        else {
+            $("#btn_add_" + ID).prop("disabled", false);
+        }
+    });
+
+    $('.btn-add').click(function () {
+        var ID = $(this).data('productid');
+        var price = $('#price_' + ID).text();
+        var quantity = $('#quantity_' + ID).val();
+
         $.ajax({
 
         contentType: "application/json; charset=utf-8",
         url: '@Url.Action("AddToCart", "Cart")',
         data: {
             productid: ID,
-            quantity: $('#quantity_' + ID).val()
+            quantity: quantity,
+            price: price
         },
         success: function () {
             alert("Succesfully added to cart!");
