@@ -14,7 +14,7 @@ namespace LoveYouALatte.Data.Entities
             AspNetUserRoles = new HashSet<AspNetUserRole>();
             AspNetUserTokens = new HashSet<AspNetUserToken>();
             CartTables = new HashSet<CartTable>();
-            OrderHistories = new HashSet<OrderHistory>();
+            UserOrders = new HashSet<UserOrder>();
         }
 
         public string Id { get; set; }
@@ -38,6 +38,6 @@ namespace LoveYouALatte.Data.Entities
         public virtual ICollection<AspNetUserRole> AspNetUserRoles { get; set; }
         public virtual ICollection<AspNetUserToken> AspNetUserTokens { get; set; }
         public virtual ICollection<CartTable> CartTables { get; set; }
-        public virtual ICollection<OrderHistory> OrderHistories { get; set; }
+        public virtual ICollection<UserOrder> UserOrders { get; set; }
     }
 }

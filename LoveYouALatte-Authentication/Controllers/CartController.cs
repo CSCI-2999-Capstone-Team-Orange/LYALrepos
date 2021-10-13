@@ -45,7 +45,7 @@ namespace LoveYouALatte_Authentication.Controllers
                 }
             }
 
-            
+
         }
 
         [HttpGet]
@@ -129,5 +129,128 @@ namespace LoveYouALatte_Authentication.Controllers
             vm.Carts = cartList;
             return View(vm);
         }
+
+        [HttpPost]
+        [Authorize]
+        public ActionResult Purchase()
+        {
+            var UserID = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var orderId = 0;
+
+            using (var dbContext = new loveyoualattedbContext())
+            {
+                var dbCart = dbContext.CartTables.Where(s => s.IdUser == UserID).ToList();
+                var newUserOrder = new UserOrder()
+                {
+                    UserId = UserID,
+                    OrderDate = DateTime.Now
+                };
+
+                var products = dbContext.Products.ToList();
+
+                foreach (var cartItem in dbCart)
+                {
+                    // TODO: remove this hack when lineItemCost is being set correctly
+                    var product = products.Single(p => p.IdProduct == cartItem.IdProduct);
+                    decimal subTotal = product.Price * (decimal)cartItem.Quantity;
+                    decimal tax = 0.075m * subTotal;
+                    decimal total = subTotal + tax;
+
+                    newUserOrder.OrderItems.Add(
+                        new OrderItem()
+                        {
+                            ProductId = cartItem.IdProduct,
+                            Quantity = cartItem.Quantity,
+                            LineItemCost = product.Price,
+                            Tax = tax,
+                            TotalCost = total
+                        });
+                }
+
+                dbContext.UserOrders.Add(newUserOrder);
+                dbContext.SaveChanges();
+                orderId = newUserOrder.UserOrderId;
+
+                //foreach(var value in dbCart)
+                //{
+                //    dbContext.CartTables.Remove(value);
+                //    dbContext.SaveChanges();
+                //}
+
+                dbContext.CartTables.RemoveRange(dbCart);
+                dbContext.SaveChanges();
+            }
+
+            return RedirectToAction("Receipt", new { id = orderId });
+        }
+
+        [HttpPost]
+        [Authorize]
+        public ActionResult ClearCart()
+        {
+            var UserID = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            using (var dbContext = new loveyoualattedbContext())
+            {
+                var dbCart = dbContext.CartTables.Where(s => s.IdUser == UserID).ToList();
+                dbContext.CartTables.RemoveRange(dbCart);
+                dbContext.SaveChanges();
+
+            }
+
+            return RedirectToAction("Checkout");
+        }
+
+
+        [HttpGet]
+        [Authorize]
+        public ActionResult Receipt(int id)
+        {
+            //var UserID = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            //ReceiptListModel userReceipt = new ReceiptListModel();
+
+            ReceiptModel receipt = new ReceiptModel();
+            using (var dbContext = new loveyoualattedbContext())
+            {
+                var products = dbContext.Products.ToList();
+                var sizes = dbContext.Sizes.ToList();
+                var drinks = dbContext.Drinks.ToList();
+
+
+                var userOrder = dbContext.UserOrders.SingleOrDefault(uo => uo.UserOrderId == id);
+                receipt.OrderDate = userOrder.OrderDate;
+                receipt.UserId = userOrder.UserId;
+                receipt.UserOrderId = userOrder.UserOrderId;
+
+                var orderItems = dbContext.OrderItems.Where(oi => oi.UserOrderId == id);
+
+                foreach (var item in orderItems)
+                {
+                    var product = products.Single(p => p.IdProduct == item.ProductId);
+                    receipt.Items.Add(new ReceiptItemModel
+                    {
+                        ProductId = item.ProductId,
+                        ProductDescription = drinks.Single(d => d.IdDrinks == product.IdDrink).DrinkName,
+                        sizeDescription = sizes.Single(s => s.IdSize == product.IdSize).Size1,
+                        unitCost = item.LineItemCost,
+                        quantity = item.Quantity,
+                        tax = item.Tax,
+                        totalCost = item.TotalCost,
+                        UserOrderId = userOrder.UserOrderId
+                    });
+                }
+            }
+
+            receipt.GrandTotal = receipt.Items.Sum(i => i.totalCost);
+
+            return View(receipt);
+        }
+
+
+
+
+
+
     }
 }
