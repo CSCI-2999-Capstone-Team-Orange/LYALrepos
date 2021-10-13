@@ -20,7 +20,7 @@ namespace LoveYouALatte_Authentication.Controllers
         string connectionString = "server=authtest.cjiyeakoxxft.us-east-1.rds.amazonaws.com; port=3306; database=loveyoualattedb; uid=test; pwd=orange1234;";
 
         [HttpGet]
-        public ActionResult AddToCart(int productid, int quantity, decimal totalPrice)
+        public ActionResult AddToCart(int productid, int quantity, decimal totalPrice, decimal lineTax, decimal lineCost)
         {
             //userId of the user that is currently logged in
             var UserID = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -31,7 +31,7 @@ namespace LoveYouALatte_Authentication.Controllers
             using (MySqlConnection conn = db.Connection)
             {
                 var cmd = conn.CreateCommand() as MySqlCommand;
-                cmd.CommandText = @"INSERT INTO loveyoualattedb.CartTable(idUser, idProduct, quantity, lineItemCost) VALUES ('" + UserID + "', " + productid + ", " + quantity + ", " + totalPrice + ")";
+                cmd.CommandText = @"INSERT INTO loveyoualattedb.CartTable(idUser, idProduct, quantity, lineItemCost, lineTax, lineCost) VALUES ('" + UserID + "', " + productid + ", " + quantity + ", " + totalPrice + ", " + lineTax + ", " + lineCost + ")";
                 int result = cmd.ExecuteNonQuery();
 
                 if (result > 0)
@@ -132,7 +132,7 @@ namespace LoveYouALatte_Authentication.Controllers
 
         [HttpPost]
         [Authorize]
-        public ActionResult Purchase(decimal totalPrice)
+        public ActionResult Purchase()
         {
             var UserID = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var orderId = 0;
@@ -168,7 +168,8 @@ namespace LoveYouALatte_Authentication.Controllers
                             ProductId = cartItem.IdProduct,
                             Quantity = cartItem.Quantity,
                             LineItemCost = product.Price,
-                            TotalCost = totalPrice
+                            Tax = cartItem.LineTax,
+                            TotalCost = cartItem.LineCost
                         });
                 }
 
@@ -186,7 +187,7 @@ namespace LoveYouALatte_Authentication.Controllers
                 dbContext.SaveChanges();
             }
 
-            return Json(Url.Action("Receipt", new { id = orderId }));
+            return RedirectToAction("Receipt", new { id = orderId });
         }
 
         [HttpPost]
