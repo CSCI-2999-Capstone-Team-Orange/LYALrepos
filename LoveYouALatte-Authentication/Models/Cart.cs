@@ -13,6 +13,8 @@ namespace LoveYouALatte_Authentication.Models
         public int Quantity { get; set; }
         public decimal Price { get; set; }
         public decimal TotalPrice { get; set; }//quantity * price
+        public decimal LineTax { get; set; }
+        public decimal LineCost { get; set; }
         public string SizeName { get; set; }
         public string DrinkName { get; set; }
     }

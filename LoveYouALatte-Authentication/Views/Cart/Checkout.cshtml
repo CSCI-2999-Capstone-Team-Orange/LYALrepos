@@ -28,12 +28,15 @@
             {
                 <tr>
                     <td>@cartItem.DrinkName</td>
-                    <td>@cartItem.Quantity</td>
+                    <td>
+                        <input data-productid="@cartItem.IdProduct" type="number" value="@cartItem.Quantity" class="w-50 quantityNum" id="quantity_@cartItem.IdProduct" 
+                        oninput="validity.valid||(value='');" name="quantity_@cartItem.IdProduct" min="1" max="10" step="1" size="2" />
+                    </td>
                     <td>@cartItem.SizeName</td>
                     <td>@cartItem.Price</td>
                     <td>@cartItem.TotalPrice</td>
-                    <td>@(0.075m * cartItem.TotalPrice)</td>
-                    <td>@((0.075m * cartItem.TotalPrice) + cartItem.TotalPrice)</td>
+                    <td>@cartItem.LineTax</td>
+                    <td>@cartItem.LineCost</td>
                 </tr>
             }
 
@@ -48,9 +51,9 @@
 
 
 <form action="" method="post">
-    <input type="submit" value="Clear Cart" name="clear" asp-controller="Cart"
+    <input type="submit" value="Clear Cart" name="clear" class="btn btn-orange" asp-controller="Cart"
            asp-action="ClearCart" />
-    <input type="submit" value="Purchase" name="purchase" class=" btn btn-orange btn-purchase" asp-controller="Cart"
+    <input type="submit" value="Purchase" name="purchase" class=" btn btn-orange" asp-controller="Cart"
            asp-action="Purchase" />
 
 </form>
