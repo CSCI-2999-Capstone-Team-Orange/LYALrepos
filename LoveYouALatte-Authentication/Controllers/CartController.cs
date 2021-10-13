@@ -202,7 +202,6 @@ namespace LoveYouALatte_Authentication.Controllers
                 var dbCart = dbContext.CartTables.Where(s => s.IdUser == UserID).ToList();
                 dbContext.CartTables.RemoveRange(dbCart);
                 dbContext.SaveChanges();
-
             }
 
             return RedirectToAction("Checkout");

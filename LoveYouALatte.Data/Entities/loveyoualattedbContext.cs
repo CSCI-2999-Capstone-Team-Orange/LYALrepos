@@ -194,7 +194,9 @@ namespace LoveYouALatte.Data.Entities
                     .HasColumnType("int unsigned")
                     .HasColumnName("idCartTable");
 
-                entity.Property(e => e.IdProduct).HasColumnName("idProduct");
+                entity.Property(e => e.IdProduct)
+                    .HasColumnType("int unsigned")
+                    .HasColumnName("idProduct");
 
                 entity.Property(e => e.IdUser)
                     .IsRequired()
@@ -225,7 +227,9 @@ namespace LoveYouALatte.Data.Entities
 
                 entity.ToTable("drinks");
 
-                entity.Property(e => e.IdDrinks).HasColumnName("idDrinks");
+                entity.Property(e => e.IdDrinks)
+                    .HasColumnType("int unsigned")
+                    .HasColumnName("idDrinks");
 
                 entity.Property(e => e.DrinkDescription)
                     .IsRequired()
@@ -255,7 +259,7 @@ namespace LoveYouALatte.Data.Entities
             {
                 entity.ToTable("orderItem");
 
-                entity.HasIndex(e => e.UserOrderId, "FK_userOrderId");
+                entity.HasIndex(e => e.UserOrderId, "FK_userOrderID");
 
                 entity.Property(e => e.OrderItemId)
                     .HasColumnType("int unsigned")
@@ -265,6 +269,10 @@ namespace LoveYouALatte.Data.Entities
                     .HasColumnType("decimal(13,2)")
                     .HasColumnName("lineItemCost");
 
+                entity.Property(e => e.ProductId)
+                    .HasColumnType("int unsigned")
+                    .HasColumnName("productId");
+
                 entity.Property(e => e.Quantity).HasColumnName("quantity");
 
                 entity.Property(e => e.Tax)
@@ -272,7 +280,7 @@ namespace LoveYouALatte.Data.Entities
                     .HasColumnName("tax");
 
                 entity.Property(e => e.TotalCost)
-                    .HasColumnType("decimal(10,0)")
+                    .HasColumnType("decimal(13,2)")
                     .HasColumnName("totalCost");
 
                 entity.Property(e => e.UserOrderId)
@@ -282,7 +290,7 @@ namespace LoveYouALatte.Data.Entities
                 entity.HasOne(d => d.UserOrder)
                     .WithMany(p => p.OrderItems)
                     .HasForeignKey(d => d.UserOrderId)
-                    .HasConstraintName("FK_userOrderId");
+                    .HasConstraintName("FK_userOrderID");
             });
 
             modelBuilder.Entity<Product>(entity =>
@@ -292,15 +300,21 @@ namespace LoveYouALatte.Data.Entities
 
                 entity.ToTable("product");
 
-                entity.HasIndex(e => e.IdDrink, "FKFromDrinks");
+                entity.HasIndex(e => e.IdDrink, "FKfromdrinks");
 
-                entity.HasIndex(e => e.IdSize, "FKFromSize");
+                entity.HasIndex(e => e.IdSize, "FKfromsize");
 
-                entity.Property(e => e.IdProduct).HasColumnName("idProduct");
+                entity.Property(e => e.IdProduct)
+                    .HasColumnType("int unsigned")
+                    .HasColumnName("idProduct");
 
-                entity.Property(e => e.IdDrink).HasColumnName("idDrink");
+                entity.Property(e => e.IdDrink)
+                    .HasColumnType("int unsigned")
+                    .HasColumnName("idDrink");
 
-                entity.Property(e => e.IdSize).HasColumnName("idSize");
+                entity.Property(e => e.IdSize)
+                    .HasColumnType("int unsigned")
+                    .HasColumnName("idSize");
 
                 entity.Property(e => e.Price)
                     .HasColumnType("decimal(13,2)")
@@ -309,14 +323,12 @@ namespace LoveYouALatte.Data.Entities
                 entity.HasOne(d => d.IdDrinkNavigation)
                     .WithMany(p => p.Products)
                     .HasForeignKey(d => d.IdDrink)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FKFromDrinks");
+                    .HasConstraintName("FKfromdrinks");
 
                 entity.HasOne(d => d.IdSizeNavigation)
                     .WithMany(p => p.Products)
                     .HasForeignKey(d => d.IdSize)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FKFromSize");
+                    .HasConstraintName("FKfromsize");
             });
 
             modelBuilder.Entity<Size>(entity =>
@@ -326,7 +338,9 @@ namespace LoveYouALatte.Data.Entities
 
                 entity.ToTable("size");
 
-                entity.Property(e => e.IdSize).HasColumnName("idSize");
+                entity.Property(e => e.IdSize)
+                    .HasColumnType("int unsigned")
+                    .HasColumnName("idSize");
 
                 entity.Property(e => e.Size1)
                     .IsRequired()
@@ -338,7 +352,7 @@ namespace LoveYouALatte.Data.Entities
             {
                 entity.ToTable("userOrder");
 
-                entity.HasIndex(e => e.UserId, "FK_AspNetUsers_Id");
+                entity.HasIndex(e => e.UserId, "FK_userID");
 
                 entity.Property(e => e.UserOrderId)
                     .HasColumnType("int unsigned")
@@ -349,12 +363,12 @@ namespace LoveYouALatte.Data.Entities
                 entity.Property(e => e.UserId)
                     .IsRequired()
                     .HasMaxLength(255)
-                    .HasColumnName("userId");
+                    .HasColumnName("userID");
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.UserOrders)
                     .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("FK_AspNetUsers_Id");
+                    .HasConstraintName("FK_userID");
             });
 
             OnModelCreatingPartial(modelBuilder);
