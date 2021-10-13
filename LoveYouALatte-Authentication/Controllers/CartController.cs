@@ -17,7 +17,7 @@ namespace LoveYouALatte_Authentication.Controllers
 {
     public class CartController : Controller
     {
-        string connectionString = "server=aa124gktif3j980.cjiyeakoxxft.us-east-1.rds.amazonaws.com; port=3306; database=loveyoualattedb; uid=test; pwd=orange1234;";
+        string connectionString = "server=authtest.cjiyeakoxxft.us-east-1.rds.amazonaws.com; port=3306; database=loveyoualattedb; uid=test; pwd=orange1234;";
 
         [HttpGet]
         public ActionResult AddToCart(int productid, int quantity, decimal price)
