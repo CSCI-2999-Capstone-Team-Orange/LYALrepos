@@ -101,7 +101,7 @@ namespace LoveYouALatte_Authentication.Controllers
             {
                 var cmd = conn.CreateCommand() as MySqlCommand;
                 cmd.CommandText = @"
-                    SELECT idCartTable, idUser, prod.idProduct, quantity, prod.price, lineItemCost, size.size, drink.drink_name FROM loveyoualattedb.CartTable cart
+                    SELECT idCartTable, idUser, prod.idProduct, quantity, prod.price, lineItemCost, lineTax, lineCost, size.size, drink.drink_name FROM loveyoualattedb.CartTable cart
                     Inner JOIN loveyoualattedb.product prod ON cart.idProduct = prod.idProduct
                     INNER JOIN loveyoualattedb.drinks drink ON prod.idDrink = drink.idDrinks
                     INNER JOIN loveyoualattedb.size size ON prod.idSize = size.idSize
@@ -119,6 +119,8 @@ namespace LoveYouALatte_Authentication.Controllers
                         cart.Quantity = dr["quantity"] as int? ?? default(int);
                         cart.Price = dr["price"] as decimal? ?? default(decimal);
                         cart.TotalPrice = dr["lineItemCost"] as decimal? ?? default(decimal);
+                        cart.LineTax = dr["lineTax"] as decimal? ?? default(decimal);
+                        cart.LineCost = dr["lineCost"] as decimal? ?? default(decimal);
                         cart.SizeName = dr["size"] as String ?? string.Empty;
                         cart.DrinkName = dr["drink_name"] as String ?? string.Empty;
 
