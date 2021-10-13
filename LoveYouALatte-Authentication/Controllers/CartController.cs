@@ -20,7 +20,7 @@ namespace LoveYouALatte_Authentication.Controllers
         string connectionString = "server=aa124gktif3j980.cjiyeakoxxft.us-east-1.rds.amazonaws.com; port=3306; database=loveyoualattedb; uid=test; pwd=orange1234;";
 
         [HttpGet]
-        public ActionResult AddToCart(int productid, int quantity)
+        public ActionResult AddToCart(int productid, int quantity, decimal price)
         {
             var UserID = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             //pass info from menu into cart table
@@ -33,7 +33,7 @@ namespace LoveYouALatte_Authentication.Controllers
             using (MySqlConnection conn = db.Connection)
             {
                 var cmd = conn.CreateCommand() as MySqlCommand;
-                cmd.CommandText = @"INSERT INTO loveyoualattedb.CartTable(idUser, idProduct, quantity) VALUES ('" + UserID + "', " + productid + ", " + quantity + ")";
+                cmd.CommandText = @"INSERT INTO loveyoualattedb.CartTable(idUser, idProduct, quantity, lineItemCost) VALUES ('" + UserID + "', " + productid + ", " + quantity + ", " + price + ")";
                 int result = cmd.ExecuteNonQuery();
 
                 if (result > 0)
