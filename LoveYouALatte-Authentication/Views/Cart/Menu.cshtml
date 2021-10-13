@@ -70,6 +70,8 @@
         var quantity = $('#quantity_' + ID).val();
 
         var totalPrice = price * quantity;
+        var lineTax = totalPrice * 0.075;
+        var lineCost = lineTax + totalPrice;
 
         $.ajax({
 
@@ -78,7 +80,9 @@
         data: {
             productid: ID,
             quantity: quantity,
-            totalPrice: totalPrice
+            totalPrice: totalPrice,
+            lineTax: lineTax,
+            lineCost: lineCost
         },
         success: function () {
             alert("Succesfully added to cart!");
