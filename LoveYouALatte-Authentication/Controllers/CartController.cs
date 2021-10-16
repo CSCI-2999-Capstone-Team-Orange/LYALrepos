@@ -48,6 +48,34 @@ namespace LoveYouALatte_Authentication.Controllers
         }
 
         [HttpGet]
+        public ActionResult UpdateCartQuantity(int cartid, int quantity, decimal totalPrice, decimal lineTax, decimal lineCost)
+        {
+            //userId of the user that is currently logged in
+            var UserID = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            MenuViewModel vm = new MenuViewModel();
+
+            MySqlDatabase db = new MySqlDatabase(connectionString);
+            using (MySqlConnection conn = db.Connection)
+            {
+                var cmd = conn.CreateCommand() as MySqlCommand;
+                cmd.CommandText = @"UPDATE loveyoualattedb.CartTable cart
+                                    SET cart.quantity = " + quantity + ", cart.lineitemcost = " + totalPrice + ", cart.lineTax = " + lineTax + ", lineCost = " + lineCost + 
+                                    " WHERE (cart.idCartTable = " + cartid + " AND cart.idUser = '" + UserID + "')";
+                int result = cmd.ExecuteNonQuery();
+
+                if (result > 0)
+                {
+                    return Content("Success");
+                }
+                else
+                {
+                    return Content("Error");
+                }
+            }
+        }
+
+        [HttpGet]
         public ActionResult Menu()
         {
             MenuViewModel vm = new MenuViewModel();
