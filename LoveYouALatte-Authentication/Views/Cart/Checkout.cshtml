@@ -39,14 +39,8 @@
                 <td>@cartItem.TotalPrice.ToString("C")</td>
                 <td>@cartItem.LineTax.ToString("C")</td>
                 <td>@cartItem.LineCost.ToString("C")</td>
-                <td><button disabled data-cartid="@cartItem.CartId" class="btn btn-orange btn-quantity" id="btn_quantity_@cartItem.CartId">Update Quantity</button></td>
-                <td><button data-cartid="@cartItem.CartId" class="btn btn-orange btn-remove" id="btn_quantity_@cartItem.CartId">Remove</button></td>
-                @*<td>
-                    <form action="" method="post">
-                        <input type="submit" value="Remove" name="asp-controller=" Checkout"
-                               asp-action="Remove" />
-                    </form>
-                </td>*@
+                <td><button disabled data-cartid="@cartItem.CartId" class="btn btn-orange btn-quantity" id="btn_quantity_@cartItem.CartId">Update Quantity</button>
+                <button data-cartid="@cartItem.CartId" class="btn btn-orange btn-remove" id="btn_quantity_@cartItem.CartId">Remove</button></td>
             </tr>
             }
 
