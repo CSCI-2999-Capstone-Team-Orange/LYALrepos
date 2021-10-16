@@ -27,20 +27,27 @@
 
             @foreach (var cartItem in Model.Carts)
             {
-                <tr>
-                    <td>@cartItem.DrinkName</td>
-                    <td>
-                        <input data-cartid="@cartItem.CartId" type="number" value="@cartItem.Quantity" class="w-50 quantityNumUpdate" id="quantity_@cartItem.CartId"
-                               oninput="validity.valid||(value='');" name="quantity_@cartItem.IdProduct" min="1" max="10" step="1" size="2" />
-                    </td>
-                    <td>@cartItem.SizeName</td>
-                    <td>@cartItem.Price.ToString("C")</td>
-                    <td hidden id="price_@cartItem.CartId">@cartItem.Price</td>
-                    <td>@cartItem.TotalPrice.ToString("C")</td>
-                    <td>@cartItem.LineTax.ToString("C")</td>
-                    <td>@cartItem.LineCost.ToString("C")</td>
-                    <td><button disabled data-cartid="@cartItem.CartId" class="btn btn-orange btn-quantity" id="btn_quantity_@cartItem.CartId">Update Quantity</button></td>
-                </tr>
+            <tr>
+                <td>@cartItem.DrinkName</td>
+                <td>
+                    <input data-cartid="@cartItem.CartId" type="number" value="@cartItem.Quantity" class="w-50 quantityNumUpdate" id="quantity_@cartItem.CartId"
+                           oninput="validity.valid||(value='');" name="quantity_@cartItem.IdProduct" min="1" max="10" step="1" size="2" />
+                </td>
+                <td>@cartItem.SizeName</td>
+                <td>@cartItem.Price.ToString("C")</td>
+                <td hidden id="price_@cartItem.CartId">@cartItem.Price</td>
+                <td>@cartItem.TotalPrice.ToString("C")</td>
+                <td>@cartItem.LineTax.ToString("C")</td>
+                <td>@cartItem.LineCost.ToString("C")</td>
+                <td><button disabled data-cartid="@cartItem.CartId" class="btn btn-orange btn-quantity" id="btn_quantity_@cartItem.CartId">Update Quantity</button></td>
+                <td><button data-cartid="@cartItem.CartId" class="btn btn-orange btn-remove" id="btn_quantity_@cartItem.CartId">Remove</button></td>
+                @*<td>
+                    <form action="" method="post">
+                        <input type="submit" value="Remove" name="asp-controller=" Checkout"
+                               asp-action="Remove" />
+                    </form>
+                </td>*@
+            </tr>
             }
 
             <tr>
@@ -99,6 +106,24 @@ else
             },
             success: function () {
                 alert("Succesfully updated quantity!");
+                location.reload();
+            },
+            error: function (data) {
+                alert('Error: ' + data.statusText);
+            }
+            });
+    });
+
+    $('.btn-remove').click(function () {
+            var ID = $(this).data('cartid');
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("Remove", "Cart")',
+                data: {
+                cartid: ID            
+            },
+            success: function () {
+                alert("Item Deleted!");
                 location.reload();
             },
             error: function (data) {
