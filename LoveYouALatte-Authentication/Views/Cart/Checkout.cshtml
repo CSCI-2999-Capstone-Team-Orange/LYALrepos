@@ -20,6 +20,7 @@
                 <th scope="col">Line Price</th>
                 <th scope="col">Tax Amount</th>
                 <th scope="col">Subtotal</th>
+                <th scope="col">Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -29,32 +30,80 @@
                 <tr>
                     <td>@cartItem.DrinkName</td>
                     <td>
-                        <input data-productid="@cartItem.IdProduct" type="number" value="@cartItem.Quantity" class="w-50 quantityNum" id="quantity_@cartItem.IdProduct" 
-                        oninput="validity.valid||(value='');" name="quantity_@cartItem.IdProduct" min="1" max="10" step="1" size="2" />
+                        <input data-cartid="@cartItem.CartId" type="number" value="@cartItem.Quantity" class="w-50 quantityNumUpdate" id="quantity_@cartItem.CartId"
+                               oninput="validity.valid||(value='');" name="quantity_@cartItem.IdProduct" min="1" max="10" step="1" size="2" />
                     </td>
                     <td>@cartItem.SizeName</td>
-                    <td>@cartItem.Price</td>
-                    <td>@cartItem.TotalPrice</td>
-                    <td>@cartItem.LineTax</td>
-                    <td>@cartItem.LineCost</td>
+                    <td>@cartItem.Price.ToString("C")</td>
+                    <td hidden id="price_@cartItem.CartId">@cartItem.Price</td>
+                    <td>@cartItem.TotalPrice.ToString("C")</td>
+                    <td>@cartItem.LineTax.ToString("C")</td>
+                    <td>@cartItem.LineCost.ToString("C")</td>
+                    <td><button disabled data-cartid="@cartItem.CartId" class="btn btn-orange btn-quantity" id="btn_quantity_@cartItem.CartId">Update Quantity</button></td>
                 </tr>
             }
 
-        <tr>
-            <td colspan="5"></td>
-            <td colspan="1" id="totalTax">@totalTax</td>
-            <td colspan="1" id="totalCost">@totalCart</td>
-        </tr>
+            <tr>
+                <td colspan="6"></td>
+                <td colspan="1" id="totalTax">@totalTax.ToString("C")</td>
+                <td colspan="1" id="totalCost">@totalCart.ToString("C")</td>
+            </tr>
         </tbody>
     </table>
 </div>
 
+@if (Model.Carts.Count > 0)
+{
+    <form action="" method="post">
+        <input type="submit" value="Clear Cart" name="clear" class="btn btn-orange" asp-controller="Cart"
+               asp-action="ClearCart" />
+        <input type="submit" value="Purchase" name="purchase" class=" btn btn-orange" asp-controller="Cart"
+               asp-action="Purchase" />
+    </form>
+}
+else
+{
+    <h5>You have no items in your cart. Don't forget to visit our <a asp-area="" asp-controller="Cart" asp-action="Menu">menu</a> to grab a latte!</h5>
+}
+<script>
+    $('.quantityNumUpdate').on('input change mouseup keyup', function () {
+        var ID = $(this).data('cartid');
 
-<form action="" method="post">
-    <input type="submit" value="Clear Cart" name="clear" class="btn btn-orange" asp-controller="Cart"
-           asp-action="ClearCart" />
-    <input type="submit" value="Purchase" name="purchase" class=" btn btn-orange" asp-controller="Cart"
-           asp-action="Purchase" />
+        var quantity = $('#quantity_' + ID).val();
+        if (quantity == "") {
+            $("#btn_quantity_" + ID).prop("disabled", true);
+        }
+        else {
+            $("#btn_quantity_" + ID).prop("disabled", false);
+        }
+    });
 
-</form>
+    $('.btn-quantity').click(function () {
+            var ID = $(this).data('cartid');
+            var price = $('#price_' + ID).text();
+            var quantity = $('#quantity_' + ID).val();
 
+            var totalPrice = price * quantity;
+            var lineTax = totalPrice * 0.075;
+            var lineCost = lineTax + totalPrice;
+
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("UpdateCartQuantity", "Cart")',
+                data: {
+                cartid: ID,
+                quantity: quantity,
+                totalPrice: totalPrice,
+                lineTax: lineTax,
+                lineCost: lineCost
+            },
+            success: function () {
+                alert("Succesfully updated quantity!");
+                location.reload();
+            },
+            error: function (data) {
+                alert('Error: ' + data.statusText);
+            }
+            });
+    });
+</script>
