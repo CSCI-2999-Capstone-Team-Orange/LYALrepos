@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using LoveYouALatte.Data.Entities;
 using MySql.Data.MySqlClient;
+using System.Security.Claims;
+
 
 namespace LoveYouALatte_Authentication.Controllers
 {
@@ -44,9 +46,44 @@ namespace LoveYouALatte_Authentication.Controllers
         {
             return View();
         }
-        
 
-        
+        public IActionResult EmployeeLogin()
+        {
+            
+            
+            return LocalRedirect("/Identity/Account/Login");
+        }
+
+        public IActionResult EmployeeView()
+        {
+          
+            var userRole = this.User.FindFirstValue(ClaimTypes.Role);
+
+            if(userRole == "Employee")
+            {
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("homepage");
+            }
+
+            
+        }
+
+        [Authorize(Roles = "Employee")]
+        public IActionResult EmployeeContent()
+        {
+
+           
+                return View();
+            
+  
+
+        }
+
+
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
