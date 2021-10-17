@@ -118,12 +118,13 @@ namespace LoveYouALatte_Authentication.Controllers
         [Authorize]
         public ActionResult Checkout()
         {
+            ViewBag.ErrorMessage = "Your cart is empty. Please add items to cart.";
             CheckoutViewModel vm = new CheckoutViewModel();
             var UserID = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var cartList = new List<Cart>();
             //cart info passed to list
-
+      
             MySqlDatabase db = new MySqlDatabase(connectionString);
             using (MySqlConnection conn = db.Connection)
             {
@@ -164,6 +165,7 @@ namespace LoveYouALatte_Authentication.Controllers
         [Authorize]
         public ActionResult Purchase()
         {
+            
             var UserID = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var orderId = 0;
 
@@ -175,49 +177,60 @@ namespace LoveYouALatte_Authentication.Controllers
             using (var dbContext = new loveyoualattedbContext())
             {
                 var dbCart = dbContext.CartTables.Where(s => s.IdUser == UserID).ToList();
-                var newUserOrder = new UserOrder()
+                if (dbCart.Count != 0)
                 {
-                    
-                    UserId = UserID,
-                    OrderDate = today
-                };
+                    var newUserOrder = new UserOrder()
+                    {
 
-                var products = dbContext.Products.ToList();
+                        UserId = UserID,
+                        OrderDate = today
+                    };
 
-                foreach (var cartItem in dbCart)
-                {
-                    // TODO: remove this hack when lineItemCost is being set correctly
-                    var product = products.Single(p => p.IdProduct == cartItem.IdProduct);
-                    //decimal subTotal = product.Price * (decimal)cartItem.Quantity;
-                    //decimal tax = 0.075m * subTotal;
-                    //decimal total = subTotal + tax;
+                    var products = dbContext.Products.ToList();
 
-                    newUserOrder.OrderItems.Add(
-                        new OrderItem()
-                        {
-                            ProductId = cartItem.IdProduct,
-                            Quantity = cartItem.Quantity,
-                            LineItemCost = product.Price,
-                            Tax = cartItem.LineTax,
-                            TotalCost = cartItem.LineCost
-                        });
+                    foreach (var cartItem in dbCart)
+                    {
+                        // TODO: remove this hack when lineItemCost is being set correctly
+                        //var product = products.Single(p => p.IdProduct == cartItem.IdProduct);
+                        //decimal subTotal = product.Price * (decimal)cartItem.Quantity;
+                        //decimal tax = 0.075m * subTotal;
+                        //decimal total = subTotal + tax;
+
+                        newUserOrder.OrderItems.Add(
+                            new OrderItem()
+                            {
+                                ProductId = cartItem.IdProduct,
+                                Quantity = cartItem.Quantity,
+                                LineItemCost = (cartItem.LineItemCost / cartItem.Quantity),
+                                Tax = (cartItem.LineItemCost * 0.075m),
+                                TotalCost = (cartItem.LineItemCost * 0.075m) + cartItem.LineItemCost,
+                            });
+                    }
+
+                    dbContext.UserOrders.Add(newUserOrder);
+                    dbContext.SaveChanges();
+                    orderId = newUserOrder.UserOrderId;
+
+                    //foreach(var value in dbCart)
+                    //{
+                    //    dbContext.CartTables.Remove(value);
+                    //    dbContext.SaveChanges();
+                    //}
+
+                    dbContext.CartTables.RemoveRange(dbCart);
+                    dbContext.SaveChanges();
+               
+
+                    return RedirectToAction("Receipt", new { id = orderId });
                 }
-
-                dbContext.UserOrders.Add(newUserOrder);
-                dbContext.SaveChanges();
-                orderId = newUserOrder.UserOrderId;
-
-                //foreach(var value in dbCart)
-                //{
-                //    dbContext.CartTables.Remove(value);
-                //    dbContext.SaveChanges();
-                //}
-
-                dbContext.CartTables.RemoveRange(dbCart);
-                dbContext.SaveChanges();
+                else
+                {
+                    ViewBag.ErrorMessage = "Your cart is empty. Please add items to cart.";
+                    return RedirectToAction("Checkout");
+                    
+                    
+                }
             }
-
-            return RedirectToAction("Receipt", new { id = orderId });
         }
 
         [HttpPost]
