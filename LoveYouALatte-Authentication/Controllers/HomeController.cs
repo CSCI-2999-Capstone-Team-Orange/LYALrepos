@@ -56,19 +56,40 @@ namespace LoveYouALatte_Authentication.Controllers
 
         public IActionResult EmployeeView()
         {
-          
+            var UserID = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var userRole = this.User.FindFirstValue(ClaimTypes.Role);
 
-            if(userRole == "Employee")
+            var currentUserInfo = new UserInfo();
+
+            if (userRole == "Employee")
             {
-                return View();
+                using (var dbContext = new loveyoualattedbContext())
+                {
+                    var userDbInfo = dbContext.AspNetUsers.SingleOrDefault(s => s.Id == UserID);
+                    if (userDbInfo != null)
+                    {
+                        currentUserInfo.firstName = userDbInfo.FirstName;
+                        currentUserInfo.lastName = userDbInfo.LastName;
+
+                    }
+                    else
+                    {
+                        return RedirectToAction("HomePage", "home");
+                    }
+
+                }
+                return View(currentUserInfo);
+            }
+            else if(userRole == "Admin")
+            {
+                return RedirectToAction("adminHome", "administration");
             }
             else
             {
                 return RedirectToAction("homepage");
             }
 
-            
+
         }
 
         [Authorize(Roles = "Employee")]

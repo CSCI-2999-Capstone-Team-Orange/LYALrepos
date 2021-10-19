@@ -25,4 +25,8 @@
     <ProjectReference Include="..\LoveYouALatte.Data\LoveYouALatte.Data.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Areas\Identity\Data\" />
+  </ItemGroup>
+
 </Project>
