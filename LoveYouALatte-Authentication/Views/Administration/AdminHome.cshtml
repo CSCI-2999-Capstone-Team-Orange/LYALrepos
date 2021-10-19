@@ -1,0 +1,27 @@
+﻿@model UserInfo
+@{
+    ViewData["Title"] = "AdminHome";
+}
+
+
+
+<h1>Administration Home</h1>
+
+<br />
+<br />
+<br />
+<h2 class="text-success">Welcome @Model.firstName @Model.lastName,</h2>
+<br />
+<br />
+<br />
+
+<h2>Admin Actions</h2>
+
+<ul>
+    <li>
+        <a asp-controller="Administration" asp-action="listroles">View and update Roles</a>
+    </li>
+
+
+</ul>
+

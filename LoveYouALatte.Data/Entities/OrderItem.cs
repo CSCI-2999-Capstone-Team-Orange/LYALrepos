@@ -15,6 +15,7 @@ namespace LoveYouALatte.Data.Entities
         public decimal Tax { get; set; }
         public decimal TotalCost { get; set; }
 
+        public virtual Product Product { get; set; }
         public virtual UserOrder UserOrder { get; set; }
     }
 }
