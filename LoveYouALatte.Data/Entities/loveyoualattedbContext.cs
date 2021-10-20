@@ -27,6 +27,7 @@ namespace LoveYouALatte.Data.Entities
         public virtual DbSet<CartTable> CartTables { get; set; }
         public virtual DbSet<Drink> Drinks { get; set; }
         public virtual DbSet<EfmigrationsHistory> EfmigrationsHistories { get; set; }
+        public virtual DbSet<Inventory> Inventories { get; set; }
         public virtual DbSet<OrderItem> OrderItems { get; set; }
         public virtual DbSet<Product> Products { get; set; }
         public virtual DbSet<Size> Sizes { get; set; }
@@ -37,7 +38,7 @@ namespace LoveYouALatte.Data.Entities
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseMySQL("Server=authtest.cjiyeakoxxft.us-east-1.rds.amazonaws.com;port=3306;user=test;password=orange1234;database=loveyoualattedb");
+                optionsBuilder.UseMySQL("Server= authtest.cjiyeakoxxft.us-east-1.rds.amazonaws.com;port=3306;user=test;password=orange1234;database=loveyoualattedb");
             }
         }
 
@@ -268,6 +269,31 @@ namespace LoveYouALatte.Data.Entities
                 entity.Property(e => e.ProductVersion)
                     .IsRequired()
                     .HasMaxLength(32);
+            });
+
+            modelBuilder.Entity<Inventory>(entity =>
+            {
+                entity.ToTable("Inventory");
+
+                entity.Property(e => e.InventoryId).HasColumnName("inventoryId");
+
+                entity.Property(e => e.InvDescription)
+                    .HasColumnType("longtext")
+                    .HasColumnName("invDescription");
+
+                entity.Property(e => e.InvName)
+                    .HasMaxLength(255)
+                    .HasColumnName("invName");
+
+                entity.Property(e => e.InvPrice)
+                    .HasColumnType("decimal(13,2)")
+                    .HasColumnName("invPrice");
+
+                entity.Property(e => e.InvQuantity).HasColumnName("invQuantity");
+
+                entity.Property(e => e.InvSize)
+                    .HasMaxLength(255)
+                    .HasColumnName("invSize");
             });
 
             modelBuilder.Entity<OrderItem>(entity =>
