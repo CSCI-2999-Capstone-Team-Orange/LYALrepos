@@ -74,7 +74,7 @@ namespace LoveYouALatte_Authentication.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
-            returnUrl ??= Url.Content("~/Home/EmployeeView");
+            returnUrl ??= Url.Content("~/Home/HomePage");
 
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         
