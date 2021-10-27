@@ -35,8 +35,20 @@ namespace LoveYouALatte_Authentication.Controllers
 
         public IActionResult HomePage()
         {
+            var userRole = this.User.FindFirstValue(ClaimTypes.Role);
 
-            return View();
+            if (userRole == "Employee")
+            {
+                return RedirectToAction("employeeView", "employee");
+            }
+            else if (userRole == "Admin")
+            {
+                return RedirectToAction("adminHome", "administration");
+            }
+            else
+            {
+                return View();
+            }
         }
         public IActionResult FAQ()
         {
@@ -46,65 +58,6 @@ namespace LoveYouALatte_Authentication.Controllers
         {
             return View();
         }
-
-        public IActionResult EmployeeLogin()
-        {
-            
-            
-            return LocalRedirect("/Identity/Account/Login");
-        }
-
-        public IActionResult EmployeeView()
-        {
-            var UserID = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var userRole = this.User.FindFirstValue(ClaimTypes.Role);
-
-            var currentUserInfo = new UserInfo();
-
-            if (userRole == "Employee")
-            {
-                using (var dbContext = new loveyoualattedbContext())
-                {
-                    var userDbInfo = dbContext.AspNetUsers.SingleOrDefault(s => s.Id == UserID);
-                    if (userDbInfo != null)
-                    {
-                        currentUserInfo.firstName = userDbInfo.FirstName;
-                        currentUserInfo.lastName = userDbInfo.LastName;
-
-                    }
-                    else
-                    {
-                        return RedirectToAction("HomePage", "home");
-                    }
-
-                }
-                return View(currentUserInfo);
-            }
-            else if(userRole == "Admin")
-            {
-                return RedirectToAction("adminHome", "administration");
-            }
-            else
-            {
-                return RedirectToAction("homepage");
-            }
-
-
-        }
-
-        [Authorize(Roles = "Employee")]
-        public IActionResult EmployeeContent()
-        {
-
-           
-                return View();
-            
-  
-
-        }
-
-
-
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
