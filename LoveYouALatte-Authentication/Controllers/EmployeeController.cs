@@ -109,5 +109,22 @@ namespace LoveYouALatte_Authentication.Controllers
             vm.Products = productList;
             return View(vm);
         }
+
+        [HttpPost]
+        [Authorize]
+        public ActionResult AddMenuItem(int idProduct, decimal price, string drink_name, string drink_description)
+        {
+            MenuViewModel vm = new MenuViewModel();
+            MySqlDatabase db = new MySqlDatabase(connectionString);
+            using (MySqlConnection conn = db.Connection)
+            {
+                var cmd = conn.CreateCommand() as MySqlCommand;
+                cmd.CommandText = @"
+                                INSERT INTO idProduct, idDrink, size.idSize, price, drink_name, drink_description, size.size FROM loveyoualattedb.product prod
+                    FROM loveyoualattedb.drinks drink ON prod.idDrink = drink.idDrinks
+                    FROM loveyoualattedb.size size ON prod.idSize = size.idSize";
+            }
+            return RedirectToAction("AddMenu");
+        }
     }
 }

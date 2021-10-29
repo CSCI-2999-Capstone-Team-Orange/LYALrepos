@@ -5,9 +5,8 @@
 @inject UserManager<ApplicationUser> UserManager
 @model MenuViewModel
 
-
 @{
-    var products = Model.Products.GroupBy(x => new { x.DrinkName, x.DrinkDescription });
+    var products = Model.Products.GroupBy(x => new { x.ProductId, x.DrinkId, x.SizeId, x.Price, x.DrinkName, x.DrinkDescription, x.SizeName });
 
 }
 
@@ -17,40 +16,41 @@
 
 <P>@ViewBag.ErrorMessage</P>
 
-
 <div class="table-responsive">
     <table class="table table-striped">
         <thead>
             <tr>
-                <th scope="col">Item Name</th>
-                <th scope="col">Quantity</th>
+                <th scope="col">Drink Name</th>
                 <th scope="col">Description</th>
-                <th scope="col">Price</th>
+                <th scope="col">Price Small</th>
+                <th scope="col">Price Medium</th>
+                <th scope="col">Price Large</th>
+                <th scope="col">Button</th>
             </tr>
         </thead>
         <tbody>
-
-            @foreach (var prod in products)
-            {
             <tr>
+                <td><input type="text" id="drinkName" name="drinkName" value=""></td>
+
+                <td><input type="text" id="drinkDescription" name="drinkDescription" value=""><br></td>
+
+                <td><input type="text" id="priceSmall" name="priceSmall" value=""><br></td>
+
+                <td><input type="text" id="priceMedium" name="priceMedium" value=""><br></td>
+
+                <td><input type="text" id="priceLarge" name="priceLarge" value=""><br></td>
+
                 <td>
-                    <input type="text" id="itemName" name="itemName" value="" />
+                    <form action="" method="post">
+                        <input type="submit" value="Add" name="Add" class=" btn btn-orange" asp-controller="Employee"
+                               asp-action="AddMenuItem" />
+                    </form>
                 </td>
-                <td>
-                    <input type="number" value="" class="w-50 quantityNumUpdate" id="quantity_"
-                           oninput="validity.valid||(value='');" name="quantity_  >" min="1" max="10" step="1" size="2" />
-                </td>
-
-                <td>
-                    <input type="text" id="itemDescription" name="itemName" value="" />
-                </td> 
-
-                <td>
-                    <input type="number" id="itemPrice" name="itemPrice" value="" />
-                </td> 
-
 
             </tr>
-             }
+
+
+        </tbody>
     </table>
 </div>
+
