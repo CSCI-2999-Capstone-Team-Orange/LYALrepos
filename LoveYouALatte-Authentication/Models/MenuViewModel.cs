@@ -12,5 +12,9 @@ namespace LoveYouALatte_Authentication.Models
             Products = new List<Product>();
         }
         public List<Product> Products { get; set; }
+
+        public ProductModel updateProduct { get; set; }
+
+        public DrinkModel drinkDivID { get; set; }
     }
 }

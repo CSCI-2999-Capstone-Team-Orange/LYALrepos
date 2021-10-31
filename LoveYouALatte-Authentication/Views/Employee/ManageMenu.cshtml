@@ -6,40 +6,83 @@
 @model MenuViewModel
 @{
     var products = Model.Products.GroupBy(x => new { x.DrinkName, x.DrinkDescription });
-
+    
 }
 <h1>@ViewData["Title"]</h1>
 
-
-<div class="card-deck">
-    <div class="row">
-        @foreach (var prod in products)
-        {
-            <div class="col-lg-6">
-                <div class="card mb-2">
-                    <img class="card-img-top" src="~/Images/@(prod.Key.DrinkName).jpg" alt="@(prod.Key.DrinkName)" />
-                    <div class="card-img-overlay">
-                        <h4 class="card-title">@(prod.Key.DrinkName)</h4>
-                    </div>
-                    <h6 class="card-text text-center">@(prod.Key.DrinkDescription)</h6>
-                    <input style="z-index: 20;" type="text" class="card-text text-center" value="@(prod.Key.DrinkDescription)"> @*example input on a bootstrap card not meant to be permanent*@
-
-
-                    <ul class="list-group list-group-flush">
-                        @foreach (var item in prod)
-                        {
-                            <li class="list-group-item text-center">
-                                <h5>@(item.SizeName): $@(item.Price)</h5>
-                                <p hidden id="price_@item.ProductId">@(item.Price)</p>
-                                <br />
-                            </li>
-                        }
-                    </ul>
-                </div>
-            </div>
-        }
-    </div>
+<h2>Filter Products</h2>
+<div>
+    @Html.DropDownList("Drinks", ViewBag.Drinks as List<SelectListItem>, "Select A Product")
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
 </div>
+
+    <div id="form" style="display: none;">
+        <div class="col-lg-6" id="editCard">
+            <div class="card mb-2">
+                <img id="editCardImage" class="card-img-top" src="~/Images/Brewed Coffee.jpg" alt="Brewed-Coffee" />
+                <div class="card-img-overlay">
+                    <input class="card-title" asp-for="updateProduct.DrinkName" />
+                    <input type="submit" value="Update" class="confirmUpdateButton">
+                    <input type="button" value="Cancel" class="cancelButton">
+                </div>
+                <input style="z-index: 20;" class="card-text text-center" asp-for="updateProduct.DrinkDescription" />
+                @*</h6><input style="z-index: 20;" type="text" class="card-text text-center" value="@(prod.Key.DrinkDescription)">*@
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item text-center">
+                        <div style="display: none;">
+                            <input asp-for="updateProduct.ProductId" readonly />
+                            <input asp-for="updateProduct.DrinkId" readonly />
+                            <input asp-for="updateProduct.SizeId" readonly />
+                            <input asp-for="updateProduct.SizeName" readonly />
+                        </div>
+                        <h5>Small:</h5><input asp-for="updateProduct.Price" min=".01"/>
+                        <br />
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <form id="cardMenu" method="post" action="@Url.Action("UpdateCardMenu","Employee")">
+        <div class="card-deck" id="cardDeck">
+            <div class="row">
+                @foreach (var prod in products)
+                {
+                    <div id="@(prod.Key.DrinkName)" class="col-lg-6" data-prod='@Json.Serialize(prod)'>
+                        <div class="card mb-2">
+                            <img class="card-img-top" src="~/Images/@(prod.Key.DrinkName).jpg" alt="@(prod.Key.DrinkName)" />
+                            <div class="card-img-overlay">
+                                <h4 class="card-title">@(prod.Key.DrinkName)</h4>
+                            </div>
+                            <h6 class="card-text text-center">@(prod.Key.DrinkDescription)</h6>
+                            @*</h6><input style="z-index: 20;" type="text" class="card-text text-center" value="@(prod.Key.DrinkDescription)">*@
+
+
+                            <ul class="list-group list-group-flush">
+                                @foreach (var item in prod)
+                                {
+                                <li class="list-group-item text-center" data-item='@Json.Serialize(item)'>
+                                    <h5>@(item.SizeName): $@(item.Price)</h5>
+                                    <input type="button" value="Update" class="updateButton">
+                                    @*<p hidden id="price_@item.ProductId">@(item.Price)</p>*@
+                                    <br />
+                                </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </form>
+
 
 <br />
 <hr />
@@ -47,5 +90,10 @@
 <h2 class="text-center">Add New Menu Item</h2>
 @using (Html.BeginForm("AddMenuItem", "Employee", FormMethod.Post))
 {
-    //inputs go here id and name should be the same 
+    //inputs go here id and name should be the same
+}
+
+
+@section Scripts{
+    <script src="~/js/cardMenu.js"></script>
 }
