@@ -10,51 +10,57 @@
 }
 <h1>@ViewData["Title"]</h1>
 
-            <div class="card-deck">
-                <div class="row">
-                    @foreach (var prod in products)
-                    {
-                        <div class="col-lg-6">
-                            <div class="card mb-2">
-                                <img class="card-img-top" src="~/Images/@(prod.Key.DrinkName).jpg" alt="@(prod.Key.DrinkName)" />
-                                <div class="card-img-overlay">
-                                    <h4 class="card-title">@(prod.Key.DrinkName)</h4>
-                                </div>
-                                <h6 class="card-text text-center">@(prod.Key.DrinkDescription)</h6>
-                                <input style="z-index: 20;" type="text" class="card-text text-center" value="@(prod.Key.DrinkDescription)"> @*example input on a bootstrap card not meant to be permanent*@
+<div class="card-deck">
+    <div class="row">
+        @foreach (var prod in products)
+        {
+            <div class="col-lg-6">
+                <div class="card mb-2">
+                    <img class="card-img-top" src="~/Images/@(prod.Key.DrinkName).jpg" alt="@(prod.Key.DrinkName)" />
+                    <div class="card-img-overlay">
+                        <h4 class="card-title">@(prod.Key.DrinkName)</h4>
+                    </div>
+                    <h6 class="card-text text-center">@(prod.Key.DrinkDescription)</h6>
+                    <input style="z-index: 20;" type="text" class="card-text text-center" value="@(prod.Key.DrinkDescription)"> @*example input on a bootstrap card not meant to be permanent*@
 
 
-                                <ul class="list-group list-group-flush">
-                                    @foreach (var item in prod)
-                                    {
-                                        <li class="list-group-item text-center">
-                                            <h5>@(item.SizeName): $@(item.Price)</h5>
-                                            <p hidden id="price_@item.ProductId">@(item.Price)</p>
-                                            <br />
-                                        </li>
-                                    }
-                                </ul>
-                            </div>
-                        </div>
-                    }
+                    <ul class="list-group list-group-flush">
+                        @foreach (var item in prod)
+                        {
+                            <li class="list-group-item text-center">
+                                <h5>@(item.SizeName): $@(item.Price)</h5>
+                                <p hidden id="price_@item.ProductId">@(item.Price)</p>
+                                <br />
+                            </li>
+                        }
+                    </ul>
                 </div>
             </div>
+        }
+    </div>
+</div>
 
-            <br />
-            <hr />
-            <br />
-            <h2 class="text-center">Add New Menu Item</h2>
-            @using (Html.BeginForm("AddMenuItem", "Employee", FormMethod.Post))
-            {
+<br />
+<hr />
+<br />
+<h2 class="text-center">Add New Menu Item</h2>
+@using (Html.BeginForm("AddMenuItem", "Employee", FormMethod.Post))
+{
+    <form>
+        <label for="drinkName">Drink Name:</label>
+        <input type="text" id="drinkName" name="drinkName" value=""><br>
+        <label for="drinkDescription">Drink Description:</label>
+        <input type="text" id="drinkDescription" name="drinkDescription" value=""><br>
+        <label for="priceSmall">Price Small:</label>
+        <input type="text" id="priceSmall" name="priceSmall" value=""><br>
+        <label for="priceMedium">Price Medium:</label>
+        <input type="text" id="priceMedium" name="priceMedium" value=""><br>
+        <label for="priceLarge">Price Large:</label>
+        <input type="text" id="priceLarge" name="priceLarge" value=""><br>
+        
+        <input type="submit" value="Add" name="Add" class=" btn btn-orange" asp-controller="Employee"
+               asp-action="AddMenuItem" />
+    </form>
 
-        <thead>
-            <tr>
-                <th scope="col">Item Name</th>
-                <th scope="col">SKU</th>
-                <th scope="col">Description</th>
-                <th scope="col">Price</th>
-            </tr>
-        </thead>
-
-            //inputs go here id and name should be the same
-            }
+        //inputs go here id and name should be the same
+    }

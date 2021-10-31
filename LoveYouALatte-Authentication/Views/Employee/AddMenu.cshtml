@@ -5,10 +5,10 @@
 @inject UserManager<ApplicationUser> UserManager
 @model MenuViewModel
 
-@{
+@*{
     var products = Model.Products.GroupBy(x => new { x.ProductId, x.DrinkId, x.SizeId, x.Price, x.DrinkName, x.DrinkDescription, x.SizeName });
 
-}
+}*@
 
 
 <h1>Add Product: </h1>
@@ -29,27 +29,48 @@
             </tr>
         </thead>
         <tbody>
+            
             <tr>
-                <td><input type="text" id="drinkName" name="drinkName" value=""></td>
-
-                <td><input type="text" id="drinkDescription" name="drinkDescription" value=""><br></td>
-
-                <td><input type="text" id="priceSmall" name="priceSmall" value=""><br></td>
-
-                <td><input type="text" id="priceMedium" name="priceMedium" value=""><br></td>
-
-                <td><input type="text" id="priceLarge" name="priceLarge" value=""><br></td>
-
+                
                 <td>
-                    <form action="" method="post">
-                        <input type="submit" value="Add" name="Add" class=" btn btn-orange" asp-controller="Employee"
-                               asp-action="AddMenuItem" />
+                    <form>
+                        <input type="text" id="drinkName" name="drinkName" value="">
                     </form>
                 </td>
 
+                <td>
+                    <form>
+                        <input type="text" id="drinkDescription" name="drinkDescription" value="">
+                    </form>
+                <br></td>
+
+                <td>
+                    <form>
+                        <input type="text" id="priceSmall" name="priceSmall" value="">
+                    </form>
+                <br></td>
+
+                <td>
+                    <form>
+                        <input type="text" id="priceMedium" name="priceMedium" value="">
+                    </form>
+                <br></td>
+
+                <td>
+                    <form>
+                        <input type="text" id="priceLarge" name="priceLarge" value="">
+                    </form>
+                <br></td>
+
+                <td>
+                    
+                        <input type="submit" value="Add" name="Add" class=" btn btn-orange" asp-controller="Employee"
+                               asp-action="AddMenuItem" />
+                    
+                </td>
+
             </tr>
-
-
+            
         </tbody>
     </table>
 </div>
