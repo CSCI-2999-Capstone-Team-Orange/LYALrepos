@@ -2,7 +2,7 @@
 @{
     ViewData["Title"] = "ManageMenuTable";
     Layout = "~/Views/Shared/_EmployeeLayout.cshtml";
-   
+
 }
 
 
@@ -13,25 +13,25 @@
 @model ManageMenuTableModel
 
 @{
-            ViewData["Title"] = "Manage Menu";
+    ViewData["Title"] = "Manage Menu";
 }
 
 <table style="display: none;">
     <tr id="editRow" style="display: none;">
-        <td><input asp-for="updateProduct.ProductId" readonly/></td>
-        <td><input asp-for="updateProduct.DrinkId" readonly/></td>
+        <td><input asp-for="updateProduct.ProductId" readonly /></td>
+        <td><input asp-for="updateProduct.DrinkId" readonly /></td>
         <td><input asp-for="updateProduct.DrinkName" /></td>
         <td><input asp-for="updateProduct.DrinkDescription" /></td>
         <td><input asp-for="updateProduct.SizeId" min="1" max="10" /></td>
-        <td><input asp-for="updateProduct.SizeName" readonly/></td>
-        <td><input asp-for="updateProduct.Price" min=".01"/></td>
+        <td><input asp-for="updateProduct.SizeName" readonly /></td>
+        <td><input asp-for="updateProduct.Price" min=".01" /></td>
         <td><input class="btn btn-primary" type="submit" value="Update" /> <input class="cancelButton" type="button" value="Cancel" /> </td>
     </tr>
 </table>
 
 <div id="menuTable">
     @Html.ValidationSummary(false)
-    
+
     <form method="post" action="@Url.Action("UpdateProduct","Employee")">
         <table class="table table-bordered table-responsive table-hover" id="productTable">
 
@@ -69,7 +69,7 @@
 
 </div>
 
-<h2>Update Product</h2>
+@*<h2>Update Product</h2>
 <div id="updateProductDiv">
 
     <form method="post" action="@Url.Action("UpdateProduct","Employee")">
@@ -90,20 +90,29 @@
         <input asp-for="updateProduct.Price" /><br />
         <input type="submit" value="update" />
 
-
     </form>
 
+</div>*@
+
+<h2>Add Menu Item Form</h2>
+<div id="addProductDiv">
+    <form method="post" action="@Url.Action("AddMenuItem","Employee")">
+        <label for="DrinkName">Drink Name</label>
+        <input asp-for="updateProduct.DrinkName" />
+        <br />
+        <label for="DrinkDescription">Drink Description</label>
+        <input asp-for="updateProduct.DrinkDescription" />
+        <br />
+        <label for="Price">Price</label>
+        <input asp-for="updateProduct.Price" />
+        <br />
+        <input type="submit" value="Add" />
+    </form>
 </div>
 
-
-
-
-
-
-
 @section Scripts{
-    <script src="~/js/datatables.js"></script>
-}
+        <script src="~/js/datatables.js"></script>
+    }
 
 
 
