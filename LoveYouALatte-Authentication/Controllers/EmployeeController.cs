@@ -23,7 +23,7 @@ namespace LoveYouALatte_Authentication.Controllers
         {
             MenuViewModel vm = new MenuViewModel();
 
-            var productList = new List<Models.Product>();
+            var productList = new List<Models.ProductKG>();
             //cart info passed to list
 
             MySqlDatabase db = new MySqlDatabase(connectionString);
@@ -39,7 +39,7 @@ namespace LoveYouALatte_Authentication.Controllers
                 {
                     while (dr.Read())
                     {
-                        Models.Product prod = new Models.Product();
+                        Models.ProductKG prod = new Models.ProductKG();
 
                         prod.ProductId = dr["idProduct"] as int? ?? default(int);
                         prod.DrinkId = dr["idDrink"] as int? ?? default(int);
@@ -146,7 +146,7 @@ namespace LoveYouALatte_Authentication.Controllers
             ManageMenuTableModel updateMenuItem = new ManageMenuTableModel();
             ProductModel productList = new ProductModel();
             
-            //List<ProductModel> productList = new List<ProductModel>();
+            
             updateMenuItem.viewProduct = productList;
             
            
@@ -164,12 +164,13 @@ namespace LoveYouALatte_Authentication.Controllers
                     {
                         ProductId = product.IdProduct,
                         DrinkId = product.IdDrink,
+                        productSku = product.ProductSku,
                         DrinkName = drinks.Single(d => d.IdDrinks == product.IdDrink).DrinkName,
                         DrinkDescription = drinks.Single(d => d.IdDrinks == product.IdDrink).DrinkDescription,
                         SizeId = product.IdSize,
                         SizeName = sizes.Single(s => s.IdSize == product.IdSize).Size1,
                         Price = product.Price
-                    });
+                    }) ;
 
                     
 
@@ -190,8 +191,10 @@ namespace LoveYouALatte_Authentication.Controllers
                 {
                     var updateThisProduct = dbContext.Products.First(s => s.IdProduct == formInfo.updateProduct.ProductId);
                     var updateThisDrink = dbContext.Drinks.First(t => t.IdDrinks == formInfo.updateProduct.DrinkId);
+                    
 
                     updateThisProduct.IdProduct = formInfo.updateProduct.ProductId;
+                    updateThisProduct.ProductSku = formInfo.updateProduct.productSku;
                     updateThisProduct.IdDrink = formInfo.updateProduct.DrinkId;
                     updateThisProduct.IdSize = formInfo.updateProduct.SizeId;
                     updateThisProduct.Price = formInfo.updateProduct.Price;
@@ -209,7 +212,7 @@ namespace LoveYouALatte_Authentication.Controllers
                 return RedirectToAction("ManageMenuTable");
             }
         }
-
+        
         public ActionResult AddProduct()
         {
             return View();
@@ -253,7 +256,6 @@ namespace LoveYouALatte_Authentication.Controllers
             else
             {
                 return View(vm);
-
             }
             return View(vm);
 

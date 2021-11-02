@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace LoveYouALatte_Authentication.Models
 {
-    public class Product
+    public class ProductKG
     {
         public int ProductId { get; set; }
         public int DrinkId { get; set; }

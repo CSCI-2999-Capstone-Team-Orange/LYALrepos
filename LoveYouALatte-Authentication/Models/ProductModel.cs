@@ -21,6 +21,8 @@ namespace LoveYouALatte_Authentication.Models
         [Range(1, 3, ErrorMessage = "This price cannot be below zero")]
         public int SizeId { get; set; }
         [Required]
+        public string productSku { get; set;}
+        [Required]
         [Range(.01,1000000000, ErrorMessage ="This price cannot be below zero")]
         public decimal Price { get; set; }
         [Required]

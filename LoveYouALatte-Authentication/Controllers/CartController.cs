@@ -80,7 +80,7 @@ namespace LoveYouALatte_Authentication.Controllers
         {
             MenuViewModel vm = new MenuViewModel();
 
-            var productList = new List<Models.Product>();
+            var productList = new List<Models.ProductKG>();
             //cart info passed to list
 
             MySqlDatabase db = new MySqlDatabase(connectionString);
@@ -96,7 +96,7 @@ namespace LoveYouALatte_Authentication.Controllers
                 {
                     while (dr.Read())
                     {
-                        Models.Product prod = new Models.Product();
+                        Models.ProductKG prod = new Models.ProductKG();
 
                         prod.ProductId = dr["idProduct"] as int? ?? default(int);
                         prod.DrinkId = dr["idDrink"] as int? ?? default(int);

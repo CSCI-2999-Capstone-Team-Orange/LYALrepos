@@ -9,9 +9,9 @@ namespace LoveYouALatte_Authentication.Models
     {
         public MenuViewModel()
         {
-            Products = new List<Product>();
+            Products = new List<ProductKG>();
         }
-        public List<Product> Products { get; set; }
+        public List<ProductKG> Products { get; set; }
 
         public ProductModel updateProduct { get; set; }
 

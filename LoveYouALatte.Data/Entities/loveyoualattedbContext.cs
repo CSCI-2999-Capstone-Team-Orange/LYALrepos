@@ -38,7 +38,7 @@ namespace LoveYouALatte.Data.Entities
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseMySQL("Server= authtest.cjiyeakoxxft.us-east-1.rds.amazonaws.com;port=3306;user=test;password=orange1234;database=loveyoualattedb");
+                optionsBuilder.UseMySQL("Server=authtest.cjiyeakoxxft.us-east-1.rds.amazonaws.com;port=3306;user=test;password=orange1234;database=loveyoualattedb");
             }
         }
 
@@ -357,6 +357,11 @@ namespace LoveYouALatte.Data.Entities
                 entity.Property(e => e.Price)
                     .HasColumnType("decimal(13,2)")
                     .HasColumnName("price");
+
+                entity.Property(e => e.ProductSku)
+                    .IsRequired()
+                    .HasMaxLength(15)
+                    .HasColumnName("productSKU");
 
                 entity.HasOne(d => d.IdDrinkNavigation)
                     .WithMany(p => p.Products)

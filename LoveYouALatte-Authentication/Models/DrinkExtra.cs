@@ -5,17 +5,17 @@ using System.Threading.Tasks;
 
 namespace LoveYouALatte_Authentication.Models
 {
-    public class Drink
+    public class DrinkExtra
     {
-        public Drink()
+        public DrinkExtra()
         {
-            ProductTables = new HashSet<Product>();
+            ProductTables = new HashSet<ProductKG>();
         }
 
         public int DrinkId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
 
-        public virtual ICollection<Product> ProductTables { get; set; }
+        public virtual ICollection<ProductKG> ProductTables { get; set; }
     }
 }
