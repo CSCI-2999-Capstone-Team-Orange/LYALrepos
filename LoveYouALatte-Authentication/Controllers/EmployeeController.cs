@@ -208,14 +208,55 @@ namespace LoveYouALatte_Authentication.Controllers
                 ModelState.AddModelError("FullName", "error-message goes here");
                 return RedirectToAction("ManageMenuTable");
             }
-
-            
         }
 
+        public ActionResult AddProduct()
+        {
+            return View();
+        }
+        [HttpPost]
+        public ActionResult AddProduct(AddProduct vm)
+        {
+            if (ModelState.IsValid)
+            {
+                MySqlDatabase db = new MySqlDatabase(connectionString);
+                using (MySqlConnection conn = db.Connection)
+                {
+                    var val = conn.CreateCommand() as MySqlCommand;
+                    val.CommandText = @"SELECT drink_name FROM loveyoualattedb.drinks WHERE drink_name = '" + vm.DrinkName + "';";
+                    var validDrink = val.ExecuteScalar();
+                    if (validDrink != null)
+                    {
+                        if (vm.DrinkName.ToLower() == validDrink.ToString().ToLower())
+                        {
+                            ModelState.AddModelError("AddProductError", "Duplicate drink.");
+                            return View(vm);
+                        }
+                    }
+                    else
+                    {
+                        var cmd1 = conn.CreateCommand() as MySqlCommand;
+                        cmd1.CommandText = @"INSERT INTO loveyoualattedb.drinks (drink_name, drink_description) VALUES ('" + vm.DrinkName + "', '" + vm.DrinkDescription + "');" +
+                            "SELECT LAST_INSERT_ID();";
+                        var drinkID = cmd1.ExecuteScalar();
 
+                        var cmd2 = conn.CreateCommand() as MySqlCommand;
+                        cmd2.CommandText = @"INSERT INTO loveyoualattedb.product (idDrink, idSize, productSKU, price) VALUES ('" + drinkID + "', '1', '" + vm.SmallSKU + "','" + vm.SmallPrice + "');" +
+                            "INSERT INTO loveyoualattedb.product (idDrink, idSize, productSKU, price) VALUES ('" + drinkID + "', '2', '" + vm.MediumSKU + "','" + vm.MediumPrice + "');" +
+                            "INSERT INTO loveyoualattedb.product (idDrink, idSize, productSKU, price) VALUES ('" + drinkID + "', '3', '" + vm.LargeSKU + "','" + vm.LargePrice + "');";
+                        cmd2.ExecuteNonQuery();
 
+                        return RedirectToAction("AddProduct", "Employee", vm);
+                    }
+                }
+            }
+            else
+            {
+                return View(vm);
 
+            }
+            return View(vm);
 
-
+        }
     }
 }
