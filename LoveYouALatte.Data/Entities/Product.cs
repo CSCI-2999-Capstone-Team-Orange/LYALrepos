@@ -16,6 +16,7 @@ namespace LoveYouALatte.Data.Entities
         public int IdProduct { get; set; }
         public int IdDrink { get; set; }
         public int IdSize { get; set; }
+        public string ProductSku { get; set; }
         public decimal Price { get; set; }
 
         public virtual Drink IdDrinkNavigation { get; set; }

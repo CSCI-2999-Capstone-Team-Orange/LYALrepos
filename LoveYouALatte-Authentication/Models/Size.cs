@@ -9,12 +9,12 @@ namespace LoveYouALatte_Authentication.Models
     {
         public Size()
         {
-            ProductTables = new HashSet<Product>();
+            ProductTables = new HashSet<ProductKG>();
         }
 
         public int Id { get; set; }
         public string Description { get; set; }
 
-        public virtual ICollection<Product> ProductTables { get; set; }
+        public virtual ICollection<ProductKG> ProductTables { get; set; }
     }
 }

@@ -18,13 +18,14 @@
 
 <table style="display: none;">
     <tr id="editRow" style="display: none;">
-        <td><input asp-for="updateProduct.ProductId" readonly/></td>
-        <td><input asp-for="updateProduct.DrinkId" readonly/></td>
+        <td><input asp-for="updateProduct.ProductId" readonly /></td>
+        <td><input asp-for="updateProduct.productSku" /></td>
+        <td><input asp-for="updateProduct.DrinkId" readonly /></td>
         <td><input asp-for="updateProduct.DrinkName" /></td>
         <td><input asp-for="updateProduct.DrinkDescription" /></td>
         <td><input asp-for="updateProduct.SizeId" min="1" max="10" /></td>
-        <td><input asp-for="updateProduct.SizeName" readonly/></td>
-        <td><input asp-for="updateProduct.Price" min=".01"/></td>
+        <td><input asp-for="updateProduct.SizeName" readonly /></td>
+        <td><input asp-for="updateProduct.Price" min=".01" /></td>
         <td><input class="btn btn-primary" type="submit" value="Update" /> <input class="cancelButton" type="button" value="Cancel" /> </td>
     </tr>
 </table>
@@ -38,6 +39,7 @@
             <thead>
                 <tr>
                     <th>Product ID</th>
+                    <th>Product SKU</th>
                     <th>Drink ID</th>
                     <th>Drink Name</th>
                     <th>Drink Description</th>
@@ -53,6 +55,7 @@
                 {
                     <tr data-product='@Json.Serialize(product)'>
                         <td>@product.ProductId</td>
+                        <td>@product.productSku</td>
                         <td>@product.DrinkId</td>
                         <td>@product.DrinkName</td>
                         <td>@product.DrinkDescription</td>
