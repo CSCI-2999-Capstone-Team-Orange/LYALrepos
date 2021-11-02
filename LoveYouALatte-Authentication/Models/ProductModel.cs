@@ -30,7 +30,7 @@ namespace LoveYouALatte_Authentication.Models
         public string ProductSku { get; set;}
 
         [Required (ErrorMessage = "A price is required.")]
-        [Range(.01,1000000000, ErrorMessage ="The price cannot be below zero.")]
+        [RegularExpression(@"^[0-9]+(\.[0-9]{1,2})$", ErrorMessage ="The price cannot be below zero and must only contain two decimal places.")]
         public decimal Price { get; set; }
 
         [Required (ErrorMessage = "A production description is required.")]
