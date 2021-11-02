@@ -14,22 +14,35 @@ namespace LoveYouALatte_Authentication.Models
             this.productList = new List<ProductModel>();
         }
         [Required]
+        [Range(1,1000)]
         public int ProductId { get; set; }
+
         [Required]
+        [Range(1, 1000)]
         public int DrinkId { get; set; }
+
         [Required]
-        [Range(1, 3, ErrorMessage = "This price cannot be below zero")]
+        [Range(1, 3, ErrorMessage = "This size Id must be a value from 1-3.")]
         public int SizeId { get; set; }
-        [Required]
-        public string productSku { get; set;}
-        [Required]
-        [Range(.01,1000000000, ErrorMessage ="This price cannot be below zero")]
+
+        [Required(ErrorMessage = "Product SKU is required and cannot be longer than 15 characters.")]
+        [StringLength (15)]
+        public string ProductSku { get; set;}
+
+        [Required (ErrorMessage = "A price is required.")]
+        [Range(.01,1000000000, ErrorMessage ="The price cannot be below zero.")]
         public decimal Price { get; set; }
-        [Required]
+
+        [Required (ErrorMessage = "A production description is required.")]
+        [StringLength(200)]
         public string DrinkDescription { get; set; }
-        [Required]
+
+        [Required(ErrorMessage = "A drink name is required.")]
+        [StringLength(45)]
         public string DrinkName { get; set; }
+
         [Required]
+        [StringLength(255)]
         public string SizeName { get; set; }
       
 
