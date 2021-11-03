@@ -5,6 +5,7 @@
     rowData = $tr.data("product");
 
     $("[name='updateProduct.ProductId']", $editRow).val(rowData.productId);
+    $("[name='updateProduct.ProductSku']", $editRow).val(rowData.productSku);
     $("[name='updateProduct.DrinkId']", $editRow).val(rowData.drinkId);
     $("[name='updateProduct.DrinkName']", $editRow).val(rowData.drinkName);
     $("[name='updateProduct.DrinkDescription']", $editRow).val(rowData.drinkDescription);
@@ -13,7 +14,7 @@
     $("[name='updateProduct.Price']", $editRow).val(rowData.price);
    
 
-    
+    $("#menuTable").find(".updateButton").hide();
     $tr.hide();
     $editRow.show();
 }
@@ -21,7 +22,8 @@
 function onCancelClick($tr) {
 
     $tr.prev().show();
-    $tr.hide();
+    $tr.empty();
+    $(".updateButton").show();
 }
 
 //function onUpdateClick($row) {
@@ -45,11 +47,11 @@ $(document).ready(function () {
         ordering: true,
         paging: true,
         searching: true,
-        "pageLength": 20
+        "pageLength": 25
         
     });
 
-    $(".updateButton").click(function () {
+    $("#menuTable").on("click",".updateButton", function () {
         onUpdateClick($(this).parents("tr"));
     });
 

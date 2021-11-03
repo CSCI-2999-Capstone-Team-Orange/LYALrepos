@@ -136,6 +136,7 @@ namespace LoveYouALatte_Authentication.Controllers
             }
             else
             {
+                
                 return RedirectToAction("ManageMenu");
             }
         }
@@ -164,7 +165,7 @@ namespace LoveYouALatte_Authentication.Controllers
                     {
                         ProductId = product.IdProduct,
                         DrinkId = product.IdDrink,
-                        productSku = product.ProductSku,
+                        ProductSku = product.ProductSku,
                         DrinkName = drinks.Single(d => d.IdDrinks == product.IdDrink).DrinkName,
                         DrinkDescription = drinks.Single(d => d.IdDrinks == product.IdDrink).DrinkDescription,
                         SizeId = product.IdSize,
@@ -184,8 +185,9 @@ namespace LoveYouALatte_Authentication.Controllers
         }
 
         [HttpPost]
-        public IActionResult UpdateProduct(ManageMenuTableModel formInfo)
+        public IActionResult ManageMenuTable(ManageMenuTableModel formInfo)
         {
+            
             if (ModelState.IsValid) {
                 using (var dbContext = new loveyoualattedbContext())
                 {
@@ -194,7 +196,7 @@ namespace LoveYouALatte_Authentication.Controllers
                     
 
                     updateThisProduct.IdProduct = formInfo.updateProduct.ProductId;
-                    updateThisProduct.ProductSku = formInfo.updateProduct.productSku;
+                    updateThisProduct.ProductSku = formInfo.updateProduct.ProductSku;
                     updateThisProduct.IdDrink = formInfo.updateProduct.DrinkId;
                     updateThisProduct.IdSize = formInfo.updateProduct.SizeId;
                     updateThisProduct.Price = formInfo.updateProduct.Price;
@@ -203,13 +205,46 @@ namespace LoveYouALatte_Authentication.Controllers
                     dbContext.SaveChanges();
                     
                 }
-                return RedirectToAction("ManageMenuTable");
+                return RedirectToAction("ManageMenuTable", "Employee", formInfo);
 
             }
             else
             {
-                ModelState.AddModelError("FullName", "error-message goes here");
-                return RedirectToAction("ManageMenuTable");
+                ProductModel productList = new ProductModel();
+
+                formInfo.viewProduct = productList;
+
+                using (var dbContext = new loveyoualattedbContext())
+                {
+                    var products = dbContext.Products.ToList();
+                    var sizes = dbContext.Sizes.ToList();
+                    var drinks = dbContext.Drinks.ToList();
+
+                    foreach (var product in products)
+                    {
+
+                        productList.productList.Add(new ProductModel
+                        {
+                            ProductId = product.IdProduct,
+                            DrinkId = product.IdDrink,
+                            ProductSku = product.ProductSku,
+                            DrinkName = drinks.Single(d => d.IdDrinks == product.IdDrink).DrinkName,
+                            DrinkDescription = drinks.Single(d => d.IdDrinks == product.IdDrink).DrinkDescription,
+                            SizeId = product.IdSize,
+                            SizeName = sizes.Single(s => s.IdSize == product.IdSize).Size1,
+                            Price = product.Price
+                        });
+
+
+
+
+                    }
+
+                }
+
+                
+
+                return View(formInfo);
             }
         }
         
