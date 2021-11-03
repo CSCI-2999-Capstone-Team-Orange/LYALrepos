@@ -249,7 +249,9 @@ namespace LoveYouALatte_Authentication.Controllers
                             "INSERT INTO loveyoualattedb.product (idDrink, idSize, productSKU, price) VALUES ('" + drinkID + "', '3', '" + vm.LargeSKU + "','" + vm.LargePrice + "');";
                         cmd2.ExecuteNonQuery();
 
-                        return RedirectToAction("AddProduct", "Employee", vm);
+                        vm.AddProductSuccess = "Succesfully added product!";
+
+                        return View(vm);
                     }
                 }
             }

@@ -9,6 +9,8 @@ namespace LoveYouALatte_Authentication.Models
     public class AddProduct
     {
         public string AddProductError { get; set; }
+        public string AddProductSuccess { get; set; }
+
         [Required]
         [Display(Name = "Small Price")]
         [RegularExpression(@"^[0-9]+(\.[0-9]{1,2})$", ErrorMessage = "Valid price with a maximum of 2 decimal places is required.")]
