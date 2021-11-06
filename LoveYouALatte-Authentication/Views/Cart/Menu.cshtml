@@ -21,20 +21,14 @@
                     <div class="card-img-overlay">
                         <h4 class="card-title">@(prod.Key.DrinkName)</h4>
                     </div>
-                    
+
+
+                    <h6 class="card-text text-center">@(prod.Key.DrinkDescription)</h6>
+
                     <div id="myNav" class="overlay">
-                        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-                        <div class="overlay-content">
-                            <a href="#">Addons</a>
-                        </div>
-                    </div>
-
-                        <h6 class="card-text text-center">@(prod.Key.DrinkDescription)</h6>
-
-                        <div id="myNav" class="overlay">
-                            <ul class="list-group list-group-flush">
-                                @foreach (var item in prod)
-                                {
+                        <ul class="list-group list-group-flush">
+                            @foreach (var item in prod)
+                            {
                                 <li class="list-group-item text-center">
                                     <h5>@(item.SizeName): $@(item.Price)</h5>
                                     <p hidden id="price_@item.ProductId">@(item.Price)</p>
@@ -43,7 +37,7 @@
                                     {
                                         <label for="quantity_@item.ProductId">Quantity: <input data-productid="@item.ProductId" type="number" class="w-50 quantityNum" id="quantity_@item.ProductId" oninput="validity.valid||(value='');" name="quantity_@item.ProductId" min="1" max="10" step="1" size="2" /></label>
                                         <button onclick="openNav()" disabled data-productid="@item.ProductId" class="btn btn-orange btn-add" id="btn_add_@item.ProductId"> Add To Cart<i class="fa fa-coffee"></i></button>
-                                        <button onclick="openNav()"> Add on</button>
+                                        <button class="addOnButton"> Add on</button>
                                         <br />
                                     }
                                     else //redirect
@@ -51,27 +45,58 @@
 
                                     }
                                 </li>
-                                }
-                            </ul>
-                        </div>
+                            }
+                        </ul>
                     </div>
-                    }
                 </div>
+                }
+            </div>
         }
 
-<script>
-    function openNav() {
-        document.getElementById("myNav").style.display = "block";
-    }
+    
+        <div style="display: none;" id="addOn" class="z-index-2 col-lg-6 position-absolute bg-primary">
+            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+            <div class="overlay-content">
+                @*<a href="#">Addons</a>*@
+                <h1>Addons</h1>
 
-    function closeNav() {
-        document.getElementById("myNav").style.display = "none";
-    }
-</script>
+                <form action="/action_page.php">
+                    <input type="checkbox" id="Creamer1" name="Skim" value="Milk">
+                    <label for="vehicle1"> Skimmed milk</label><br>
+                    <input type="checkbox" id="Creamer2" name="%2" value="Milk">
+                    <label for="vehicle2"> %2 Milk</label><br>
+                    <input type="checkbox" id="Creamer3" name="Almond" value="Milk">
+                    <label for="vehicle3"> Almond Milk</label><br><br>
+                    <input type="submit" value="Submit">
+                </form>
+
+                <button class="closeAddOn btn-danger"> Close</button>
+
+                <label for=""></label>
+            </div>
+        </div>
+
+        @*<script>
+            function openNav() {
+                document.getElementById("myNav").style.display = "block";
+            }
+
+            function closeNav() {
+                document.getElementById("myNav").style.display = "none";
+            }
+        </script>*@
     <script>
     $(document).ready(function () {
 
     });
+
+        
+
+        $('.closeAddOn').click(function () {
+            $("#addOn").hide();
+
+        });
+
 
     $('.quantityNum').on('input change mouseup keyup', function () {
         var ID = $(this).data('productid');
@@ -106,7 +131,8 @@
             lineCost: lineCost
         },
         success: function () {
-           // alert("Succesfully added to cart!");
+            alert("Succesfully added to cart!");
+            $("#addOn").show();
 
         },
         error: function (data) {
@@ -115,4 +141,6 @@
         });
     });
 
-</script>
+    </script>
+
+
