@@ -21,34 +21,53 @@
                     <div class="card-img-overlay">
                         <h4 class="card-title">@(prod.Key.DrinkName)</h4>
                     </div>
-                        <h6 class="card-text text-center">@(prod.Key.DrinkDescription)</h6>
                     
+                    <div id="myNav" class="overlay">
+                        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+                        <div class="overlay-content">
+                            <a href="#">Addons</a>
+                        </div>
+                    </div>
 
-                    <ul class="list-group list-group-flush">
-                        @foreach (var item in prod)
-                        {
-                            <li class="list-group-item text-center">
-                                <h5>@(item.SizeName): $@(item.Price)</h5>
-                                <p hidden id="price_@item.ProductId">@(item.Price)</p>
+                        <h6 class="card-text text-center">@(prod.Key.DrinkDescription)</h6>
 
-                                @if (SignInManager.IsSignedIn(User))
+                        <div id="myNav" class="overlay">
+                            <ul class="list-group list-group-flush">
+                                @foreach (var item in prod)
                                 {
-                                    <label for="quantity_@item.ProductId">Quantity: <input data-productid="@item.ProductId" type="number" class="w-50 quantityNum" id="quantity_@item.ProductId" oninput="validity.valid||(value='');" name="quantity_@item.ProductId" min="1" max="10" step="1" size="2" /></label>
-                                    <button disabled data-productid="@item.ProductId" class="btn btn-orange btn-add" id="btn_add_@item.ProductId">Add To Cart<i class="fa fa-coffee"></i></button>
-                                    <br />
-                                }
-                                else //redirect
-                                {
+                                <li class="list-group-item text-center">
+                                    <h5>@(item.SizeName): $@(item.Price)</h5>
+                                    <p hidden id="price_@item.ProductId">@(item.Price)</p>
 
+                                    @if (SignInManager.IsSignedIn(User))
+                                    {
+                                        <label for="quantity_@item.ProductId">Quantity: <input data-productid="@item.ProductId" type="number" class="w-50 quantityNum" id="quantity_@item.ProductId" oninput="validity.valid||(value='');" name="quantity_@item.ProductId" min="1" max="10" step="1" size="2" /></label>
+                                        <button onclick="openNav()" disabled data-productid="@item.ProductId" class="btn btn-orange btn-add" id="btn_add_@item.ProductId"> Add To Cart<i class="fa fa-coffee"></i></button>
+                                        <button onclick="openNav()"> Add on</button>
+                                        <br />
+                                    }
+                                    else //redirect
+                                    {
+
+                                    }
+                                </li>
                                 }
-                            </li>
-                        }
-                    </ul>
+                            </ul>
+                        </div>
+                    </div>
+                    }
                 </div>
-            </div>
         }
-    </div>
-</div>
+
+<script>
+    function openNav() {
+        document.getElementById("myNav").style.display = "block";
+    }
+
+    function closeNav() {
+        document.getElementById("myNav").style.display = "none";
+    }
+</script>
     <script>
     $(document).ready(function () {
 
@@ -87,7 +106,7 @@
             lineCost: lineCost
         },
         success: function () {
-            alert("Succesfully added to cart!");
+           // alert("Succesfully added to cart!");
 
         },
         error: function (data) {
@@ -96,4 +115,4 @@
         });
     });
 
-    </script>
+</script>
