@@ -12,7 +12,7 @@ using System.Security.Claims;
 
 namespace LoveYouALatte_Authentication.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "admin")]
     public class AdministrationController : Controller
     {
         private readonly RoleManager<IdentityRole> roleManager;

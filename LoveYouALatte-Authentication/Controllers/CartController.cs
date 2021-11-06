@@ -294,6 +294,8 @@ namespace LoveYouALatte_Authentication.Controllers
                 var products = dbContext.Products.ToList();
                 var sizes = dbContext.Sizes.ToList();
                 var drinks = dbContext.Drinks.ToList();
+                var addOn = dbContext.AddOns.ToList();
+                var addOnList = dbContext.AddOnItemLists.ToList();
 
 
                 var userOrder = dbContext.UserOrders.SingleOrDefault(uo => uo.UserOrderId == id);
@@ -310,7 +312,7 @@ namespace LoveYouALatte_Authentication.Controllers
                     {
                         ProductId = item.ProductId,
                         ProductDescription = drinks.Single(d => d.IdDrinks == product.IdDrink).DrinkName,
-                        sizeDescription = sizes.Single(s => s.IdSize == product.IdSize).Size1,
+                        sizeDescription = sizes.Single(s => s.IdSize == product.IdSize).Size1, 
                         unitCost = item.LineItemCost,
                         quantity = item.Quantity,
                         tax = item.Tax,

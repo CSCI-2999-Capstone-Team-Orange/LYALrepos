@@ -11,6 +11,8 @@ namespace LoveYouALatte_Authentication.Models
         public int ProductId { get; set; }
         public string ProductDescription { get; set;}
         public string sizeDescription { get; set; }
+        public string addOnType { get; set; }
+        public string addOnDescription { get; set; }
         public decimal unitCost { get; set; }
         public int quantity { get; set; }
         public decimal tax { get; set; }

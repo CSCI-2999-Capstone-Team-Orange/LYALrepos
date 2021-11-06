@@ -9,12 +9,26 @@ using MySql.Data.MySqlClient;
 using System.Security.Claims;
 using LoveYouALatte_Authentication.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Identity;
+using LoveYouALatte_Authentication.Data;
 
 namespace LoveYouALatte_Authentication.Controllers
 {
     [Authorize(Roles = "Employee")]
     public class EmployeeController : Controller
     {
+        private readonly RoleManager<IdentityRole> roleManager;
+        private readonly UserManager<ApplicationUser> userManager;
+
+        public EmployeeController(RoleManager<IdentityRole> roleManager,
+                                            UserManager<ApplicationUser> userManager)
+        {
+            this.roleManager = roleManager;
+            this.userManager = userManager;
+        }
+
+
+
         string connectionString = "server=authtest.cjiyeakoxxft.us-east-1.rds.amazonaws.com; port=3306; database=loveyoualattedb; uid=test; pwd=orange1234;";
 
         [HttpGet]
@@ -297,5 +311,27 @@ namespace LoveYouALatte_Authentication.Controllers
             return View(vm);
 
         }
+
+        public IActionResult AddEmployee()
+        {
+           
+            return View();
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 }

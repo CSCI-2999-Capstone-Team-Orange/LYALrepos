@@ -11,11 +11,11 @@ namespace LoveYouALatte.Data.Entities
         public int UserOrderId { get; set; }
         public int ProductId { get; set; }
         public int Quantity { get; set; }
+        public int cartAddOnItemId { get; set; }
         public decimal LineItemCost { get; set; }
         public decimal Tax { get; set; }
         public decimal TotalCost { get; set; }
 
-        public virtual Product Product { get; set; }
         public virtual UserOrder UserOrder { get; set; }
     }
 }
