@@ -434,7 +434,7 @@ namespace LoveYouALatte_Authentication.Controllers
 
         //public IActionResult RegistrationConfirmation()
         //{
-            
+
         //    return View();
         //}
 
