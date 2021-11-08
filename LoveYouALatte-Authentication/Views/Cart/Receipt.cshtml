@@ -37,7 +37,21 @@
                 <td>@orderItem.tax.ToString("C")</td>
                 <td>@orderItem.totalCost.ToString("C")</td>
             </tr>
-        }
+            <tr>
+                <th>Add Ons</th>
+                @foreach (var addOn in orderItem.addOnList)
+                {
+                    <td>
+
+
+                        @addOn.addOnDescription
+
+                    </td>
+                }
+            </tr> 
+             
+         }
+            
     <tr>
         <td colspan="4"></td>
         <td>Total:</td>

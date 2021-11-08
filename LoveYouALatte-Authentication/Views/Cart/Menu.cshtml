@@ -21,8 +21,8 @@
                     <div class="card-img-overlay">
                         <h4 class="card-title">@(prod.Key.DrinkName)</h4>
                     </div>
-                        <h6 class="card-text text-center">@(prod.Key.DrinkDescription)</h6>
-                    
+                    <h6 class="card-text text-center">@(prod.Key.DrinkDescription)</h6>
+
 
                     <ul class="list-group list-group-flush">
                         @foreach (var item in prod)
@@ -49,10 +49,51 @@
         }
     </div>
 </div>
+
+@*<input type="hidden" asp-for="@Model.addOns.addOnList[i].addOnId" />
+    <input type="hidden" asp-for="@Model.addOns.addOnList[i].addOnType" />
+    <input type="hidden" asp-for="@Model.addOns.addOnList[i].addOnDescription" />
+        <label class="form-check-label">
+                    @Model.addOns.addOnList[i].addOnDescription
+                </label>*@
+
+
+<div style="display: none;" id="addOn" class="z-index-2 w-50 h-100 fixed-top bg-light">
+    <div class="overlay-content">
+
+        <h1>Addons</h1>
+        <form method="post" asp-action="addAddOns" asp-controller="cart">
+
+            <button class="closeAddOn btn-danger"> Close</button>
+            @for (int i = 0; i < Model.addOns.addOnList.Count; i++)
+            {
+        <div>
+            <input type="hidden" asp-for="@Model.addOns.addOnList[i].addOnId" />
+            <input type="hidden" asp-for="@Model.addOns.addOnList[i].addOnType" />
+            <input type="hidden" asp-for="@Model.addOns.addOnList[i].addOnDescription" />
+            <input type="checkbox" asp-for="@Model.addOns.addOnList[i].isSelected" />
+            <label class="form-check-label">
+                @Model.addOns.addOnList[i].addOnDescription
+            </label>
+
+        </div>
+            }
+
+            <input type="submit" value="submit" />
+        </form>
+
+    </div>
+
     <script>
     $(document).ready(function () {
 
     });
+
+    $('.closeAddOn').click(function () {
+        $("#addOn").hide();
+
+    });
+
 
     $('.quantityNum').on('input change mouseup keyup', function () {
         var ID = $(this).data('productid');
@@ -88,6 +129,7 @@
         },
         success: function () {
             alert("Succesfully added to cart!");
+            $("#addOn").show();
 
         },
         error: function (data) {

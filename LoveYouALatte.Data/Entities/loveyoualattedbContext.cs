@@ -31,6 +31,7 @@ namespace LoveYouALatte.Data.Entities
         public virtual DbSet<Category> Categories { get; set; }
         public virtual DbSet<Drink> Drinks { get; set; }
         public virtual DbSet<EfmigrationsHistory> EfmigrationsHistories { get; set; }
+        public virtual DbSet<GuestUser> GuestUsers { get; set; }
         public virtual DbSet<OrderItem> OrderItems { get; set; }
         public virtual DbSet<Product> Products { get; set; }
         public virtual DbSet<Size> Sizes { get; set; }
@@ -41,7 +42,7 @@ namespace LoveYouALatte.Data.Entities
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseMySQL("Server=authtest.cjiyeakoxxft.us-east-1.rds.amazonaws.com;port=3306;user=test;password=orange1234;database=loveyoualattedb");
+                optionsBuilder.UseMySQL("Server=identitytest.cjiyeakoxxft.us-east-1.rds.amazonaws.com;port=3306;user=test;password=orange1234;database=loveyoualattedb");
             }
         }
 
@@ -246,14 +247,25 @@ namespace LoveYouALatte.Data.Entities
 
                 entity.HasIndex(e => e.IdCartTable, "FKfromCartTable");
 
+                entity.HasIndex(e => e.OrderItemId, "FKfromOrderItem");
+
                 entity.Property(e => e.CartAddOnItemId).HasColumnName("cartAddOnItemId");
 
                 entity.Property(e => e.IdCartTable).HasColumnName("idCartTable");
 
+                entity.Property(e => e.OrderItemId).HasColumnName("orderItemId");
+
                 entity.HasOne(d => d.IdCartTableNavigation)
                     .WithMany(p => p.CartAddOnItems)
                     .HasForeignKey(d => d.IdCartTable)
+                    .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("FKfromCartTable");
+
+                entity.HasOne(d => d.OrderItem)
+                    .WithMany(p => p.CartAddOnItems)
+                    .HasForeignKey(d => d.OrderItemId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FKfromOrderItem");
             });
 
             modelBuilder.Entity<CartTable>(entity =>
@@ -262,6 +274,8 @@ namespace LoveYouALatte.Data.Entities
                     .HasName("PRIMARY");
 
                 entity.ToTable("CartTable");
+
+                entity.HasIndex(e => e.GuestUserId, "CTFKguestUserId");
 
                 entity.HasIndex(e => e.CartAddOnItemId, "FKfromcartAddOnItem");
 
@@ -273,10 +287,13 @@ namespace LoveYouALatte.Data.Entities
 
                 entity.Property(e => e.CartAddOnItemId).HasColumnName("cartAddOnItemId");
 
+                entity.Property(e => e.GuestUserId)
+                    .HasMaxLength(15)
+                    .HasColumnName("guestUserId");
+
                 entity.Property(e => e.IdProduct).HasColumnName("idProduct");
 
                 entity.Property(e => e.IdUser)
-                    .IsRequired()
                     .HasMaxLength(255)
                     .HasColumnName("idUser");
 
@@ -300,6 +317,13 @@ namespace LoveYouALatte.Data.Entities
                     .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FKfromcartAddOnItem");
 
+                entity.HasOne(d => d.GuestUser)
+                    .WithMany(p => p.CartTables)
+                    .HasPrincipalKey(p => p.GuestUserId)
+                    .HasForeignKey(d => d.GuestUserId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("CTFKguestUserId");
+
                 entity.HasOne(d => d.IdProductNavigation)
                     .WithMany(p => p.CartTables)
                     .HasForeignKey(d => d.IdProduct)
@@ -308,6 +332,7 @@ namespace LoveYouALatte.Data.Entities
                 entity.HasOne(d => d.IdUserNavigation)
                     .WithMany(p => p.CartTables)
                     .HasForeignKey(d => d.IdUser)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("cartTableUserID");
             });
 
@@ -374,13 +399,54 @@ namespace LoveYouALatte.Data.Entities
                     .HasMaxLength(32);
             });
 
+            modelBuilder.Entity<GuestUser>(entity =>
+            {
+                entity.HasKey(e => e.GuestUserIncId)
+                    .HasName("PRIMARY");
+
+                entity.ToTable("guestUser");
+
+                entity.HasIndex(e => e.GuestUserId, "guestUserId")
+                    .IsUnique();
+
+                entity.Property(e => e.GuestUserIncId).HasColumnName("guestUserIncId");
+
+                entity.Property(e => e.Email)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .HasColumnName("email");
+
+                entity.Property(e => e.FirstName)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .HasColumnName("firstName");
+
+                entity.Property(e => e.GuestUserId)
+                    .IsRequired()
+                    .HasMaxLength(15)
+                    .HasColumnName("guestUserId");
+
+                entity.Property(e => e.LastName)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .HasColumnName("lastName");
+            });
+
             modelBuilder.Entity<OrderItem>(entity =>
             {
                 entity.ToTable("orderItem");
 
                 entity.HasIndex(e => e.UserOrderId, "FK_userOrderID");
 
+                entity.HasIndex(e => e.GuestUserId, "OIFKguestUserId");
+
                 entity.Property(e => e.OrderItemId).HasColumnName("orderItemId");
+
+                entity.Property(e => e.CartAddOnItemId).HasColumnName("cartAddOnItemId");
+
+                entity.Property(e => e.GuestUserId)
+                    .HasMaxLength(15)
+                    .HasColumnName("guestUserId");
 
                 entity.Property(e => e.LineItemCost)
                     .HasColumnType("decimal(13,2)")
@@ -400,9 +466,17 @@ namespace LoveYouALatte.Data.Entities
 
                 entity.Property(e => e.UserOrderId).HasColumnName("userOrderId");
 
+                entity.HasOne(d => d.GuestUser)
+                    .WithMany(p => p.OrderItems)
+                    .HasPrincipalKey(p => p.GuestUserId)
+                    .HasForeignKey(d => d.GuestUserId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("OIFKguestUserId");
+
                 entity.HasOne(d => d.UserOrder)
                     .WithMany(p => p.OrderItems)
                     .HasForeignKey(d => d.UserOrderId)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_userOrderID");
             });
 
@@ -464,18 +538,31 @@ namespace LoveYouALatte.Data.Entities
 
                 entity.HasIndex(e => e.UserId, "FK_userID");
 
+                entity.HasIndex(e => e.GuestUserId, "UOFKguestUserId");
+
                 entity.Property(e => e.UserOrderId).HasColumnName("userOrderId");
+
+                entity.Property(e => e.GuestUserId)
+                    .HasMaxLength(15)
+                    .HasColumnName("guestUserId");
 
                 entity.Property(e => e.OrderDate).HasColumnName("orderDate");
 
                 entity.Property(e => e.UserId)
-                    .IsRequired()
                     .HasMaxLength(255)
                     .HasColumnName("userID");
+
+                entity.HasOne(d => d.GuestUser)
+                    .WithMany(p => p.UserOrders)
+                    .HasPrincipalKey(p => p.GuestUserId)
+                    .HasForeignKey(d => d.GuestUserId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("UOFKguestUserId");
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.UserOrders)
                     .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_userID");
             });
 

@@ -14,9 +14,11 @@ namespace LoveYouALatte.Data.Entities
         }
 
         public int CartAddOnItemId { get; set; }
-        public int IdCartTable { get; set; }
+        public int? IdCartTable { get; set; }
+        public int? OrderItemId { get; set; }
 
         public virtual CartTable IdCartTableNavigation { get; set; }
+        public virtual OrderItem OrderItem { get; set; }
         public virtual ICollection<AddOnItemList> AddOnItemLists { get; set; }
         public virtual ICollection<CartTable> CartTables { get; set; }
     }

@@ -11,6 +11,10 @@ using LoveYouALatte_Authentication.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Identity;
 using LoveYouALatte_Authentication.Data;
+using Microsoft.AspNetCore.WebUtilities;
+using System.Text;
+using System.Text.Encodings.Web;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace LoveYouALatte_Authentication.Controllers
 {
@@ -19,12 +23,17 @@ namespace LoveYouALatte_Authentication.Controllers
     {
         private readonly RoleManager<IdentityRole> roleManager;
         private readonly UserManager<ApplicationUser> userManager;
+        private readonly SignInManager<ApplicationUser> signInManager;
+        private readonly IEmailSender _emailSender;
+
 
         public EmployeeController(RoleManager<IdentityRole> roleManager,
-                                            UserManager<ApplicationUser> userManager)
+                                            UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IEmailSender emailSender)
         {
             this.roleManager = roleManager;
             this.userManager = userManager;
+            this.signInManager = signInManager;
+            _emailSender = emailSender;
         }
 
 
@@ -314,12 +323,120 @@ namespace LoveYouALatte_Authentication.Controllers
 
         public IActionResult AddEmployee()
         {
-           
-            return View();
+            EmployeeRegistrationModel newEmployee = new EmployeeRegistrationModel();
+            return View(newEmployee);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddEmployee(EmployeeRegistrationModel request)
+        {
+            
+            string returnUrl = null;
+            var ExternalLogins = (await signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+            ExternalLogins = (await signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+            if (ModelState.IsValid)
+            {
+                var userCheck = await userManager.FindByEmailAsync(request.Email);
+                if (userCheck == null)
+                {
+                    var user = new ApplicationUser
+                    {
+                        UserName = request.Email,
+                        Email = request.Email,
+                        firstName = request.FirstName,
+                        lastName = request.LastName
+                    };
+                    var result = await userManager.CreateAsync(user, request.Password);
+
+                    if (request.isEmployee)
+                    {
+                        var newUser = await userManager.FindByIdAsync(user.Id);
+                        var addToEmployeeRole = await userManager.AddToRoleAsync(newUser, "Employee");
+                    }
+
+
+                    if (result.Succeeded)
+                    {
+                        var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
+                        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                        var callbackUrl = Url.Page(
+                            "/Account/ConfirmEmail",
+                            pageHandler: null,
+                            values: new { area = "Identity", userId = user.Id, code = code, returnUrl = returnUrl },
+                            protocol: Request.Scheme);
+
+                        await _emailSender.SendEmailAsync(request.Email, "Confirm your email",
+                            $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                        if (userManager.Options.SignIn.RequireConfirmedAccount)
+                        {
+                            return RedirectToAction("registrationconfirmation", new { email = request.Email, returnUrl = returnUrl } );
+                        }
+                        else
+                        {
+                            await signInManager.SignInAsync(user, isPersistent: false);
+                            return LocalRedirect(returnUrl);
+                        }
+                    }
+                    else
+                    {
+                        if (result.Errors.Count() > 0)
+                        {
+                            foreach (var error in result.Errors)
+                            {
+                                ModelState.AddModelError("message", error.Description);
+                            }
+                        }
+                        return View(request);
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError("message", "Email already exists.");
+                    return View(request);
+                }
+            }
+            return View(request);
+
         }
 
 
+        public async Task<IActionResult> RegistrationConfirmation(string email, string returnUrl = null)
+        {
+            EmployeeConfirmRegistrationModel confirmNewEmployee = new EmployeeConfirmRegistrationModel();
+            if (email == null)
+            {
+                return RedirectToPage("/Index");
+            }
 
+            var user = await userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                return NotFound($"Unable to load user with email '{email}'.");
+            }
+
+            var Email = email;
+            // Once you add a real email sender, you should remove this code that lets you confirm the account
+            confirmNewEmployee.DisplayConfirmAccountLink = true;
+            if (confirmNewEmployee.DisplayConfirmAccountLink)
+            {
+                var userId = await userManager.GetUserIdAsync(user);
+                var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
+                code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                confirmNewEmployee.EmailConfirmationUrl = Url.Page(
+                    "/Account/ConfirmEmail",
+                    pageHandler: null,
+                    values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
+                    protocol: Request.Scheme);
+            }
+
+            return View(confirmNewEmployee);
+        }
+
+        //public IActionResult RegistrationConfirmation()
+        //{
+            
+        //    return View();
+        //}
 
 
 
