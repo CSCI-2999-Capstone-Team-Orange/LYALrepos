@@ -114,3 +114,13 @@ body {
 .card {
     box-shadow: 0px 3px 10px rgba(0,0,0,0.2);
 }
+
+.img-thumbnail {
+    background-color: #cc573b;
+    box-shadow: 0px 3px 10px rgba(0,0,0,0.2);
+}
+
+.img-txt{
+    font-size: 22px;
+    font-weight: bold;
+}

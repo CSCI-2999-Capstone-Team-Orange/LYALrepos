@@ -74,29 +74,65 @@ namespace LoveYouALatte_Authentication.Controllers
                 }
             }
         }
-
+       
         [HttpGet]
-        public ActionResult Menu()
+        public ActionResult Category()
         {
-            MenuViewModel vm = new MenuViewModel();
+            CategoryViewModel vm = new CategoryViewModel();
 
-            var productList = new List<Models.ProductKG>();
-            //cart info passed to list
+            var categoryList = new List<Category>();
 
             MySqlDatabase db = new MySqlDatabase(connectionString);
             using (MySqlConnection conn = db.Connection)
             {
                 var cmd = conn.CreateCommand() as MySqlCommand;
                 cmd.CommandText = @"
-                    SELECT idProduct, idDrink, size.idSize, price, drink_name, drink_description, size.size FROM loveyoualattedb.product prod
-                    INNER JOIN loveyoualattedb.drinks drink ON prod.idDrink = drink.idDrinks
-                    INNER JOIN loveyoualattedb.size size ON prod.idSize = size.idSize";
+                    SELECT idDrinks, cat.idCategory, cat.categoryName, cat.categoryDescription, drink_name, drink_description FROM loveyoualattedb.drinks drink
+                    INNER JOIN loveyoualattedb.category cat ON drink.idCategory = cat.idCategory";
 
                 using (MySqlDataReader dr = cmd.ExecuteReader())
                 {
                     while (dr.Read())
                     {
-                        Models.ProductKG prod = new Models.ProductKG();
+                        Category cat = new Category();
+
+                        cat.IdDrinks = dr["idDrinks"] as int? ?? default(int);
+                        cat.IdCategory = dr["idCategory"] as int? ?? default(int);
+                        cat.CategoryName = dr["categoryName"] as String ?? string.Empty;
+                        cat.CategoryDescription = dr["categoryDescription"] as String ?? string.Empty;
+                        cat.DrinkName = dr["drink_name"] as String ?? string.Empty;
+                        cat.DrinkDescription = dr["drink_description"] as String ?? string.Empty;
+
+                        categoryList.Add(cat);
+                    }
+                }
+            }
+            vm.Categories = categoryList;
+            return View(vm);
+        }
+        [HttpGet]
+        public ActionResult Menu(int catid)
+        {
+            MenuViewModel vm = new MenuViewModel();
+
+            var productList = new List<ProductKG>();
+
+            MySqlDatabase db = new MySqlDatabase(connectionString);
+            using (MySqlConnection conn = db.Connection)
+            {
+                var cmd = conn.CreateCommand() as MySqlCommand;
+                cmd.CommandText = @"
+                    SELECT idProduct, idDrink, size.idSize, price, drink_name, drink_description, cat.categoryName, size.size FROM loveyoualattedb.product prod 
+                        INNER JOIN loveyoualattedb.drinks drink ON prod.idDrink = drink.idDrinks
+                        INNER JOIN loveyoualattedb.size size ON prod.idSize = size.idSize
+                        INNER JOIN loveyoualattedb.category cat ON drink.idCategory = cat.idCategory
+                    WHERE cat.idCategory = " + catid;
+
+                using (MySqlDataReader dr = cmd.ExecuteReader())
+                {
+                    while (dr.Read())
+                    {
+                        ProductKG prod = new ProductKG();
 
                         prod.ProductId = dr["idProduct"] as int? ?? default(int);
                         prod.DrinkId = dr["idDrink"] as int? ?? default(int);
@@ -104,6 +140,7 @@ namespace LoveYouALatte_Authentication.Controllers
                         prod.Price = dr["price"] as decimal? ?? default(decimal);
                         prod.DrinkName = dr["drink_name"] as String ?? string.Empty;
                         prod.DrinkDescription = dr["drink_description"] as String ?? string.Empty;
+                        prod.DrinkCategory = dr["categoryName"] as String ?? string.Empty;
                         prod.SizeName = dr["size"] as String ?? string.Empty;
 
                         productList.Add(prod);
@@ -113,7 +150,6 @@ namespace LoveYouALatte_Authentication.Controllers
             vm.Products = productList;
             return View(vm);
         }
-
         [HttpGet]
         [Authorize]
         public ActionResult Checkout()

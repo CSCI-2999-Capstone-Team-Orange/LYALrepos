@@ -1,0 +1,38 @@
+﻿@model CategoryViewModel
+@{
+    var categories = Model.Categories.GroupBy(x => new { x.CategoryName, x.IdCategory, x.CategoryDescription });
+}
+<h1>@ViewData["Title"]</h1>
+<div class="row">
+    @foreach (var category in categories)
+    {
+    <div class="col-lg-4">
+        <div class="text-lg-center img-txt">@(category.Key.CategoryName)</div>
+            <img class="rounded-circle img-thumbnail catImg" id="@(category.Key.IdCategory)" src="~/Images/@(category.Key.CategoryName).jpg" alt="@(category.Key.CategoryName)" title="@(category.Key.CategoryName)" data-placement="bottom" data-container="body" data-toggle="popover" data-trigger="hover" data-content="@(category.Key.CategoryDescription)">
+    </div>
+    }
+</div>
+
+<script>
+    $('.catImg').click(function () {
+        var ID = $(this).attr('id');
+        $.ajax({
+
+        contentType: "application/json; charset=utf-8",
+        url: '@Url.Action("Menu", "Cart")',
+        data: {
+            catid: ID
+        },
+        success: function () {
+            window.location.href = '@Url.Action("Menu", "Cart")?catid=' + ID;
+        },
+        error: function (data) {
+            alert('Error: ' + data.statusText);
+        }
+        });
+    });
+
+    $(document).ready(function () {
+        $('[data-toggle="popover"]').popover();
+    });
+</script>
