@@ -274,7 +274,7 @@ namespace LoveYouALatte_Authentication.Controllers
                     else
                     {
                         var cmd1 = conn.CreateCommand() as MySqlCommand;
-                        cmd1.CommandText = @"INSERT INTO loveyoualattedb.drinks (drink_name, drink_description) VALUES ('" + vm.DrinkName + "', '" + vm.DrinkDescription + "');" +
+                        cmd1.CommandText = @"INSERT INTO loveyoualattedb.drinks (idCategory, drink_name, drink_description) VALUES ('" + vm.CategoryID + "', '" + vm.DrinkName + "', '" + vm.DrinkDescription + "');" +
                             "SELECT LAST_INSERT_ID();";
                         var drinkID = cmd1.ExecuteScalar();
 

@@ -45,5 +45,8 @@ namespace LoveYouALatte_Authentication.Models
         [Required]
         [Display(Name = "Drink Name")]
         public string DrinkName { get; set; }
+        [Required]
+        [Display(Name = "Category Name")]
+        public int CategoryID { get; set; }
     }
 }
