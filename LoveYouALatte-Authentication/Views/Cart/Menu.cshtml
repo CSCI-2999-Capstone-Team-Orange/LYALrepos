@@ -21,81 +21,99 @@
                     <div class="card-img-overlay">
                         <h4 class="card-title">@(prod.Key.DrinkName)</h4>
                     </div>
-
-
                     <h6 class="card-text text-center">@(prod.Key.DrinkDescription)</h6>
 
-                    <div id="myNav" class="overlay">
-                        <ul class="list-group list-group-flush">
-                            @foreach (var item in prod)
-                            {
-                                <li class="list-group-item text-center">
-                                    <h5>@(item.SizeName): $@(item.Price)</h5>
-                                    <p hidden id="price_@item.ProductId">@(item.Price)</p>
 
-                                    @if (SignInManager.IsSignedIn(User))
-                                    {
-                                        <label for="quantity_@item.ProductId">Quantity: <input data-productid="@item.ProductId" type="number" class="w-50 quantityNum" id="quantity_@item.ProductId" oninput="validity.valid||(value='');" name="quantity_@item.ProductId" min="1" max="10" step="1" size="2" /></label>
-                                        <button onclick="openNav()" disabled data-productid="@item.ProductId" class="btn btn-orange btn-add" id="btn_add_@item.ProductId"> Add To Cart<i class="fa fa-coffee"></i></button>
-                                        <button class="addOnButton"> Add on</button>
-                                        <br />
-                                    }
-                                    else //redirect
-                                    {
+                    <ul class="list-group list-group-flush">
+                        @foreach (var item in prod)
+                        {
+                            <li class="list-group-item text-center">
+                                <h5>@(item.SizeName): $@(item.Price)</h5>
+                                <p hidden id="price_@item.ProductId">@(item.Price)</p>
 
-                                    }
-                                </li>
-                            }
-                        </ul>
-                    </div>
+                                @if (SignInManager.IsSignedIn(User))
+                                {
+                                    <label for="quantity_@item.ProductId">Quantity: <input data-productid="@item.ProductId" type="number" class="w-50 quantityNum" id="quantity_@item.ProductId" oninput="validity.valid||(value='');" name="quantity_@item.ProductId" min="1" max="10" step="1" size="2" /></label>
+                                    <button onclick="addOnButton()" disabled data-productid="@item.ProductId" class="btn btn-orange btn-add" id="btn_add_@item.ProductId"> Add To Cart<i class="fa fa-coffee"></i></button>
+                                    <button class="addOnButton"> Add on</button>
+                                    <br />
+                                }
+                                else //redirect
+                                {
+
+                                }
+                            </li>
+                        }
+                    </ul>
                 </div>
-                }
             </div>
         }
+    </div>
+</div>
 
-    
-        <div style="display: none;" id="addOn" class="z-index-2 col-lg-6 position-absolute bg-primary">
-            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-            <div class="overlay-content">
-                @*<a href="#">Addons</a>*@
-                <h1>Addons</h1>
 
-                <form action="/action_page.php">
-                    <input type="checkbox" id="Creamer1" name="Skim" value="Milk">
-                    <label for="vehicle1"> Skimmed milk</label><br>
-                    <input type="checkbox" id="Creamer2" name="%2" value="Milk">
-                    <label for="vehicle2"> %2 Milk</label><br>
-                    <input type="checkbox" id="Creamer3" name="Almond" value="Milk">
-                    <label for="vehicle3"> Almond Milk</label><br><br>
-                    <input type="submit" value="Submit">
-                </form>
+<div style="display: none;" id="addOn" class="z-index-1 col-lg-10 position-absolute bg-secondary">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+    <div class="overlay-content">
+        @*<a href="#">Addons</a>*@
+        <h1>Addons</h1>
+        <p> Here are the creamer options we have at love you a latte!</p>
+        <form action="/action_page.php">
+            <input type="checkbox" id="Creamer1" name="Skim" value="Milk">
+            <label for="Milk1"> Skimmed milk</label><br>
+            <input type="checkbox" id="Creamer2" name="%2" value="Milk">
+            <label for="Milk2"> %2 Milk</label><br>
+            <input type="checkbox" id="Creamer3" name="Whole" value="Milk">
+            <label for="Milk3"> Whole Milk</label><br>
+            <input type="checkbox" id="Creamer4" name="Soy" value="Milk">
+            <label for="Milk4"> Soy Milk</label><br>
+            <input type="checkbox" id="Creamer5" name="Almond" value="Milk">
+            <label for="Milk5"> Almond Milk</label><br><br>
+            <input type="submit" value="Submit">
+        </form>
 
-                <button class="closeAddOn btn-danger"> Close</button>
 
-                <label for=""></label>
-            </div>
-        </div>
+        <button class="closeAddOn btn-danger"> Close</button>
 
-        @*<script>
-            function openNav() {
-                document.getElementById("myNav").style.display = "block";
-            }
+        <label for=""></label>
+    </div>
+</div>
 
-            function closeNav() {
-                document.getElementById("myNav").style.display = "none";
-            }
-        </script>*@
-    <script>
+@*<script>
+        function openNav() {
+            document.getElementById("myNav").style.display = "block";
+        }
+
+        function closeNav() {
+            document.getElementById("myNav").style.display = "none";
+        }
+    </script>*@
+<script>
     $(document).ready(function () {
 
     });
 
-        
+        $('.addOnButton').click(function () {
+            $("#addOn").show();
+            $("#addOn").css("color", "white");
+            if ($(this).css("margin-right") == "200px") {
+                $('.addOnButton').animate({ "margin-right": '-=200' });
+                $('#addOn').animate({ "margin-right": '-=200' });
+            }
+            else {
+                $('.addOnButton').animate({ "margin-right": '+=200' });
+                $('#addOn').animate({ "margin-right": '+=200' });
+            }
+        });
+
+
 
         $('.closeAddOn').click(function () {
             $("#addOn").hide();
 
         });
+
+
 
 
     $('.quantityNum').on('input change mouseup keyup', function () {
@@ -141,6 +159,6 @@
         });
     });
 
-    </script>
+</script>
 
 
