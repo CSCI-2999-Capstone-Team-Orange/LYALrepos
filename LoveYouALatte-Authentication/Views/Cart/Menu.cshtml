@@ -52,7 +52,7 @@
 </div>
 
 
-<div style="display: none;" id="addOn" class="z-index-1 col-lg-10 position-absolute bg-secondary">
+<div style="display: none; float:right; right:0px; top:50px;" id="addOn" class="z-index-2 w-25 h-100 position-absolute bg-secondary">
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
     <div class="overlay-content">
         @*<a href="#">Addons</a>*@
@@ -94,22 +94,23 @@
     });
 
         $('.addOnButton').click(function () {
-            $("#addOn").show();
+            $("#addOn").show("slow");
             $("#addOn").css("color", "white");
-            if ($(this).css("margin-right") == "200px") {
-                $('.addOnButton').animate({ "margin-right": '-=200' });
-                $('#addOn').animate({ "margin-right": '-=200' });
-            }
-            else {
-                $('.addOnButton').animate({ "margin-right": '+=200' });
-                $('#addOn').animate({ "margin-right": '+=200' });
-            }
+            //$("#addOn").animate({ right: '0px' });
+            //if ($(this).css("margin-right") == "200px") {
+            //    $('.addOnButton').animate({ "margin-right": '-=200' });
+            //    $('#addOn').animate({ "margin-right": '-=200' });
+            //}
+            //else {
+            //    $('.addOnButton').animate({ "margin-right": '+=200' });
+            //    $('#addOn').animate({ "margin-right": '+=200' });
+            //}
         });
 
 
 
         $('.closeAddOn').click(function () {
-            $("#addOn").hide();
+            $("#addOn").hide("slow");
 
         });
 
