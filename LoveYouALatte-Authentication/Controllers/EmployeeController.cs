@@ -253,7 +253,40 @@ namespace LoveYouALatte_Authentication.Controllers
         
         public ActionResult AddProduct()
         {
-            return View();
+            AddProduct vm = new AddProduct();
+            List<CategoryModel> categoryList = new List<CategoryModel>();
+            using (var dbContext = new loveyoualattedbContext())
+            {
+                var categories = dbContext.Categories.ToList();
+                foreach (var category in categories)
+                {
+                    categoryList.Add(new CategoryModel
+                    {
+                        IdCategory = category.IdCategory,
+                        CategoryName = category.CategoryName
+                    });
+                }
+            }
+
+            ViewBag.Categories = new SelectList(categoryList, "IdCategory", "CategoryName");
+
+            CategoryModel categoryIds = new CategoryModel();
+
+            using (var dbContext = new loveyoualattedbContext())
+            {
+                var categories = dbContext.Categories.ToList();
+                foreach (var category in categories)
+                {
+                    categoryIds.categoryIdList.Add(new CategoryModel
+                    {
+                        IdCategory = category.IdCategory,
+                        CategoryName = category.CategoryName
+                    });
+                }
+            }
+
+            vm.categoryDivID = categoryIds;
+            return View(vm);
         }
         [HttpPost]
         public ActionResult AddProduct(AddProduct vm)
@@ -297,8 +330,52 @@ namespace LoveYouALatte_Authentication.Controllers
             {
                 return View(vm);
             }
+            
             return View(vm);
 
         }
+        public ActionResult AddCategory()
+        {
+            return View();
+        }
+        [HttpPost]
+        public ActionResult AddCategory(AddCategory vm)
+        {
+            if (ModelState.IsValid)
+            {
+                MySqlDatabase db = new MySqlDatabase(connectionString);
+                using (MySqlConnection conn = db.Connection)
+                {
+                    var val = conn.CreateCommand() as MySqlCommand;
+                    val.CommandText = @"SELECT categoryName FROM loveyoualattedb.category WHERE categoryName = '" + vm.CategoryName + "';";
+                    var validDrink = val.ExecuteScalar();
+                    if (validDrink != null)
+                    {
+                        if (vm.CategoryName.ToLower() == validDrink.ToString().ToLower())
+                        {
+                            ModelState.AddModelError("AddCategoryError", "Duplicate category.");
+                            return View(vm);
+                        }
+                    }
+                    else
+                    {
+                        var cmd = conn.CreateCommand() as MySqlCommand;
+                        cmd.CommandText = @"INSERT INTO loveyoualattedb.category (categoryName, categoryDescription) VALUES ('" + vm.CategoryName + "', '" + vm.CategoryDescription + "');";
+                        cmd.ExecuteNonQuery();
+
+                        vm.AddCategorySuccess = "Succesfully added category!";
+
+                        return View(vm);
+                    }
+                }
+            }
+            else
+            {
+                return View(vm);
+            }
+            return View(vm);
+
+        }
+
     }
 }

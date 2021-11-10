@@ -7,6 +7,12 @@ namespace LoveYouALatte_Authentication.Models
 {
     public class CategoryModel
     {
+        public CategoryModel()
+        {
+            this.categoryIdList = new List<CategoryModel>();
+        }
+
+        public List<CategoryModel> categoryIdList { get; set; }
         public int IdDrinks { get; set; }
         public int IdCategory { get; set; }
         public string CategoryName { get; set; }

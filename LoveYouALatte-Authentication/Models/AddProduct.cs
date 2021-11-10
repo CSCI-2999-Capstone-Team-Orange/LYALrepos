@@ -8,6 +8,10 @@ namespace LoveYouALatte_Authentication.Models
 {
     public class AddProduct
     {
+        public AddProduct()
+        {
+            categoryDivID = new CategoryModel();
+        }
         public string AddProductError { get; set; }
         public string AddProductSuccess { get; set; }
 
@@ -48,5 +52,8 @@ namespace LoveYouALatte_Authentication.Models
         [Required]
         [Display(Name = "Category Name")]
         public int CategoryID { get; set; }
+
+        public CategoryModel categoryDivID { get; set; }
+
     }
 }
