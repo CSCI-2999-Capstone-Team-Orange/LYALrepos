@@ -5,17 +5,20 @@ using System.Threading.Tasks;
 
 namespace LoveYouALatte_Authentication.Models
 {
-    public class ReceiptItemModel
+    public class CheckoutItemModel
     {
-        public int UserOrderId { get; set; }
+
+        public int cartTableId { get; set; }
         public int ProductId { get; set; }
-        public string ProductDescription { get; set;}
+        public string ProductDescription { get; set; }
         public string sizeDescription { get; set; }
         public int cartAddOnItemId { get; set; }
-        public List<ReceiptAddOnModel> addOnList{ get; set; }
+        public List<ReceiptAddOnModel> addOnList { get; set; }
         public decimal unitCost { get; set; }
         public int quantity { get; set; }
         public decimal tax { get; set; }
         public decimal totalCost { get; set; }
+
+
     }
 }

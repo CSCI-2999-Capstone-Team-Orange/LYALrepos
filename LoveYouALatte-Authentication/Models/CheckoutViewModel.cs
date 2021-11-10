@@ -12,5 +12,7 @@ namespace LoveYouALatte_Authentication.Models
             Carts = new List<Cart>();
         }
         public List<Cart> Carts { get; set; }
+
+        public List<CheckoutItemModel> checkoutItems { get; set;}
     }
 }

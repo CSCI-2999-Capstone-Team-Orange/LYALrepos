@@ -18,6 +18,7 @@ namespace LoveYouALatte.Data.Entities
         public decimal LineItemCost { get; set; }
         public decimal LineTax { get; set; }
         public decimal LineCost { get; set; }
+        public int IdGuest { get; set; }
 
         public virtual ICollection<GuestOrderItem> GuestOrderItems { get; set; }
     }

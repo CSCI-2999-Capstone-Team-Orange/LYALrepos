@@ -16,5 +16,10 @@ namespace LoveYouALatte_Authentication.Models
         public ProductModel updateProduct { get; set; }
 
         public DrinkModel drinkDivID { get; set; }
+
+        public ViewAddOnModel addOns { get; set; }
+
+        public CheckoutItemModel checkoutItems { get; set; }
+       
     }
 }

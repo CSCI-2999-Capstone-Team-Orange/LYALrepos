@@ -10,6 +10,7 @@ namespace LoveYouALatte.Data.Entities
         public Product()
         {
             CartTables = new HashSet<CartTable>();
+            GuestOrderItems = new HashSet<GuestOrderItem>();
         }
 
         public int IdProduct { get; set; }
@@ -21,5 +22,6 @@ namespace LoveYouALatte.Data.Entities
         public virtual Drink IdDrinkNavigation { get; set; }
         public virtual Size IdSizeNavigation { get; set; }
         public virtual ICollection<CartTable> CartTables { get; set; }
+        public virtual ICollection<GuestOrderItem> GuestOrderItems { get; set; }
     }
 }
