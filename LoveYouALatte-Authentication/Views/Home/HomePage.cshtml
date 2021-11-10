@@ -1,4 +1,6 @@
-﻿@{
+﻿@model UserInfo
+
+@{
     Layout = "~/Views/Shared/_HomePageLayout.cshtml";
 }
 
@@ -7,9 +9,18 @@
     ViewData["Title"] = "Love You a Latte";
 }
 
-<div class="d-flex justify-content-md-center align-items-center vh-100" style="height: 93vh !important;">
+<div class="d-flex justify-content-md-center align-items-center vh-100" style="height: 30vh !important; color: #e5874d;">
     <h1>@ViewData["Title"]</h1>
 </div>
+<div class="justify-content-md-center align-items-center">
+    @if (this.User.Identity.IsAuthenticated)
+    {
+        <h1> Hello @Model.firstName @Model.lastName !</h1>
+    }
+
+</div>
+
+
 
 
 
