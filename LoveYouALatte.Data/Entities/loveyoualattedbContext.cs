@@ -387,6 +387,8 @@ namespace LoveYouALatte.Data.Entities
 
                 entity.HasIndex(e => e.IdGuestTable, "FK_guestTableId_idx");
 
+                entity.HasIndex(e => e.IdProduct, "FK_productId_idx");
+
                 entity.Property(e => e.GuestOrderItemId).HasColumnName("guestOrderItemId");
 
                 entity.Property(e => e.IdGuestTable).HasColumnName("idGuestTable");
@@ -412,6 +414,12 @@ namespace LoveYouALatte.Data.Entities
                     .HasForeignKey(d => d.IdGuestTable)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_guestTableId");
+
+                entity.HasOne(d => d.IdProductNavigation)
+                    .WithMany(p => p.GuestOrderItems)
+                    .HasForeignKey(d => d.IdProduct)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_productId");
             });
 
             modelBuilder.Entity<GuestUserId>(entity =>
@@ -420,9 +428,6 @@ namespace LoveYouALatte.Data.Entities
                     .HasName("PRIMARY");
 
                 entity.ToTable("guestUserID");
-
-                entity.HasIndex(e => e.IdGuest, "IdGuest_UNIQUE")
-                    .IsUnique();
 
                 entity.Property(e => e.LastName).HasMaxLength(45);
 
@@ -435,6 +440,8 @@ namespace LoveYouALatte.Data.Entities
                     .HasName("PRIMARY");
 
                 entity.ToTable("guestUserTable");
+
+                entity.HasIndex(e => e.IdGuest, "FK_GuestID_idx");
 
                 entity.Property(e => e.IdGuestTable).HasColumnName("idGuestTable");
 
