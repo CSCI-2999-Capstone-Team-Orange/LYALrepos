@@ -6,6 +6,7 @@
 
     $("[name='updateProduct.ProductId']", $editRow).val(rowData.productId);
     $("[name='updateProduct.ProductSku']", $editRow).val(rowData.productSku);
+    $("[name='updateProduct.category']", $editRow).val(rowData.category);
     $("[name='updateProduct.DrinkId']", $editRow).val(rowData.drinkId);
     $("[name='updateProduct.DrinkName']", $editRow).val(rowData.drinkName);
     $("[name='updateProduct.DrinkDescription']", $editRow).val(rowData.drinkDescription);

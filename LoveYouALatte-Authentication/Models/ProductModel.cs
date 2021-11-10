@@ -29,6 +29,10 @@ namespace LoveYouALatte_Authentication.Models
         [StringLength (15)]
         public string ProductSku { get; set;}
 
+        [Required(ErrorMessage = "Product category is required and cannot be longer than 15 characters.")]
+        [Range(1, 3, ErrorMessage = "Product category must be already lister")]
+        public int category { get; set; }
+
         [Required (ErrorMessage = "A price is required.")]
         [RegularExpression(@"^[0-9]+(\.[0-9]{1,2})$", ErrorMessage ="The price cannot be below zero and must only contain two decimal places.")]
         public decimal Price { get; set; }

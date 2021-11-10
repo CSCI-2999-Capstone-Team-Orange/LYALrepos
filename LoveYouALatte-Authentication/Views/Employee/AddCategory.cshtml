@@ -1,0 +1,32 @@
+﻿@model AddCategory
+
+@{
+    ViewData["Title"] = "AddCategory";
+    Layout = "~/Views/Shared/_EmployeeLayout.cshtml";
+}
+
+<h2>Add Menu Item Form</h2>
+<div id="addCategoryDiv">
+    @using (Html.BeginForm("AddCategory", "Employee", FormMethod.Post))
+    {
+        @if (Model != null)
+        {
+            <div class="text-success">@Model.AddCategorySuccess</div>
+        }
+        @Html.ValidationMessageFor(m => m.AddCategoryError, "", new { @class = "text-danger" })
+
+        <div class="form-row">
+            <div class="form-group col-lg-4">
+                @Html.LabelFor(m => m.CategoryName)
+                @Html.TextBoxFor(m => m.CategoryName, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.CategoryName, "", new { @class = "text-danger" })
+            </div>
+            <div class="form-group col-lg-4">
+                @Html.LabelFor(m => m.CategoryDescription)
+                @Html.TextBoxFor(m => m.CategoryDescription, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.CategoryDescription, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <input type="submit" value="Add" class="btn btn-orange" />
+    }
+</div>

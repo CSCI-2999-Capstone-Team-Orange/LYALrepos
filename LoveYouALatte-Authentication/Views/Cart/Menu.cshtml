@@ -6,11 +6,14 @@
 @model MenuViewModel
 @{
     var products = Model.Products.GroupBy(x => new { x.DrinkName, x.DrinkDescription });
-
+    var categories = Model.Products.GroupBy(x => new { x.DrinkCategory });
 }
 <h1>@ViewData["Title"]</h1>
 
-
+@foreach (var cat in categories)
+{
+    <h1 class="text-center">@cat.Key.DrinkCategory</h1>
+}
 <div class="card-deck">
     <div class="row">
         @foreach (var prod in products)

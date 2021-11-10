@@ -16,12 +16,14 @@
     ViewData["Title"] = "Manage Menu";
 }
 <a class="btn btn-orange" asp-controller="Employee" asp-action="AddProduct">Add Product</a>
+<a class="btn btn-orange" asp-controller="Employee" asp-action="AddCategory">Add Category</a>
 <br />
 <br />
 <table style="display: none;" id="updateRow">
     <tr id="editRow" style="display: none;">
         <td><input class="form-control form-control-sm" style="max-width:75px;overflow:auto;" asp-for="updateProduct.ProductId" readonly /></td>
         <td><input style="max-width:150px;overflow:auto;" asp-for="updateProduct.ProductSku" /></td>
+        <td><input style="max-width:150px;overflow:auto;" asp-for="updateProduct.category" min="1" max="3" /></td>
         <td><input class="form-control form-control-sm" style="max-width:75px; overflow: auto;" asp-for="updateProduct.DrinkId" readonly /></td>
         <td><input asp-for="updateProduct.DrinkName" /></td>
         <td><input style="min-width:600px;overflow:auto;" asp-for="updateProduct.DrinkDescription" /></td>
@@ -35,7 +37,7 @@
 
 <div id="menuTable">
     <form method="post" asp-action="ManageMenuTable" asp-controller="Employee">
-        <div class = "text-danger" asp-validation-summary="All">
+        <div class="text-danger" asp-validation-summary="All">
         </div>
 
         <table class="table table-bordered table-responsive table-hover" id="productTable">
@@ -43,6 +45,7 @@
                 <tr>
                     <th>Product ID</th>
                     <th>Product SKU</th>
+                    <th>Product Category</th>
                     <th>Drink ID</th>
                     <th>Drink Name</th>
                     <th>Drink Description</th>
@@ -59,6 +62,7 @@
                     <tr data-product='@Json.Serialize(product)'>
                         <td>@product.ProductId</td>
                         <td>@product.ProductSku</td>
+                        <td>@product.category</td>
                         <td>@product.DrinkId</td>
                         <td>@product.DrinkName</td>
                         <td>@product.DrinkDescription</td>
@@ -80,8 +84,8 @@
 
 
 @section Scripts{
-        <script src="~/js/datatables.js"></script>
-    }
+    <script src="~/js/datatables.js"></script>
+}
 
 
 

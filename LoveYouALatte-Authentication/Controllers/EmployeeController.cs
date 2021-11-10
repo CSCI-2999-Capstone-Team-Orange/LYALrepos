@@ -180,6 +180,7 @@ namespace LoveYouALatte_Authentication.Controllers
                 var products = dbContext.Products.ToList();
                 var sizes = dbContext.Sizes.ToList();
                 var drinks = dbContext.Drinks.ToList();
+                var categories = dbContext.Categories.ToList();
 
                 foreach (var product in products)
                 {
@@ -189,6 +190,7 @@ namespace LoveYouALatte_Authentication.Controllers
                         ProductId = product.IdProduct,
                         DrinkId = product.IdDrink,
                         ProductSku = product.ProductSku,
+                        category = drinks.Single(a => a.IdDrinks == product.IdDrink).IdCategory,
                         DrinkName = drinks.Single(d => d.IdDrinks == product.IdDrink).DrinkName,
                         DrinkDescription = drinks.Single(d => d.IdDrinks == product.IdDrink).DrinkDescription,
                         SizeId = product.IdSize,
@@ -224,6 +226,7 @@ namespace LoveYouALatte_Authentication.Controllers
                     updateThisProduct.IdSize = formInfo.updateProduct.SizeId;
                     updateThisProduct.Price = formInfo.updateProduct.Price;
                     updateThisDrink.DrinkName = formInfo.updateProduct.DrinkName;
+                    updateThisDrink.IdCategory = formInfo.updateProduct.category;
                     updateThisDrink.DrinkDescription = formInfo.updateProduct.DrinkDescription;
                     dbContext.SaveChanges();
                     
@@ -273,7 +276,40 @@ namespace LoveYouALatte_Authentication.Controllers
         
         public ActionResult AddProduct()
         {
-            return View();
+            AddProduct vm = new AddProduct();
+            List<CategoryModel> categoryList = new List<CategoryModel>();
+            using (var dbContext = new loveyoualattedbContext())
+            {
+                var categories = dbContext.Categories.ToList();
+                foreach (var category in categories)
+                {
+                    categoryList.Add(new CategoryModel
+                    {
+                        IdCategory = category.IdCategory,
+                        CategoryName = category.CategoryName
+                    });
+                }
+            }
+
+            ViewBag.Categories = new SelectList(categoryList, "IdCategory", "CategoryName");
+
+            CategoryModel categoryIds = new CategoryModel();
+
+            using (var dbContext = new loveyoualattedbContext())
+            {
+                var categories = dbContext.Categories.ToList();
+                foreach (var category in categories)
+                {
+                    categoryIds.categoryIdList.Add(new CategoryModel
+                    {
+                        IdCategory = category.IdCategory,
+                        CategoryName = category.CategoryName
+                    });
+                }
+            }
+
+            vm.categoryDivID = categoryIds;
+            return View(vm);
         }
         [HttpPost]
         public ActionResult AddProduct(AddProduct vm)
@@ -297,7 +333,7 @@ namespace LoveYouALatte_Authentication.Controllers
                     else
                     {
                         var cmd1 = conn.CreateCommand() as MySqlCommand;
-                        cmd1.CommandText = @"INSERT INTO loveyoualattedb.drinks (drink_name, drink_description) VALUES ('" + vm.DrinkName + "', '" + vm.DrinkDescription + "');" +
+                        cmd1.CommandText = @"INSERT INTO loveyoualattedb.drinks (idCategory, drink_name, drink_description) VALUES ('" + vm.CategoryID + "', '" + vm.DrinkName + "', '" + vm.DrinkDescription + "');" +
                             "SELECT LAST_INSERT_ID();";
                         var drinkID = cmd1.ExecuteScalar();
 
@@ -308,6 +344,49 @@ namespace LoveYouALatte_Authentication.Controllers
                         cmd2.ExecuteNonQuery();
 
                         vm.AddProductSuccess = "Succesfully added product!";
+
+                        return View(vm);
+                    }
+                }
+            }
+            else
+            {
+                return View(vm);
+            }
+            
+            return View(vm);
+
+        }
+        public ActionResult AddCategory()
+        {
+            return View();
+        }
+        [HttpPost]
+        public ActionResult AddCategory(AddCategory vm)
+        {
+            if (ModelState.IsValid)
+            {
+                MySqlDatabase db = new MySqlDatabase(connectionString);
+                using (MySqlConnection conn = db.Connection)
+                {
+                    var val = conn.CreateCommand() as MySqlCommand;
+                    val.CommandText = @"SELECT categoryName FROM loveyoualattedb.category WHERE categoryName = '" + vm.CategoryName + "';";
+                    var validDrink = val.ExecuteScalar();
+                    if (validDrink != null)
+                    {
+                        if (vm.CategoryName.ToLower() == validDrink.ToString().ToLower())
+                        {
+                            ModelState.AddModelError("AddCategoryError", "Duplicate category.");
+                            return View(vm);
+                        }
+                    }
+                    else
+                    {
+                        var cmd = conn.CreateCommand() as MySqlCommand;
+                        cmd.CommandText = @"INSERT INTO loveyoualattedb.category (categoryName, categoryDescription) VALUES ('" + vm.CategoryName + "', '" + vm.CategoryDescription + "');";
+                        cmd.ExecuteNonQuery();
+
+                        vm.AddCategorySuccess = "Succesfully added category!";
 
                         return View(vm);
                     }
