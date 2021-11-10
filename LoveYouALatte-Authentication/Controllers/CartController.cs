@@ -400,7 +400,7 @@ namespace LoveYouALatte_Authentication.Controllers
                 }
                 else
                 {
-                    ViewBag.ErrorMessage = "Your cart is empty. Please add items to cart.";
+                    
                     return RedirectToAction("Checkout");
                     
                     
