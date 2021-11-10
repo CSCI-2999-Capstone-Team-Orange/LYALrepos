@@ -24,6 +24,7 @@
         <td><input class="form-control form-control-sm" style="max-width:75px;overflow:auto;" asp-for="updateProduct.ProductId" readonly /></td>
         <td><input style="max-width:150px;overflow:auto;" asp-for="updateProduct.ProductSku" /></td>
         <td><input style="max-width:150px;overflow:auto;" asp-for="updateProduct.category" min="1" max="10" /></td>
+        @*@Html.DropDownListFor(m => m.CategoryID, new SelectList(Model.categoryDivID.categoryIdList, "IdCategory", "CategoryName", Model.CategoryID), "Select Category", new { @class = "form-control" })*@
         <td><input class="form-control form-control-sm" style="max-width:75px; overflow: auto;" asp-for="updateProduct.DrinkId" readonly /></td>
         <td><input asp-for="updateProduct.DrinkName" /></td>
         <td><input style="min-width:600px;overflow:auto;" asp-for="updateProduct.DrinkDescription" /></td>
@@ -45,7 +46,7 @@
                 <tr>
                     <th>Product ID</th>
                     <th>Product SKU</th>
-                    <th>Product Category</th>
+                    <th>Category</th>
                     <th>Drink ID</th>
                     <th>Drink Name</th>
                     <th>Drink Description</th>
@@ -59,18 +60,18 @@
             <tbody>
                 @foreach (var product in Model.viewProduct.productList)
                 {
-                    <tr data-product='@Json.Serialize(product)'>
-                        <td>@product.ProductId</td>
-                        <td>@product.ProductSku</td>
-                        <td>@product.category</td>
-                        <td>@product.DrinkId</td>
-                        <td>@product.DrinkName</td>
-                        <td>@product.DrinkDescription</td>
-                        <td>@product.SizeId</td>
-                        <td>@product.SizeName</td>
-                        <td>@product.Price.ToString("C")</td>
-                        <td><input type="button" value="update" class="btn btn-orange updateButton" /></td>
-                    </tr>
+                <tr data-product='@Json.Serialize(product)'>
+                    <td>@product.ProductId</td>
+                    <td>@product.ProductSku</td>
+                    <td>@product.category</td>
+                    <td>@product.DrinkId</td>
+                    <td>@product.DrinkName</td>
+                    <td>@product.DrinkDescription</td>
+                    <td>@product.SizeId</td>
+                    <td>@product.SizeName</td>
+                    <td>@product.Price.ToString("C")</td>
+                    <td><input type="button" value="update" class="btn btn-orange updateButton" /></td>
+                </tr>
                 }
 
             </tbody>

@@ -11,6 +11,9 @@ namespace LoveYouALatte_Authentication.Models
 
         public ProductModel updateProduct { get; set;}
 
-        
+        public int CategoryID { get; set; }
+
+        public ProductModel categoryDivID { get; set; }
+
     }
 }

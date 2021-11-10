@@ -172,8 +172,22 @@ namespace LoveYouALatte_Authentication.Controllers
             
             
             updateMenuItem.viewProduct = productList;
-            
-           
+
+
+            using (var dbContext = new loveyoualattedbContext())
+            {
+                var categories = dbContext.Categories.ToList();
+                foreach (var category in categories)
+                {
+                    productList.categoryIdList.Add(new CategoryModel
+                    {
+                        IdCategory = category.IdCategory,
+                        CategoryName = category.CategoryName
+                    });
+                }
+            }
+
+            updateMenuItem.categoryDivID = productList;
 
             using (var dbContext = new loveyoualattedbContext())
             {
@@ -181,7 +195,6 @@ namespace LoveYouALatte_Authentication.Controllers
                 var sizes = dbContext.Sizes.ToList();
                 var drinks = dbContext.Drinks.ToList();
                 var categories = dbContext.Categories.ToList();
-
                 foreach (var product in products)
                 {
 
@@ -277,22 +290,6 @@ namespace LoveYouALatte_Authentication.Controllers
         public ActionResult AddProduct()
         {
             AddProduct vm = new AddProduct();
-            List<CategoryModel> categoryList = new List<CategoryModel>();
-            using (var dbContext = new loveyoualattedbContext())
-            {
-                var categories = dbContext.Categories.ToList();
-                foreach (var category in categories)
-                {
-                    categoryList.Add(new CategoryModel
-                    {
-                        IdCategory = category.IdCategory,
-                        CategoryName = category.CategoryName
-                    });
-                }
-            }
-
-            ViewBag.Categories = new SelectList(categoryList, "IdCategory", "CategoryName");
-
             CategoryModel categoryIds = new CategoryModel();
 
             using (var dbContext = new loveyoualattedbContext())
