@@ -13,9 +13,11 @@ namespace LoveYouALatte.Data.Entities
         }
 
         public int IdDrinks { get; set; }
+        public int IdCategory { get; set; }
         public string DrinkName { get; set; }
         public string DrinkDescription { get; set; }
 
+        public virtual Category IdCategoryNavigation { get; set; }
         public virtual ICollection<Product> Products { get; set; }
     }
 }

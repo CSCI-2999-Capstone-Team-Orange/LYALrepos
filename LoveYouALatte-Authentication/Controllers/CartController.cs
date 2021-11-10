@@ -80,7 +80,7 @@ namespace LoveYouALatte_Authentication.Controllers
         {
             CategoryViewModel vm = new CategoryViewModel();
 
-            var categoryList = new List<Category>();
+            var categoryList = new List<CategoryModel>();
 
             MySqlDatabase db = new MySqlDatabase(connectionString);
             using (MySqlConnection conn = db.Connection)
@@ -94,7 +94,7 @@ namespace LoveYouALatte_Authentication.Controllers
                 {
                     while (dr.Read())
                     {
-                        Category cat = new Category();
+                        CategoryModel cat = new CategoryModel();
 
                         cat.IdDrinks = dr["idDrinks"] as int? ?? default(int);
                         cat.IdCategory = dr["idCategory"] as int? ?? default(int);

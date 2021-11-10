@@ -157,6 +157,7 @@ namespace LoveYouALatte_Authentication.Controllers
                 var products = dbContext.Products.ToList();
                 var sizes = dbContext.Sizes.ToList();
                 var drinks = dbContext.Drinks.ToList();
+                var categories = dbContext.Categories.ToList();
 
                 foreach (var product in products)
                 {
@@ -166,6 +167,7 @@ namespace LoveYouALatte_Authentication.Controllers
                         ProductId = product.IdProduct,
                         DrinkId = product.IdDrink,
                         ProductSku = product.ProductSku,
+                        category = drinks.Single(a => a.IdDrinks == product.IdDrink).IdCategory,
                         DrinkName = drinks.Single(d => d.IdDrinks == product.IdDrink).DrinkName,
                         DrinkDescription = drinks.Single(d => d.IdDrinks == product.IdDrink).DrinkDescription,
                         SizeId = product.IdSize,
@@ -201,6 +203,7 @@ namespace LoveYouALatte_Authentication.Controllers
                     updateThisProduct.IdSize = formInfo.updateProduct.SizeId;
                     updateThisProduct.Price = formInfo.updateProduct.Price;
                     updateThisDrink.DrinkName = formInfo.updateProduct.DrinkName;
+                    updateThisDrink.IdCategory = formInfo.updateProduct.category;
                     updateThisDrink.DrinkDescription = formInfo.updateProduct.DrinkDescription;
                     dbContext.SaveChanges();
                     

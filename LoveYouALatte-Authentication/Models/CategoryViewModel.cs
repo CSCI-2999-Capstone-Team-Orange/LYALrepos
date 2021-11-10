@@ -9,8 +9,8 @@ namespace LoveYouALatte_Authentication.Models
     {
         public CategoryViewModel()
         {
-            Categories = new List<Category>();
+            Categories = new List<CategoryModel>();
         }
-        public List<Category> Categories { get; set; }
+        public List<CategoryModel> Categories { get; set; }
     }
 }
