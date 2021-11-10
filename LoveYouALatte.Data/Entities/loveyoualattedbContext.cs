@@ -31,7 +31,9 @@ namespace LoveYouALatte.Data.Entities
         public virtual DbSet<Category> Categories { get; set; }
         public virtual DbSet<Drink> Drinks { get; set; }
         public virtual DbSet<EfmigrationsHistory> EfmigrationsHistories { get; set; }
-        public virtual DbSet<GuestUser> GuestUsers { get; set; }
+        public virtual DbSet<GuestOrderItem> GuestOrderItems { get; set; }
+        public virtual DbSet<GuestUserId> GuestUserIds { get; set; }
+        public virtual DbSet<GuestUserTable> GuestUserTables { get; set; }
         public virtual DbSet<OrderItem> OrderItems { get; set; }
         public virtual DbSet<Product> Products { get; set; }
         public virtual DbSet<Size> Sizes { get; set; }
@@ -42,7 +44,7 @@ namespace LoveYouALatte.Data.Entities
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseMySQL("Server=identitytest.cjiyeakoxxft.us-east-1.rds.amazonaws.com;port=3306;user=test;password=orange1234;database=loveyoualattedb");
+                optionsBuilder.UseMySQL("Server=authtest.cjiyeakoxxft.us-east-1.rds.amazonaws.com;port=3306;user=test;password=orange1234;database=loveyoualattedb");
             }
         }
 
@@ -72,8 +74,6 @@ namespace LoveYouALatte.Data.Entities
 
                 entity.ToTable("addOnItemList");
 
-                entity.HasIndex(e => e.AddOnId, "FKfromaddOn");
-
                 entity.HasIndex(e => e.CartAddOnItemId, "listFKfromcartAddOnItem");
 
                 entity.Property(e => e.AddOnListId).HasColumnName("addOnListId");
@@ -81,11 +81,6 @@ namespace LoveYouALatte.Data.Entities
                 entity.Property(e => e.AddOnId).HasColumnName("addOnId");
 
                 entity.Property(e => e.CartAddOnItemId).HasColumnName("cartAddOnItemId");
-
-                entity.HasOne(d => d.AddOn)
-                    .WithMany(p => p.AddOnItemLists)
-                    .HasForeignKey(d => d.AddOnId)
-                    .HasConstraintName("FKfromaddOn");
 
                 entity.HasOne(d => d.CartAddOnItem)
                     .WithMany(p => p.AddOnItemLists)
@@ -275,8 +270,6 @@ namespace LoveYouALatte.Data.Entities
 
                 entity.ToTable("CartTable");
 
-                entity.HasIndex(e => e.GuestUserId, "CTFKguestUserId");
-
                 entity.HasIndex(e => e.CartAddOnItemId, "FKfromcartAddOnItem");
 
                 entity.HasIndex(e => e.IdProduct, "cartTableUProductID");
@@ -287,13 +280,10 @@ namespace LoveYouALatte.Data.Entities
 
                 entity.Property(e => e.CartAddOnItemId).HasColumnName("cartAddOnItemId");
 
-                entity.Property(e => e.GuestUserId)
-                    .HasMaxLength(15)
-                    .HasColumnName("guestUserId");
-
                 entity.Property(e => e.IdProduct).HasColumnName("idProduct");
 
                 entity.Property(e => e.IdUser)
+                    .IsRequired()
                     .HasMaxLength(255)
                     .HasColumnName("idUser");
 
@@ -317,13 +307,6 @@ namespace LoveYouALatte.Data.Entities
                     .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FKfromcartAddOnItem");
 
-                entity.HasOne(d => d.GuestUser)
-                    .WithMany(p => p.CartTables)
-                    .HasPrincipalKey(p => p.GuestUserId)
-                    .HasForeignKey(d => d.GuestUserId)
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .HasConstraintName("CTFKguestUserId");
-
                 entity.HasOne(d => d.IdProductNavigation)
                     .WithMany(p => p.CartTables)
                     .HasForeignKey(d => d.IdProduct)
@@ -332,7 +315,6 @@ namespace LoveYouALatte.Data.Entities
                 entity.HasOne(d => d.IdUserNavigation)
                     .WithMany(p => p.CartTables)
                     .HasForeignKey(d => d.IdUser)
-                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("cartTableUserID");
             });
 
@@ -363,7 +345,7 @@ namespace LoveYouALatte.Data.Entities
 
                 entity.ToTable("drinks");
 
-                entity.HasIndex(e => e.IdCategory, "FKfromdcategories");
+                entity.HasIndex(e => e.IdCategory, "CategoryIDFK");
 
                 entity.Property(e => e.IdDrinks).HasColumnName("idDrinks");
 
@@ -381,8 +363,8 @@ namespace LoveYouALatte.Data.Entities
                 entity.HasOne(d => d.IdCategoryNavigation)
                     .WithMany(p => p.Drinks)
                     .HasForeignKey(d => d.IdCategory)
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .HasConstraintName("FKfromdcategories");
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("CategoryIDFK");
             });
 
             modelBuilder.Entity<EfmigrationsHistory>(entity =>
@@ -399,37 +381,85 @@ namespace LoveYouALatte.Data.Entities
                     .HasMaxLength(32);
             });
 
-            modelBuilder.Entity<GuestUser>(entity =>
+            modelBuilder.Entity<GuestOrderItem>(entity =>
             {
-                entity.HasKey(e => e.GuestUserIncId)
+                entity.ToTable("guestOrderItem");
+
+                entity.HasIndex(e => e.IdGuestTable, "FK_guestTableId_idx");
+
+                entity.HasIndex(e => e.IdProduct, "FK_productId_idx");
+
+                entity.Property(e => e.GuestOrderItemId).HasColumnName("guestOrderItemId");
+
+                entity.Property(e => e.IdGuestTable).HasColumnName("idGuestTable");
+
+                entity.Property(e => e.IdProduct).HasColumnName("idProduct");
+
+                entity.Property(e => e.LineItemCost)
+                    .HasColumnType("decimal(13,2)")
+                    .HasColumnName("lineItemCost");
+
+                entity.Property(e => e.LineTax)
+                    .HasColumnType("decimal(13,2)")
+                    .HasColumnName("lineTax");
+
+                entity.Property(e => e.Quantity).HasColumnName("quantity");
+
+                entity.Property(e => e.TotalCost)
+                    .HasColumnType("decimal(13,2)")
+                    .HasColumnName("totalCost");
+
+                entity.HasOne(d => d.IdGuestTableNavigation)
+                    .WithMany(p => p.GuestOrderItems)
+                    .HasForeignKey(d => d.IdGuestTable)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_guestTableId");
+
+                entity.HasOne(d => d.IdProductNavigation)
+                    .WithMany(p => p.GuestOrderItems)
+                    .HasForeignKey(d => d.IdProduct)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_productId");
+            });
+
+            modelBuilder.Entity<GuestUserId>(entity =>
+            {
+                entity.HasKey(e => e.IdGuest)
                     .HasName("PRIMARY");
 
-                entity.ToTable("guestUser");
+                entity.ToTable("guestUserID");
 
-                entity.HasIndex(e => e.GuestUserId, "guestUserId")
-                    .IsUnique();
+                entity.Property(e => e.LastName).HasMaxLength(45);
 
-                entity.Property(e => e.GuestUserIncId).HasColumnName("guestUserIncId");
+                entity.Property(e => e.Name).HasMaxLength(255);
+            });
 
-                entity.Property(e => e.Email)
-                    .IsRequired()
-                    .HasMaxLength(255)
-                    .HasColumnName("email");
+            modelBuilder.Entity<GuestUserTable>(entity =>
+            {
+                entity.HasKey(e => e.IdGuestTable)
+                    .HasName("PRIMARY");
 
-                entity.Property(e => e.FirstName)
-                    .IsRequired()
-                    .HasMaxLength(255)
-                    .HasColumnName("firstName");
+                entity.ToTable("guestUserTable");
 
-                entity.Property(e => e.GuestUserId)
-                    .IsRequired()
-                    .HasMaxLength(15)
-                    .HasColumnName("guestUserId");
+                entity.HasIndex(e => e.IdGuest, "FK_GuestID_idx");
 
-                entity.Property(e => e.LastName)
-                    .IsRequired()
-                    .HasMaxLength(255)
-                    .HasColumnName("lastName");
+                entity.Property(e => e.IdGuestTable).HasColumnName("idGuestTable");
+
+                entity.Property(e => e.IdProduct).HasColumnName("idProduct");
+
+                entity.Property(e => e.LineCost)
+                    .HasColumnType("decimal(13,2)")
+                    .HasColumnName("lineCost");
+
+                entity.Property(e => e.LineItemCost)
+                    .HasColumnType("decimal(13,2)")
+                    .HasColumnName("lineItemCost");
+
+                entity.Property(e => e.LineTax)
+                    .HasColumnType("decimal(13,2)")
+                    .HasColumnName("lineTax");
+
+                entity.Property(e => e.Quantity).HasColumnName("quantity");
             });
 
             modelBuilder.Entity<OrderItem>(entity =>
@@ -438,15 +468,9 @@ namespace LoveYouALatte.Data.Entities
 
                 entity.HasIndex(e => e.UserOrderId, "FK_userOrderID");
 
-                entity.HasIndex(e => e.GuestUserId, "OIFKguestUserId");
-
                 entity.Property(e => e.OrderItemId).HasColumnName("orderItemId");
 
                 entity.Property(e => e.CartAddOnItemId).HasColumnName("cartAddOnItemId");
-
-                entity.Property(e => e.GuestUserId)
-                    .HasMaxLength(15)
-                    .HasColumnName("guestUserId");
 
                 entity.Property(e => e.LineItemCost)
                     .HasColumnType("decimal(13,2)")
@@ -466,17 +490,9 @@ namespace LoveYouALatte.Data.Entities
 
                 entity.Property(e => e.UserOrderId).HasColumnName("userOrderId");
 
-                entity.HasOne(d => d.GuestUser)
-                    .WithMany(p => p.OrderItems)
-                    .HasPrincipalKey(p => p.GuestUserId)
-                    .HasForeignKey(d => d.GuestUserId)
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .HasConstraintName("OIFKguestUserId");
-
                 entity.HasOne(d => d.UserOrder)
                     .WithMany(p => p.OrderItems)
                     .HasForeignKey(d => d.UserOrderId)
-                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_userOrderID");
             });
 
@@ -538,31 +554,18 @@ namespace LoveYouALatte.Data.Entities
 
                 entity.HasIndex(e => e.UserId, "FK_userID");
 
-                entity.HasIndex(e => e.GuestUserId, "UOFKguestUserId");
-
                 entity.Property(e => e.UserOrderId).HasColumnName("userOrderId");
-
-                entity.Property(e => e.GuestUserId)
-                    .HasMaxLength(15)
-                    .HasColumnName("guestUserId");
 
                 entity.Property(e => e.OrderDate).HasColumnName("orderDate");
 
                 entity.Property(e => e.UserId)
+                    .IsRequired()
                     .HasMaxLength(255)
                     .HasColumnName("userID");
-
-                entity.HasOne(d => d.GuestUser)
-                    .WithMany(p => p.UserOrders)
-                    .HasPrincipalKey(p => p.GuestUserId)
-                    .HasForeignKey(d => d.GuestUserId)
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .HasConstraintName("UOFKguestUserId");
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.UserOrders)
                     .HasForeignKey(d => d.UserId)
-                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_userID");
             });
 

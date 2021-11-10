@@ -1,7 +1,23 @@
-﻿@page
+﻿
+@page
 @model ConfirmEmailModel
+
+@{
+    if (this.User.IsInRole("Employee"))
+
+    { Layout = "~/Views/Shared/_EmployeeLayout.cshtml"; }
+}
 @{
     ViewData["Title"] = "Confirm email";
 }
 
 <h1>@ViewData["Title"]</h1>
+
+
+<h2>@Model.StatusMessage</h2>
+
+@if (this.User.IsInRole("Employee"))
+{
+
+    <a href="~/Employee/EmployeeView"> Return to Employee View</a>
+}

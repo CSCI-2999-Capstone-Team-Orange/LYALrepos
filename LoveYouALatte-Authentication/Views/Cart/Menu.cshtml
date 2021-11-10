@@ -50,49 +50,97 @@
     </div>
 </div>
 
-@*<input type="hidden" asp-for="@Model.addOns.addOnList[i].addOnId" />
-    <input type="hidden" asp-for="@Model.addOns.addOnList[i].addOnType" />
-    <input type="hidden" asp-for="@Model.addOns.addOnList[i].addOnDescription" />
-        <label class="form-check-label">
-                    @Model.addOns.addOnList[i].addOnDescription
-                </label>*@
 
 
-<div style="display: none;" id="addOn" class="z-index-2 w-50 h-100 fixed-top bg-light">
-    <div class="overlay-content">
 
+<div style="display: none; float: right; right: 0px; top: 50px; " id="addOn" class="z-index-2 w-25 h-100 position-fixed bg-secondary text-light">
+    <div class="overlay-content text-center">
+        <br /><br />
         <h1>Addons</h1>
+        <br />
+        <p> Here are the creamer options we have at love you a latte!</p>
+        <br />
+       
         <form method="post" asp-action="addAddOns" asp-controller="cart">
 
-            <button class="closeAddOn btn-danger"> Close</button>
+            <h2>Creamers</h2>
+
             @for (int i = 0; i < Model.addOns.addOnList.Count; i++)
             {
-        <div>
-            <input type="hidden" asp-for="@Model.addOns.addOnList[i].addOnId" />
-            <input type="hidden" asp-for="@Model.addOns.addOnList[i].addOnType" />
-            <input type="hidden" asp-for="@Model.addOns.addOnList[i].addOnDescription" />
-            <input type="checkbox" asp-for="@Model.addOns.addOnList[i].isSelected" />
-            <label class="form-check-label">
-                @Model.addOns.addOnList[i].addOnDescription
-            </label>
+                <div>
+                    <input class="hello" data-addOn='@Json.Serialize(@Model.addOns.addOnList[i])' type="hidden" asp-for="@Model.addOns.addOnList[i].addOnId" />
+                        <input type="hidden" asp-for="@Model.addOns.addOnList[i].addOnType" />
+                        <input type="hidden" asp-for="@Model.addOns.addOnList[i].addOnDescription" />
+                    <input class="add-on-checkbox" data-addOn='@Json.Serialize(@Model.addOns.addOnList[i])' data-addOnId='@Model.addOns.addOnList[i].addOnId' type="checkbox" asp-for="@Model.addOns.addOnList[i].isSelected" />
+                    <label class="form-check-label">
+                        @Model.addOns.addOnList[i].addOnDescription
+                    </label>
 
-        </div>
+                </div>
             }
-
-            <input type="submit" value="submit" />
+            <br />
+            <input class="btn btn-orange submit" id="addOnSubmit" type="button" value="Add to Drink" /><br /><br />
+            <input class="btn btn-primary submit" type="button" value="No Thank You"
         </form>
 
     </div>
 
-    <script>
+</div>
+
+<script>
     $(document).ready(function () {
+       $('.submit').click(function () {
+            drinkAddOns = [];
 
+            $(".add-on-checkbox").each(function (i, item) {
+                var $item = $(item);
+                drinkAddOns.push({
+                    addOnId: $item.data("addonid"),
+                    isSelected: $item[0].checked,
+                    addOnType: "creamer",
+                    addOnDescription: "test"
+                })
+            })
+            
+            
+           $.ajax({
+               type: "POST",
+               url: '@Url.Action("addAddOns", "Cart")',
+               contentType: "application/json; charset=utf-8",
+               dataType: "json",
+               data: JSON.stringify(drinkAddOns),
+                success: function (response) {
+                    alert(response.responseText);
+                    $("#addOn").hide("slow");
+                    $(".quantityNum").each(function () {
+                        $(this).val('');
+                    })
+                    $(".add-on-checkbox").each(function () {
+                        $(this).prop("checked", false);
+                    })
+
+
+
+                },
+                error: function (response) {
+                    alert('Error: ' + response.responseText);
+                }
+            });
+
+
+
+
+       });
+
+      
     });
 
-    $('.closeAddOn').click(function () {
-        $("#addOn").hide();
 
-    });
+
+
+
+
+    
 
 
     $('.quantityNum').on('input change mouseup keyup', function () {
@@ -129,7 +177,7 @@
         },
         success: function () {
             alert("Succesfully added to cart!");
-            $("#addOn").show();
+            $("#addOn").show("slow");
 
         },
         error: function (data) {
@@ -138,4 +186,4 @@
         });
     });
 
-    </script>
+</script>

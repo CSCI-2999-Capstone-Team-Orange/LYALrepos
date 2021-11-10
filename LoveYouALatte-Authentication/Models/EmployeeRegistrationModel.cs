@@ -20,6 +20,7 @@ namespace LoveYouALatte_Authentication.Models
 
         [Required]
         [EmailAddress]
+        [RegularExpression(@"^[@\.a-z0-9]+$", ErrorMessage = "Your email address cannot have uppercase letters.")]
         [Display(Name = "username")]
         public string Email { get; set; }
 
@@ -33,6 +34,7 @@ namespace LoveYouALatte_Authentication.Models
         [Display(Name = "Confirm password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
+        
         [Required]
         [Display(Name = "Employee")]
         public bool isEmployee { get; set; }

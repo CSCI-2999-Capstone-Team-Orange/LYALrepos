@@ -19,6 +19,12 @@ namespace LoveYouALatte_Authentication.Controllers
     {
         string connectionString = "server=authtest.cjiyeakoxxft.us-east-1.rds.amazonaws.com; port=3306; database=loveyoualattedb; uid=test; pwd=orange1234;";
 
+
+    //private MenuViewModel DisplayMenu()
+
+
+
+
         [HttpGet]
         public ActionResult AddToCart(int productid, int quantity, decimal totalPrice, decimal lineTax, decimal lineCost)
         {
@@ -75,6 +81,8 @@ namespace LoveYouALatte_Authentication.Controllers
             }
         }
 
+
+
         [HttpGet]
         public ActionResult Menu()
         {
@@ -113,10 +121,9 @@ namespace LoveYouALatte_Authentication.Controllers
             vm.Products = productList;
 
             ViewAddOnModel dbAddOnList = new ViewAddOnModel();
-            ViewAddOnModel cartAddOnList = new ViewAddOnModel();
+            
             vm.addOns = dbAddOnList;
-            vm.cartAddons = cartAddOnList;
-
+        
             
             using (var dbContext = new loveyoualattedbContext()) {
 
@@ -133,18 +140,20 @@ namespace LoveYouALatte_Authentication.Controllers
             
             }
             
-
-
+            
+            
             return View(vm);
         }
 
+
+        
         [HttpPost]
-        public ActionResult addAddOns(MenuViewModel drinkAddOns) {
-            var addOns = drinkAddOns.addOns.addOnList.Where(a=>a.isSelected == true).ToList();
-            using(var dbContext = new loveyoualattedbContext())
+        public ActionResult addAddOns([FromBody]List<AddOnModel> drinkAddOns) {
+            var addOns = drinkAddOns.Where(a => a.isSelected == true).ToList();
+            using (var dbContext = new loveyoualattedbContext())
             {
                 var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-                var cartTable = dbContext.CartTables.Where(a=> a.IdUser == userId).ToList();
+                var cartTable = dbContext.CartTables.Where(a => a.IdUser == userId).ToList();
                 var lastCartTableId = cartTable.OrderBy(ct => ct.IdCartTable).LastOrDefault().IdCartTable;
 
                 var newCartItemId = new CartAddOnItem()
@@ -170,15 +179,26 @@ namespace LoveYouALatte_Authentication.Controllers
                 lastCartTableItem.CartAddOnItem = newCartItemId;
                 dbContext.SaveChanges();
 
+                if (addOns.Count() == 0)
+                {
+                    return Json(new { success = true, responseText = "No Addons were added" });
+                }
+                else if (addOns.Count >0)
+                {
+                    return Json(new { success = true, responseText = "Addons have been added" });
+                }
+                else
+                {
+                    return Json(new { success = false, responseText = "Addons were not added" });
+                }
 
             }
             
-
-
-
-            return RedirectToAction("Checkout");
         } 
 
+
+
+       
 
 
 
@@ -225,6 +245,56 @@ namespace LoveYouALatte_Authentication.Controllers
                     }
                 }
             }
+
+            List<CheckoutItemModel> checkoutItemList = new List<CheckoutItemModel>();
+            
+
+            using (var dbContext = new loveyoualattedbContext())
+            {
+
+                var products = dbContext.Products.ToList();
+                var sizes = dbContext.Sizes.ToList();
+                var drinks = dbContext.Drinks.ToList();
+                var addOnItems = dbContext.AddOns.ToList();
+                var addOnList = dbContext.AddOnItemLists.ToList();
+
+                var cartItems = dbContext.CartTables.Where(a => a.IdUser == UserID).ToList();
+    
+
+                foreach (var item in cartItems)
+                {
+                    var product = products.Single(p => p.IdProduct == item.IdProduct);
+                    var addOns = addOnList.Where(i => i.CartAddOnItemId == item.CartAddOnItemId).ToList();
+                    List<ReceiptAddOnModel> orderAddOns = new List<ReceiptAddOnModel>();
+                    foreach (var addon in addOns)
+                    {
+                        orderAddOns.Add(new ReceiptAddOnModel()
+                        {
+                            addOnType = addOnItems.Single(a => a.AddOnId == addon.AddOnId).AddOnType,
+                            addOnDescription = addOnItems.Single(a => a.AddOnId == addon.AddOnId).AddOnDescription
+                        });
+
+                    }
+
+                    checkoutItemList.Add(new CheckoutItemModel
+                    {
+                        cartTableId = item.IdCartTable,
+                        ProductId = item.IdProduct,
+                        ProductDescription = drinks.Single(d => d.IdDrinks == product.IdDrink).DrinkName,
+                        sizeDescription = sizes.Single(s => s.IdSize == product.IdSize).Size1,
+                        unitCost = item.LineItemCost,
+                        addOnList = orderAddOns,
+                        quantity = item.Quantity,
+                    });
+
+                }
+
+
+            }
+
+            vm.checkoutItems = checkoutItemList;
+
+
             vm.Carts = cartList;
             return View(vm);
         }
@@ -286,11 +356,6 @@ namespace LoveYouALatte_Authentication.Controllers
                     dbContext.SaveChanges();
                     orderId = newUserOrder.UserOrderId;
 
-                    //foreach(var value in dbCart)
-                    //{
-                    //    dbContext.CartTables.Remove(value);
-                    //    dbContext.SaveChanges();
-                    //}
 
                     dbContext.CartTables.RemoveRange(dbCart);
                     dbContext.SaveChanges();

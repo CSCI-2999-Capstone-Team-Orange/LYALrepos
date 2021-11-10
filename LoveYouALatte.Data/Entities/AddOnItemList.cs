@@ -11,7 +11,6 @@ namespace LoveYouALatte.Data.Entities
         public int CartAddOnItemId { get; set; }
         public int AddOnId { get; set; }
 
-        public virtual AddOn AddOn { get; set; }
         public virtual CartAddOnItem CartAddOnItem { get; set; }
     }
 }

@@ -19,7 +19,7 @@ namespace LoveYouALatte_Authentication.Models
 
         public ViewAddOnModel addOns { get; set; }
 
-        public ViewAddOnModel cartAddons { get; set; }
+        public CheckoutItemModel checkoutItems { get; set; }
        
     }
 }

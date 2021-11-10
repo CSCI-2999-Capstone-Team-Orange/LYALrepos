@@ -330,70 +330,73 @@ namespace LoveYouALatte_Authentication.Controllers
         [HttpPost]
         public async Task<IActionResult> AddEmployee(EmployeeRegistrationModel request)
         {
-            
-            string returnUrl = null;
-            var ExternalLogins = (await signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-            ExternalLogins = (await signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var userCheck = await userManager.FindByEmailAsync(request.Email);
-                if (userCheck == null)
+                if (ModelState.IsValid)
                 {
-                    var user = new ApplicationUser
+                    string returnUrl = null;
+                    var ExternalLogins = (await signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+                    ExternalLogins = (await signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+
+                    var userCheck = await userManager.FindByEmailAsync(request.Email);
+                    if (userCheck == null)
                     {
-                        UserName = request.Email,
-                        Email = request.Email,
-                        firstName = request.FirstName,
-                        lastName = request.LastName
-                    };
-                    var result = await userManager.CreateAsync(user, request.Password);
-
-                    if (request.isEmployee)
-                    {
-                        var newUser = await userManager.FindByIdAsync(user.Id);
-                        var addToEmployeeRole = await userManager.AddToRoleAsync(newUser, "Employee");
-                    }
-
-
-                    if (result.Succeeded)
-                    {
-                        var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
-                        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                        var callbackUrl = Url.Page(
-                            "/Account/ConfirmEmail",
-                            pageHandler: null,
-                            values: new { area = "Identity", userId = user.Id, code = code, returnUrl = returnUrl },
-                            protocol: Request.Scheme);
-
-                        await _emailSender.SendEmailAsync(request.Email, "Confirm your email",
-                            $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
-                        if (userManager.Options.SignIn.RequireConfirmedAccount)
+                        var user = new ApplicationUser
                         {
-                            return RedirectToAction("registrationconfirmation", new { email = request.Email, returnUrl = returnUrl } );
+                            UserName = request.Email,
+                            Email = request.Email,
+                            firstName = request.FirstName,
+                            lastName = request.LastName
+                        };
+                        var result = await userManager.CreateAsync(user, request.Password);
+                        if (result.Succeeded)
+                        {
+                            if (request.isEmployee)
+                            {
+                                var newUser = await userManager.FindByIdAsync(user.Id);
+                                var addToEmployeeRole = await userManager.AddToRoleAsync(newUser, "Employee");
+                            }
+
+                            var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
+                            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                            var callbackUrl = Url.Page(
+                                "/Account/ConfirmEmail",
+                                pageHandler: null,
+                                values: new { area = "Identity", userId = user.Id, code = code, returnUrl = returnUrl },
+                                protocol: Request.Scheme);
+
+                            await _emailSender.SendEmailAsync(request.Email, "Confirm your email",
+                                $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                            if (userManager.Options.SignIn.RequireConfirmedAccount)
+                            {
+                                return RedirectToAction("registrationconfirmation", new { email = request.Email, returnUrl = returnUrl });
+                            }
+                            else
+                            {
+                                await signInManager.SignInAsync(user, isPersistent: false);
+                                return LocalRedirect(returnUrl);
+                            }
                         }
                         else
                         {
-                            await signInManager.SignInAsync(user, isPersistent: false);
-                            return LocalRedirect(returnUrl);
+                            if (result.Errors.Count() > 0)
+                            {
+                                foreach (var error in result.Errors)
+                                {
+                                    ModelState.AddModelError("message", error.Description);
+                                }
+                            }
+                            return View(request);
                         }
                     }
                     else
                     {
-                        if (result.Errors.Count() > 0)
-                        {
-                            foreach (var error in result.Errors)
-                            {
-                                ModelState.AddModelError("message", error.Description);
-                            }
-                        }
+                        ModelState.AddModelError("message", "Email already exists.");
                         return View(request);
                     }
                 }
-                else
-                {
-                    ModelState.AddModelError("message", "Email already exists.");
-                    return View(request);
-                }
+
+                return View(request);
             }
             return View(request);
 
@@ -432,11 +435,7 @@ namespace LoveYouALatte_Authentication.Controllers
             return View(confirmNewEmployee);
         }
 
-        //public IActionResult RegistrationConfirmation()
-        //{
-
-        //    return View();
-        //}
+        
 
 
 

@@ -13,7 +13,7 @@ namespace LoveYouALatte.Data.Entities
         }
 
         public int IdDrinks { get; set; }
-        public int? IdCategory { get; set; }
+        public int IdCategory { get; set; }
         public string DrinkName { get; set; }
         public string DrinkDescription { get; set; }
 
