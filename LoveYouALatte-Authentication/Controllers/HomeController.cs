@@ -36,6 +36,7 @@ namespace LoveYouALatte_Authentication.Controllers
         public IActionResult HomePage()
         {
             var userRole = this.User.FindFirstValue(ClaimTypes.Role);
+            var UserID = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (userRole == "Employee")
             {
@@ -47,7 +48,17 @@ namespace LoveYouALatte_Authentication.Controllers
             }
             else
             {
-                return View();
+                UserInfo authenticatedUser = new UserInfo();
+                using (var dbContext = new loveyoualattedbContext())
+                {
+                    var userDbInfo = dbContext.AspNetUsers.SingleOrDefault(s => s.Id == UserID);
+                    if (userDbInfo != null)
+                    {
+                        authenticatedUser.firstName = userDbInfo.FirstName;
+                        authenticatedUser.lastName = userDbInfo.LastName;
+                    }
+                }
+                return View(authenticatedUser);
             }
         }
         public IActionResult FAQ()
