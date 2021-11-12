@@ -38,7 +38,7 @@ namespace LoveYouALatte_Authentication.Controllers
 
 
 
-        string connectionString = "server=authtest.cjiyeakoxxft.us-east-1.rds.amazonaws.com; port=3306; database=loveyoualattedb; uid=test; pwd=orange1234;";
+        string connectionString = "server=identitytest.cjiyeakoxxft.us-east-1.rds.amazonaws.com; port=3306; database=loveyoualattedb; uid=test; pwd=orange1234;";
 
         [HttpGet]
         [Authorize(Roles = "Employee")]
@@ -190,7 +190,7 @@ namespace LoveYouALatte_Authentication.Controllers
                         ProductId = product.IdProduct,
                         DrinkId = product.IdDrink,
                         ProductSku = product.ProductSku,
-                        category = drinks.Single(a => a.IdDrinks == product.IdDrink).IdCategory,
+                        category = (int)drinks.Single(a => a.IdDrinks == product.IdDrink).IdCategory,
                         DrinkName = drinks.Single(d => d.IdDrinks == product.IdDrink).DrinkName,
                         DrinkDescription = drinks.Single(d => d.IdDrinks == product.IdDrink).DrinkDescription,
                         SizeId = product.IdSize,

@@ -1,4 +1,4 @@
-﻿@using LoveYouALatte_Authentication.Data; 
+﻿@using LoveYouALatte_Authentication.Data;
 @inject SignInManager<ApplicationUser> SignInManager
 @{
     var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();

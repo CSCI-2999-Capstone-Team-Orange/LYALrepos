@@ -37,12 +37,12 @@ namespace LoveYouALatte_Authentication.Controllers
         {
             var userRole = this.User.FindFirstValue(ClaimTypes.Role);
             var UserID = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-
+            
             if (userRole == "Employee")
             {
                 return RedirectToAction("employeeView", "employee");
             }
-            else if (userRole == "Admin")
+            else if (userRole == "admin")
             {
                 return RedirectToAction("adminHome", "administration");
             }
