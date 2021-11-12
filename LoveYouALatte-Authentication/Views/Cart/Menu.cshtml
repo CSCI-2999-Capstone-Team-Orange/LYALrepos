@@ -126,7 +126,7 @@
 
 
 <script>
-    var $isGuestUser = '';
+    var $isGuestUser = '@HttpContextAccessor.HttpContext.Request.Cookies["guestUserId"]';
     $(document).ready(function () {
 
        /*Addon AJAX CALL*/
