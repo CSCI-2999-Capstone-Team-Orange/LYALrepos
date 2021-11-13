@@ -109,6 +109,8 @@ namespace LoveYouALatte_Authentication.Controllers
                 var sizes = dbContext.Sizes.ToList();
                 var drinks = dbContext.Drinks.ToList();
                 var cartItems = dbContext.CartTables.Where(a => a.GuestUserId == UserID).ToList();
+                var check = products.Single(a => a.IdProduct == 25).Price;
+                        
 
                 foreach (var item in cartItems)
                 {
@@ -122,8 +124,8 @@ namespace LoveYouALatte_Authentication.Controllers
                         TotalPrice = item.LineItemCost,
                         LineTax = item.LineTax,
                         LineCost = item.LineCost,
-                        SizeName = sizes.Single(s => s.IdSize == item.IdProduct).Size1,
-                        DrinkName = drinks.Single(d => d.IdDrinks == item.IdProduct).DrinkName,
+                        SizeName = sizes.Single(s => s.IdSize == products.Single(a => a.IdProduct == item.IdProduct).IdSize).Size1,
+                        DrinkName = drinks.Single(d => d.IdDrinks == products.Single(a => a.IdProduct == item.IdProduct).IdDrink).DrinkName,
 
 
                     });

@@ -10,7 +10,6 @@ namespace LoveYouALatte.Data.Entities
         public GuestUser()
         {
             CartTables = new HashSet<CartTable>();
-            OrderItems = new HashSet<OrderItem>();
             UserOrders = new HashSet<UserOrder>();
         }
 
@@ -21,7 +20,6 @@ namespace LoveYouALatte.Data.Entities
         public string GuestUserId { get; set; }
 
         public virtual ICollection<CartTable> CartTables { get; set; }
-        public virtual ICollection<OrderItem> OrderItems { get; set; }
         public virtual ICollection<UserOrder> UserOrders { get; set; }
     }
 }

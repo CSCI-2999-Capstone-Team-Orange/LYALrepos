@@ -288,7 +288,7 @@ namespace LoveYouALatte.Data.Entities
                 entity.Property(e => e.CartAddOnItemId).HasColumnName("cartAddOnItemId");
 
                 entity.Property(e => e.GuestUserId)
-                    .HasMaxLength(15)
+                    .HasMaxLength(600)
                     .HasColumnName("guestUserId");
 
                 entity.Property(e => e.IdProduct).HasColumnName("idProduct");
@@ -423,7 +423,7 @@ namespace LoveYouALatte.Data.Entities
 
                 entity.Property(e => e.GuestUserId)
                     .IsRequired()
-                    .HasMaxLength(15)
+                    .HasMaxLength(600)
                     .HasColumnName("guestUserId");
 
                 entity.Property(e => e.LastName)
@@ -438,15 +438,9 @@ namespace LoveYouALatte.Data.Entities
 
                 entity.HasIndex(e => e.UserOrderId, "FK_userOrderID");
 
-                entity.HasIndex(e => e.GuestUserId, "OIFKguestUserId");
-
                 entity.Property(e => e.OrderItemId).HasColumnName("orderItemId");
 
                 entity.Property(e => e.CartAddOnItemId).HasColumnName("cartAddOnItemId");
-
-                entity.Property(e => e.GuestUserId)
-                    .HasMaxLength(15)
-                    .HasColumnName("guestUserId");
 
                 entity.Property(e => e.LineItemCost)
                     .HasColumnType("decimal(13,2)")
@@ -465,13 +459,6 @@ namespace LoveYouALatte.Data.Entities
                     .HasColumnName("totalCost");
 
                 entity.Property(e => e.UserOrderId).HasColumnName("userOrderId");
-
-                entity.HasOne(d => d.GuestUser)
-                    .WithMany(p => p.OrderItems)
-                    .HasPrincipalKey(p => p.GuestUserId)
-                    .HasForeignKey(d => d.GuestUserId)
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .HasConstraintName("OIFKguestUserId");
 
                 entity.HasOne(d => d.UserOrder)
                     .WithMany(p => p.OrderItems)
@@ -543,7 +530,7 @@ namespace LoveYouALatte.Data.Entities
                 entity.Property(e => e.UserOrderId).HasColumnName("userOrderId");
 
                 entity.Property(e => e.GuestUserId)
-                    .HasMaxLength(15)
+                    .HasMaxLength(600)
                     .HasColumnName("guestUserId");
 
                 entity.Property(e => e.OrderDate).HasColumnName("orderDate");
