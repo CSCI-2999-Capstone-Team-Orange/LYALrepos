@@ -16,6 +16,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Identity.UI.Services;
 
+
 namespace LoveYouALatte_Authentication.Controllers
 {
     [Authorize(Roles = "Employee")]
@@ -172,8 +173,28 @@ namespace LoveYouALatte_Authentication.Controllers
             
             
             updateMenuItem.viewProduct = productList;
+
             
-           
+            List<SelectListItem> categoriesList = new List<SelectListItem>();
+
+
+            using (var dbContext = new loveyoualattedbContext())
+            {
+                var categories = dbContext.Categories.ToList();
+                foreach (var category in categories)
+                {
+                    categoriesList.Add( new SelectListItem ()
+                    {
+                        Value = $"{category.IdCategory}",
+                        Text = category.CategoryName
+
+                    });
+                    
+                }
+
+            }
+
+            updateMenuItem.DrinkCategories = categoriesList;
 
             using (var dbContext = new loveyoualattedbContext())
             {
@@ -191,6 +212,7 @@ namespace LoveYouALatte_Authentication.Controllers
                         DrinkId = product.IdDrink,
                         ProductSku = product.ProductSku,
                         category = (int)drinks.Single(a => a.IdDrinks == product.IdDrink).IdCategory,
+                        CategoryName = categories.Single(n => n.IdCategory == drinks.Single(a => a.IdDrinks == product.IdDrink).IdCategory).CategoryName,
                         DrinkName = drinks.Single(d => d.IdDrinks == product.IdDrink).DrinkName,
                         DrinkDescription = drinks.Single(d => d.IdDrinks == product.IdDrink).DrinkDescription,
                         SizeId = product.IdSize,
