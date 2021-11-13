@@ -1,0 +1,72 @@
+﻿model ReceiptModel
+
+@{
+    ViewData["Title"] = "Receipt";
+}
+
+@{
+    Layout = "~/Views/Shared/_EmployeeLayout.cshtml";
+}
+
+
+<h1>Receipt</h1>
+
+
+<table class="table table-bordered table-responsive table-hover">
+
+    <tr>
+        <th> Order Number</th>
+        <th> Date/Time</th>
+    </tr>
+    <tr>
+        <td>@Model.UserOrderId</td>
+        <td>@Model.OrderDate</td>
+    </tr>
+    <tr>
+        <th>Product</th>
+        <th>Size</th>
+        <th>Unit Price</th>
+        <th>Quantity</th>
+        <th>Tax</th>
+        <th>Line Item Price</th>
+
+    </tr>
+    <tr>
+        @foreach (var orderItem in Model.Items)
+        {
+        <tr>
+            <td>@orderItem.ProductDescription</td>
+            <td>@orderItem.sizeDescription</td>
+            <td>@orderItem.unitCost.ToString("C")</td>
+            <td>@orderItem.quantity</td>
+            <td>@orderItem.tax.ToString("C")</td>
+            <td>@orderItem.totalCost.ToString("C")</td>
+        </tr>
+        <tr>
+            <td></td>
+            <th>Add Ons</th>
+            @foreach (var addOn in orderItem.addOnList)
+            {
+                <td>
+
+
+                    @addOn.addOnDescription
+
+                </td>
+            }
+        </tr>
+
+
+
+    }
+
+        <tr>
+            <td colspan="4"></td>
+            <td>Total:</td>
+            <td>@Model.GrandTotal.ToString("C")</td>
+        </tr>
+
+
+
+
+    </table>

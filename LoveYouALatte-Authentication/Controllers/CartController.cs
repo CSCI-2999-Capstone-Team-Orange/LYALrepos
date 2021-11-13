@@ -94,7 +94,6 @@ namespace LoveYouALatte_Authentication.Controllers
 
         private CheckoutViewModel Checkout(string guestUserId)
         {
-            ViewBag.ErrorMessage = "Your cart is empty. Please add items to cart.";
             CheckoutViewModel vm = new CheckoutViewModel();
             var UserID = guestUserId;
             var cartList = new List<Cart>();
@@ -489,7 +488,6 @@ namespace LoveYouALatte_Authentication.Controllers
         {
             if (this.User.Identity.IsAuthenticated)
             {
-                ViewBag.ErrorMessage = "Your cart is empty. Please add items to cart.";
                 CheckoutViewModel vm = new CheckoutViewModel();
                 var UserID = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
