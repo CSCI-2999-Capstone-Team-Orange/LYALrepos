@@ -71,6 +71,46 @@ namespace LoveYouALatte_Authentication.Controllers
 
             return (result);
         }
+        private int Remove(int cartid, string guestUserId)
+        {
+            var UserID = guestUserId;
+
+            MenuViewModel vm = new MenuViewModel();
+
+            MySqlDatabase db = new MySqlDatabase(connectionString);
+            using (MySqlConnection conn = db.Connection)
+            {
+
+
+                var cmd = conn.CreateCommand() as MySqlCommand;
+                cmd.CommandText = @"DELETE FROM loveyoualattedb.CartTable cart
+                                WHERE (cart.idCartTable = " + cartid + " AND cart.guestUserId = '" + UserID + "')";
+                int result = cmd.ExecuteNonQuery();
+
+                return (result);
+            }
+
+        }
+
+        public int UpdateCartQuantityMethod(int cartid, int quantity, decimal totalPrice, decimal lineTax, decimal lineCost, string guestUserId)
+        {
+            var UserID = guestUserId;
+
+            MenuViewModel vm = new MenuViewModel();
+
+            MySqlDatabase db = new MySqlDatabase(connectionString);
+            using (MySqlConnection conn = db.Connection)
+            {
+                var cmd = conn.CreateCommand() as MySqlCommand;
+                cmd.CommandText = @"UPDATE loveyoualattedb.CartTable cart
+                                    SET cart.quantity = " + quantity + ", cart.lineitemcost = " + totalPrice + ", cart.lineTax = " + lineTax + ", lineCost = " + lineCost +
+                                    " WHERE (cart.idCartTable = " + cartid + " AND cart.guestUserId = '" + UserID + "')";
+                int result = cmd.ExecuteNonQuery();
+
+                return (result);
+
+            }
+        }
 
         private int AddToCartMethod(int productid, int quantity, decimal totalPrice, decimal lineTax, decimal lineCost, string guestUserId)
         {
@@ -89,9 +129,9 @@ namespace LoveYouALatte_Authentication.Controllers
 
                 return (result);
             }
-            
-        }
 
+        }
+  
         private CheckoutViewModel Checkout(string guestUserId)
         {
             CheckoutViewModel vm = new CheckoutViewModel();
@@ -109,6 +149,8 @@ namespace LoveYouALatte_Authentication.Controllers
                 var sizes = dbContext.Sizes.ToList();
                 var drinks = dbContext.Drinks.ToList();
                 var cartItems = dbContext.CartTables.Where(a => a.GuestUserId == UserID).ToList();
+                var check = products.Single(a => a.IdProduct == 25).Price;
+                        
 
                 foreach (var item in cartItems)
                 {
@@ -122,8 +164,8 @@ namespace LoveYouALatte_Authentication.Controllers
                         TotalPrice = item.LineItemCost,
                         LineTax = item.LineTax,
                         LineCost = item.LineCost,
-                        SizeName = sizes.Single(s => s.IdSize == item.IdProduct).Size1,
-                        DrinkName = drinks.Single(d => d.IdDrinks == item.IdProduct).DrinkName,
+                        SizeName = sizes.Single(s => s.IdSize == products.Single(a => a.IdProduct == item.IdProduct).IdSize).Size1,
+                        DrinkName = drinks.Single(d => d.IdDrinks == products.Single(a => a.IdProduct == item.IdProduct).IdDrink).DrinkName,
 
 
                     });
@@ -214,10 +256,6 @@ namespace LoveYouALatte_Authentication.Controllers
         }
 
 
-
-
-
-
         [HttpGet]
         public ActionResult AddToCart(int productid, int quantity, decimal totalPrice, decimal lineTax, decimal lineCost)
         {
@@ -270,19 +308,36 @@ namespace LoveYouALatte_Authentication.Controllers
         public ActionResult UpdateCartQuantity(int cartid, int quantity, decimal totalPrice, decimal lineTax, decimal lineCost)
         {
             //userId of the user that is currently logged in
-            var UserID = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            MenuViewModel vm = new MenuViewModel();
-
-            MySqlDatabase db = new MySqlDatabase(connectionString);
-            using (MySqlConnection conn = db.Connection)
+            if (this.User.Identity.IsAuthenticated)
             {
-                var cmd = conn.CreateCommand() as MySqlCommand;
-                cmd.CommandText = @"UPDATE loveyoualattedb.CartTable cart
-                                    SET cart.quantity = " + quantity + ", cart.lineitemcost = " + totalPrice + ", cart.lineTax = " + lineTax + ", lineCost = " + lineCost + 
-                                    " WHERE (cart.idCartTable = " + cartid + " AND cart.idUser = '" + UserID + "')";
-                int result = cmd.ExecuteNonQuery();
+                var UserID = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
+                MenuViewModel vm = new MenuViewModel();
+
+                MySqlDatabase db = new MySqlDatabase(connectionString);
+                using (MySqlConnection conn = db.Connection)
+                {
+                    var cmd = conn.CreateCommand() as MySqlCommand;
+                    cmd.CommandText = @"UPDATE loveyoualattedb.CartTable cart
+                                    SET cart.quantity = " + quantity + ", cart.lineitemcost = " + totalPrice + ", cart.lineTax = " + lineTax + ", lineCost = " + lineCost +
+                                        " WHERE (cart.idCartTable = " + cartid + " AND cart.idUser = '" + UserID + "')";
+                    int result = cmd.ExecuteNonQuery();
+
+                    if (result > 0)
+                    {
+                        return Content("Success");
+                    }
+                    else
+                    {
+                        return Content("Error");
+                    }
+                }
+            }
+            else
+            {
+                var guestUserId = HttpContext.Request.Cookies["guestUserId"];
+
+                var result = UpdateCartQuantityMethod(cartid, quantity, totalPrice, lineTax, lineCost, guestUserId);
                 if (result > 0)
                 {
                     return Content("Success");
@@ -291,6 +346,8 @@ namespace LoveYouALatte_Authentication.Controllers
                 {
                     return Content("Error");
                 }
+
+
             }
         }
        
@@ -597,70 +654,141 @@ namespace LoveYouALatte_Authentication.Controllers
         [HttpPost]
         public ActionResult Purchase()
         {
-            
-            var UserID = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var orderId = 0;
-
-            var timeUtc = DateTime.UtcNow;
-            var easternZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
-            var today = TimeZoneInfo.ConvertTimeFromUtc(timeUtc, easternZone);
-
-
-            using (var dbContext = new loveyoualattedbContext())
+            if (this.User.Identity.IsAuthenticated)
             {
-                var dbCart = dbContext.CartTables.Where(s => s.IdUser == UserID).ToList();
-                if (dbCart.Count != 0)
+                var UserID = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var orderId = 0;
+
+                var timeUtc = DateTime.UtcNow;
+                var easternZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
+                var today = TimeZoneInfo.ConvertTimeFromUtc(timeUtc, easternZone);
+
+
+                using (var dbContext = new loveyoualattedbContext())
                 {
-                    var newUserOrder = new UserOrder()
+                    var dbCart = dbContext.CartTables.Where(s => s.IdUser == UserID).ToList();
+                    if (dbCart.Count != 0)
                     {
+                        var newUserOrder = new UserOrder()
+                        {
 
-                        UserId = UserID,
-                        OrderDate = today
-                    };
+                            UserId = UserID,
+                            OrderDate = today
+                        };
 
-                    var products = dbContext.Products.ToList();
+                        var products = dbContext.Products.ToList();
 
-                    foreach (var cartItem in dbCart)
-                    {
-                        newUserOrder.OrderItems.Add(
-                            new OrderItem()
-                            {
-                                ProductId = cartItem.IdProduct,
-                                Quantity = cartItem.Quantity,
-                                CartAddOnItemId = cartItem.CartAddOnItemId,
-                                LineItemCost = (cartItem.LineItemCost / cartItem.Quantity),
-                                Tax = (cartItem.LineItemCost * 0.075m),
-                                TotalCost = (cartItem.LineItemCost * 0.075m) + cartItem.LineItemCost,
-                            });
+                        foreach (var cartItem in dbCart)
+                        {
+                            newUserOrder.OrderItems.Add(
+                                new OrderItem()
+                                {
+                                    ProductId = cartItem.IdProduct,
+                                    Quantity = cartItem.Quantity,
+                                    CartAddOnItemId = cartItem.CartAddOnItemId,
+                                    LineItemCost = (cartItem.LineItemCost / cartItem.Quantity),
+                                    Tax = (cartItem.LineItemCost * 0.075m),
+                                    TotalCost = (cartItem.LineItemCost * 0.075m) + cartItem.LineItemCost,
+                                });
+                        }
+
+
+
+                        dbContext.UserOrders.Add(newUserOrder);
+                        dbContext.SaveChanges();
+                        orderId = newUserOrder.UserOrderId;
+
+                        foreach (var orderItem in newUserOrder.OrderItems)
+                        {
+                            var addOnItemOrderId = dbContext.CartAddOnItems.Single(a => a.CartAddOnItemId == orderItem.CartAddOnItemId);
+
+                            addOnItemOrderId.OrderItemId = orderItem.OrderItemId;
+                        }
+
+
+                        dbContext.CartTables.RemoveRange(dbCart);
+                        dbContext.SaveChanges();
+
+
+                        return RedirectToAction("Receipt", new { id = orderId });
                     }
-
-                    
-                    
-                    dbContext.UserOrders.Add(newUserOrder);
-                    dbContext.SaveChanges();
-                    orderId = newUserOrder.UserOrderId;
-
-                    foreach (var orderItem in newUserOrder.OrderItems)
+                    else
                     {
-                        var addOnItemOrderId = dbContext.CartAddOnItems.Single(a => a.CartAddOnItemId == orderItem.CartAddOnItemId);
 
-                        addOnItemOrderId.OrderItemId = orderItem.OrderItemId;
+                        return RedirectToAction("Checkout");
+
+
                     }
-
-
-                    dbContext.CartTables.RemoveRange(dbCart);
-                    dbContext.SaveChanges();
-               
-
-                    return RedirectToAction("Receipt", new { id = orderId });
                 }
-                else
+            }
+            else
+            {
+                var guestUserId = HttpContext.Request.Cookies["guestUserId"];
+
+                var UserID = guestUserId;
+                var orderId = 0;
+
+                var timeUtc = DateTime.UtcNow;
+                var easternZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
+                var today = TimeZoneInfo.ConvertTimeFromUtc(timeUtc, easternZone);
+
+
+                using (var dbContext = new loveyoualattedbContext())
                 {
-                    
-                    return RedirectToAction("Checkout");
-                    
-                    
+                    var dbCart = dbContext.CartTables.Where(s => s.GuestUserId == UserID).ToList();
+                    if (dbCart.Count != 0)
+                    {
+                        var newUserOrder = new UserOrder()
+                        {
+
+                            GuestUserId = UserID,
+                            OrderDate = today
+                        };
+
+                        var products = dbContext.Products.ToList();
+
+                        foreach (var cartItem in dbCart)
+                        {
+                            newUserOrder.OrderItems.Add(
+                                new OrderItem()
+                                {
+                                    ProductId = cartItem.IdProduct,
+                                    Quantity = cartItem.Quantity,
+                                    CartAddOnItemId = cartItem.CartAddOnItemId,
+                                    LineItemCost = (cartItem.LineItemCost / cartItem.Quantity),
+                                    Tax = (cartItem.LineItemCost * 0.075m),
+                                    TotalCost = (cartItem.LineItemCost * 0.075m) + cartItem.LineItemCost,
+                                });
+                        }
+
+
+
+                        dbContext.UserOrders.Add(newUserOrder);
+                        dbContext.SaveChanges();
+                        orderId = newUserOrder.UserOrderId;
+
+                        foreach (var orderItem in newUserOrder.OrderItems)
+                        {
+                            var addOnItemOrderId = dbContext.CartAddOnItems.Single(a => a.CartAddOnItemId == orderItem.CartAddOnItemId);
+
+                            addOnItemOrderId.OrderItemId = orderItem.OrderItemId;
+                        }
+
+
+                        dbContext.CartTables.RemoveRange(dbCart);
+                        dbContext.SaveChanges();
+
+
+                        return RedirectToAction("Receipt", new { id = orderId });
+                    }
+                    else
+                    {
+
+                        return RedirectToAction("Checkout");
+
+                    }
                 }
+
             }
         }
 
@@ -669,107 +797,205 @@ namespace LoveYouALatte_Authentication.Controllers
         [HttpPost]
         public ActionResult ClearCart()
         {
-            var UserID = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            using (var dbContext = new loveyoualattedbContext())
+            if (this.User.Identity.IsAuthenticated)
             {
-                var dbCart = dbContext.CartTables.Where(s => s.IdUser == UserID).ToList();
-                dbContext.CartTables.RemoveRange(dbCart);
-                dbContext.SaveChanges();
-            }
+                var UserID = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            return RedirectToAction("Checkout");
+                using (var dbContext = new loveyoualattedbContext())
+                {
+                    var dbCart = dbContext.CartTables.Where(s => s.IdUser == UserID).ToList();
+                    dbContext.CartTables.RemoveRange(dbCart);
+                    dbContext.SaveChanges();
+                }
+
+                return RedirectToAction("Checkout");
+            }
+            else
+            {
+                var guestUserId = HttpContext.Request.Cookies["guestUserId"];
+                var UserID = guestUserId;
+                using (var dbContext = new loveyoualattedbContext())
+                {
+                    var dbCart = dbContext.CartTables.Where(s => s.GuestUserId == UserID).ToList();
+                    dbContext.CartTables.RemoveRange(dbCart);
+                    dbContext.SaveChanges();
+                }
+
+                return RedirectToAction("Checkout");
+
+            }
         }
 
         //Needs to be updated with guest access
         [HttpGet]
         public ActionResult Remove(int cartid)
         {
-            //userId of the user that is currently logged in
-            var UserID = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (this.User.Identity.IsAuthenticated)
+            { //userId of the user that is currently logged in
+                var UserID = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            MenuViewModel vm = new MenuViewModel();
+                MenuViewModel vm = new MenuViewModel();
 
-            MySqlDatabase db = new MySqlDatabase(connectionString);
-            using (MySqlConnection conn = db.Connection) { 
+                MySqlDatabase db = new MySqlDatabase(connectionString);
+                using (MySqlConnection conn = db.Connection)
+                {
 
-                
-            var cmd = conn.CreateCommand() as MySqlCommand;
-            cmd.CommandText = @"DELETE FROM loveyoualattedb.CartTable cart
+
+                    var cmd = conn.CreateCommand() as MySqlCommand;
+                    cmd.CommandText = @"DELETE FROM loveyoualattedb.CartTable cart
                                 WHERE (cart.idCartTable = " + cartid + " AND cart.idUser = '" + UserID + "')";
-            int result = cmd.ExecuteNonQuery();
+                    int result = cmd.ExecuteNonQuery();
 
-            if (result > 0)
-            {
-                return Content("Success");
+                    if (result > 0)
+                    {
+                        return Content("Success");
+                    }
+                    else
+                    {
+                        return Content("Error");
+                    }
+                }
             }
             else
             {
-                return Content("Error");
-            }
-            }
+                var guestUserId = HttpContext.Request.Cookies["guestUserId"];
 
+                var result = Remove(cartid, guestUserId);
+                if (result > 0)
+                {
+                    return Content("Success");
+                }
+                else
+                {
+                    return Content("Error");
+                }
+
+            }
         }
 
         //Needs to be updated with guest access
         [HttpGet]
         public ActionResult Receipt(int id)
         {
-            
 
-            ReceiptModel receipt = new ReceiptModel();
-            using (var dbContext = new loveyoualattedbContext())
+            if (this.User.Identity.IsAuthenticated)
             {
-                var products = dbContext.Products.ToList();
-                var sizes = dbContext.Sizes.ToList();
-                var drinks = dbContext.Drinks.ToList();
-                var addOnItems = dbContext.AddOns.ToList();
-                var addOnList = dbContext.AddOnItemLists.ToList();
-
-
-                var userOrder = dbContext.UserOrders.SingleOrDefault(uo => uo.UserOrderId == id);
-                receipt.OrderDate = userOrder.OrderDate;
-                receipt.UserId = userOrder.UserId;
-                receipt.UserOrderId = userOrder.UserOrderId;
-
-                var orderItems = dbContext.OrderItems.Where(oi => oi.UserOrderId == id);
-               
-                foreach (var item in orderItems)
+                ReceiptModel receipt = new ReceiptModel();
+                using (var dbContext = new loveyoualattedbContext())
                 {
-                    var product = products.Single(p => p.IdProduct == item.ProductId);
-                    var addOns = addOnList.Where(i => i.CartAddOnItemId == item.CartAddOnItemId).ToList();
-                    List<ReceiptAddOnModel> orderAddOns = new List<ReceiptAddOnModel>();
-                    foreach (var addon in addOns)
+                    var products = dbContext.Products.ToList();
+                    var sizes = dbContext.Sizes.ToList();
+                    var drinks = dbContext.Drinks.ToList();
+                    var addOnItems = dbContext.AddOns.ToList();
+                    var addOnList = dbContext.AddOnItemLists.ToList();
+
+
+                    var userOrder = dbContext.UserOrders.SingleOrDefault(uo => uo.UserOrderId == id);
+                    receipt.OrderDate = userOrder.OrderDate;
+                    receipt.UserId = userOrder.UserId;
+                    receipt.UserOrderId = userOrder.UserOrderId;
+
+                    var orderItems = dbContext.OrderItems.Where(oi => oi.UserOrderId == id);
+
+                    foreach (var item in orderItems)
                     {
-                        orderAddOns.Add(new ReceiptAddOnModel() { 
-                      
-                            addOnType = addOnItems.Single(a => a.AddOnId == addon.AddOnId).AddOnType,
-                            addOnDescription = addOnItems.Single(a => a.AddOnId == addon.AddOnId).AddOnDescription
+                        var product = products.Single(p => p.IdProduct == item.ProductId);
+                        var addOns = addOnList.Where(i => i.CartAddOnItemId == item.CartAddOnItemId).ToList();
+                        List<ReceiptAddOnModel> orderAddOns = new List<ReceiptAddOnModel>();
+                        foreach (var addon in addOns)
+                        {
+                            orderAddOns.Add(new ReceiptAddOnModel()
+                            {
+
+                                addOnType = addOnItems.Single(a => a.AddOnId == addon.AddOnId).AddOnType,
+                                addOnDescription = addOnItems.Single(a => a.AddOnId == addon.AddOnId).AddOnDescription
+                            });
+
+                        }
+
+                        receipt.Items.Add(new ReceiptItemModel
+                        {
+                            ProductId = item.ProductId,
+                            ProductDescription = drinks.Single(d => d.IdDrinks == product.IdDrink).DrinkName,
+                            sizeDescription = sizes.Single(s => s.IdSize == product.IdSize).Size1,
+                            unitCost = item.LineItemCost,
+                            addOnList = orderAddOns,
+                            quantity = item.Quantity,
+                            tax = item.Tax,
+                            totalCost = item.TotalCost,
+                            UserOrderId = userOrder.UserOrderId
                         });
 
                     }
 
-                    receipt.Items.Add(new ReceiptItemModel
-                    {
-                        ProductId = item.ProductId,
-                        ProductDescription = drinks.Single(d => d.IdDrinks == product.IdDrink).DrinkName,
-                        sizeDescription = sizes.Single(s => s.IdSize == product.IdSize).Size1, 
-                        unitCost = item.LineItemCost,
-                        addOnList = orderAddOns,
-                        quantity = item.Quantity,
-                        tax = item.Tax,
-                        totalCost = item.TotalCost,
-                        UserOrderId = userOrder.UserOrderId
-                    });
-                    
+
                 }
-                
+
+                receipt.GrandTotal = receipt.Items.Sum(i => i.totalCost);
+
+                return View(receipt);
+            }
+            else
+            {
+                var guestUserId = HttpContext.Request.Cookies["guestUserId"];
+                var UserID = guestUserId;
+
+                ReceiptModel receipt = new ReceiptModel();
+                using (var dbContext = new loveyoualattedbContext())
+                {
+                    var products = dbContext.Products.ToList();
+                    var sizes = dbContext.Sizes.ToList();
+                    var drinks = dbContext.Drinks.ToList();
+                    var addOnItems = dbContext.AddOns.ToList();
+                    var addOnList = dbContext.AddOnItemLists.ToList();
+
+
+                    var userOrder = dbContext.UserOrders.SingleOrDefault(uo => uo.UserOrderId == id);
+                    receipt.OrderDate = userOrder.OrderDate;
+                    receipt.UserId = userOrder.GuestUserId;
+                    receipt.UserOrderId = userOrder.UserOrderId;
+
+                    var orderItems = dbContext.OrderItems.Where(oi => oi.UserOrderId == id);
+
+                    foreach (var item in orderItems)
+                    {
+                        var product = products.Single(p => p.IdProduct == item.ProductId);
+                        var addOns = addOnList.Where(i => i.CartAddOnItemId == item.CartAddOnItemId).ToList();
+                        List<ReceiptAddOnModel> orderAddOns = new List<ReceiptAddOnModel>();
+                        foreach (var addon in addOns)
+                        {
+                            orderAddOns.Add(new ReceiptAddOnModel()
+                            {
+
+                                addOnType = addOnItems.Single(a => a.AddOnId == addon.AddOnId).AddOnType,
+                                addOnDescription = addOnItems.Single(a => a.AddOnId == addon.AddOnId).AddOnDescription
+                            });
+
+                        }
+
+                        receipt.Items.Add(new ReceiptItemModel
+                        {
+                            ProductId = item.ProductId,
+                            ProductDescription = drinks.Single(d => d.IdDrinks == product.IdDrink).DrinkName,
+                            sizeDescription = sizes.Single(s => s.IdSize == product.IdSize).Size1,
+                            unitCost = item.LineItemCost,
+                            addOnList = orderAddOns,
+                            quantity = item.Quantity,
+                            tax = item.Tax,
+                            totalCost = item.TotalCost,
+                            UserOrderId = userOrder.UserOrderId
+                        });
+
+                    }
+
+
+                }
+
+                receipt.GrandTotal = receipt.Items.Sum(i => i.totalCost);
+
+                return View(receipt);
 
             }
-
-            receipt.GrandTotal = receipt.Items.Sum(i => i.totalCost);
-
-            return View(receipt);
         }
 
 
