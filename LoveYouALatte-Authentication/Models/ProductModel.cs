@@ -12,7 +12,11 @@ namespace LoveYouALatte_Authentication.Models
         public ProductModel()
         {
             this.productList = new List<ProductModel>();
+            this.categoryIdList = new List<CategoryModel>();
+
         }
+
+        public List<CategoryModel> categoryIdList { get; set; }
         [Required]
         [Range(1,1000)]
         public int ProductId { get; set; }
