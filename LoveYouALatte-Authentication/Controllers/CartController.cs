@@ -71,6 +71,26 @@ namespace LoveYouALatte_Authentication.Controllers
 
             return (result);
         }
+        private int Remove(int cartid, string guestUserId)
+        {
+            var UserID = guestUserId;
+
+            MenuViewModel vm = new MenuViewModel();
+
+            MySqlDatabase db = new MySqlDatabase(connectionString);
+            using (MySqlConnection conn = db.Connection)
+            {
+
+
+                var cmd = conn.CreateCommand() as MySqlCommand;
+                cmd.CommandText = @"DELETE FROM loveyoualattedb.CartTable cart
+                                WHERE (cart.idCartTable = " + cartid + " AND cart.guestUserId = '" + UserID + "')";
+                int result = cmd.ExecuteNonQuery();
+
+                return (result);
+            }
+
+        }
 
         private int AddToCartMethod(int productid, int quantity, decimal totalPrice, decimal lineTax, decimal lineCost, string guestUserId)
         {
