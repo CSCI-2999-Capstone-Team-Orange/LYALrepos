@@ -13,7 +13,7 @@ namespace LoveYouALatte.Data.Entities
         }
 
         public int OrderItemId { get; set; }
-        public int UserOrderId { get; set; }
+        public int? UserOrderId { get; set; }
         public int ProductId { get; set; }
         public int Quantity { get; set; }
         public int? CartAddOnItemId { get; set; }

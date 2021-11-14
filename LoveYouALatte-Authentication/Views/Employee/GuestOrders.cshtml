@@ -1,0 +1,52 @@
+﻿@model List<ReceiptModel>
+
+@{
+    ViewData["Title"] = "View";
+    Layout = "~/Views/Shared/_EmployeeLayout.cshtml";
+}
+
+<h1>Guest Orders</h1>
+
+<div id="Table">
+    <table class="table table-bordered table-responsive table-hover" id="GuestOrderTable">
+        <thead>
+            <tr>
+                <th>Order Id</th>
+                <th>Guest User Id</th>
+                <th>Order Date</th>
+                <th>See Receipt</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in Model)
+            {
+                <tr>
+                    <td>@order.UserOrderId</td>
+                    <td>@order.UserId</td>
+                    <td>@order.OrderDate</td>
+                    <td><a class="btn btn-orange" asp-controller="Employee" asp-action="GuestUserOrderReceipt" asp-route-id="@order.UserOrderId">See Receipt</a></td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
+</div>
+
+
+
+   
+
+
+
+
+
+
+
+
+
+
+
+
+@section Scripts{
+    <script src="~/js/guestOrderView.js"></script>
+}

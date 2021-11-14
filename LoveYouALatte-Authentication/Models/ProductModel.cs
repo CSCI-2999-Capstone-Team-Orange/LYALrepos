@@ -37,6 +37,8 @@ namespace LoveYouALatte_Authentication.Models
         [Range(1, 3, ErrorMessage = "Product category must be already lister")]
         public int category { get; set; }
 
+        public string CategoryName { get; set; }
+
         [Required (ErrorMessage = "A price is required.")]
         [RegularExpression(@"^[0-9]+(\.[0-9]{1,2})$", ErrorMessage ="The price cannot be below zero and must only contain two decimal places.")]
         public decimal Price { get; set; }

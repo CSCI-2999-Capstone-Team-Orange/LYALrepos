@@ -20,6 +20,8 @@ namespace LoveYouALatte_Authentication.Models
         public ViewAddOnModel addOns { get; set; }
 
         public CheckoutItemModel checkoutItems { get; set; }
+
+        public GuestUserModel NewGuestUser { get; set; }
        
     }
 }

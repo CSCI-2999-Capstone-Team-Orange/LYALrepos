@@ -16,6 +16,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Identity.UI.Services;
 
+
 namespace LoveYouALatte_Authentication.Controllers
 {
     [Authorize(Roles = "Employee")]
@@ -38,7 +39,7 @@ namespace LoveYouALatte_Authentication.Controllers
 
 
 
-        string connectionString = "server=authtest.cjiyeakoxxft.us-east-1.rds.amazonaws.com; port=3306; database=loveyoualattedb; uid=test; pwd=orange1234;";
+        string connectionString = "server=identitytest.cjiyeakoxxft.us-east-1.rds.amazonaws.com; port=3306; database=loveyoualattedb; uid=test; pwd=orange1234;";
 
         [HttpGet]
         [Authorize(Roles = "Employee")]
@@ -173,19 +174,27 @@ namespace LoveYouALatte_Authentication.Controllers
             
             updateMenuItem.viewProduct = productList;
 
+            
+            List<SelectListItem> categoriesList = new List<SelectListItem>();
+
 
             using (var dbContext = new loveyoualattedbContext())
             {
                 var categories = dbContext.Categories.ToList();
                 foreach (var category in categories)
                 {
-                    productList.categoryIdList.Add(new CategoryModel
+                    categoriesList.Add( new SelectListItem ()
                     {
-                        IdCategory = category.IdCategory,
-                        CategoryName = category.CategoryName
+                        Value = $"{category.IdCategory}",
+                        Text = category.CategoryName
+
                     });
+                    
                 }
+
             }
+
+            updateMenuItem.DrinkCategories = categoriesList;
 
             updateMenuItem.categoryDivID = productList;
 
@@ -203,7 +212,8 @@ namespace LoveYouALatte_Authentication.Controllers
                         ProductId = product.IdProduct,
                         DrinkId = product.IdDrink,
                         ProductSku = product.ProductSku,
-                        category = drinks.Single(a => a.IdDrinks == product.IdDrink).IdCategory,
+                        category = (int)drinks.Single(a => a.IdDrinks == product.IdDrink).IdCategory,
+                        CategoryName = categories.Single(n => n.IdCategory == drinks.Single(a => a.IdDrinks == product.IdDrink).IdCategory).CategoryName,
                         DrinkName = drinks.Single(d => d.IdDrinks == product.IdDrink).DrinkName,
                         DrinkDescription = drinks.Single(d => d.IdDrinks == product.IdDrink).DrinkDescription,
                         SizeId = product.IdSize,
@@ -396,6 +406,99 @@ namespace LoveYouALatte_Authentication.Controllers
             return View(vm);
 
         }
+
+
+
+        public IActionResult GuestOrders()
+        {
+            List<ReceiptModel> guestReceipts = new List<ReceiptModel>();
+
+            using(var dbContext = new loveyoualattedbContext())
+            {
+                
+                var guestOrders = dbContext.UserOrders.Where(g => g.GuestUserId != null).ToList();
+                    
+                foreach (var order in guestOrders)
+                guestReceipts.Add(new ReceiptModel() {
+                    UserOrderId = order.UserOrderId,
+                    UserId = order.GuestUserId,
+                    OrderDate = order.OrderDate
+                });
+            }
+
+            return View(guestReceipts);
+        }
+
+
+        public IActionResult GuestUserOrderReceipt(int Id)
+        {
+            ReceiptModel receipt = new ReceiptModel();
+            using (var dbContext = new loveyoualattedbContext())
+            {
+                var products = dbContext.Products.ToList();
+                var sizes = dbContext.Sizes.ToList();
+                var drinks = dbContext.Drinks.ToList();
+                var addOnItems = dbContext.AddOns.ToList();
+                var addOnList = dbContext.AddOnItemLists.ToList();
+
+
+                var userOrder = dbContext.UserOrders.SingleOrDefault(uo => uo.UserOrderId == Id);
+                receipt.OrderDate = userOrder.OrderDate;
+                receipt.UserId = userOrder.UserId;
+                receipt.UserOrderId = userOrder.UserOrderId;
+
+                var orderItems = dbContext.OrderItems.Where(oi => oi.UserOrderId == Id);
+
+                foreach (var item in orderItems)
+                {
+                    var product = products.Single(p => p.IdProduct == item.ProductId);
+                    var addOns = addOnList.Where(i => i.CartAddOnItemId == item.CartAddOnItemId).ToList();
+                    List<ReceiptAddOnModel> orderAddOns = new List<ReceiptAddOnModel>();
+                    foreach (var addon in addOns)
+                    {
+                        orderAddOns.Add(new ReceiptAddOnModel()
+                        {
+
+                            addOnType = addOnItems.Single(a => a.AddOnId == addon.AddOnId).AddOnType,
+                            addOnDescription = addOnItems.Single(a => a.AddOnId == addon.AddOnId).AddOnDescription
+                        });
+
+                    }
+
+                    receipt.Items.Add(new ReceiptItemModel
+                    {
+                        ProductId = item.ProductId,
+                        ProductDescription = drinks.Single(d => d.IdDrinks == product.IdDrink).DrinkName,
+                        sizeDescription = sizes.Single(s => s.IdSize == product.IdSize).Size1,
+                        unitCost = item.LineItemCost,
+                        addOnList = orderAddOns,
+                        quantity = item.Quantity,
+                        tax = item.Tax,
+                        totalCost = item.TotalCost,
+                        UserOrderId = userOrder.UserOrderId
+                    });
+
+                }
+
+
+            }
+
+            receipt.GrandTotal = receipt.Items.Sum(i => i.totalCost);
+
+            return View(receipt);
+        }
+
+
+
+
+
+
+
+
+
+
+
+
 
         public IActionResult AddEmployee()
         {

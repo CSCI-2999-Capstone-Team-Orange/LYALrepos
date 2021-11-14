@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,9 +12,8 @@ namespace LoveYouALatte_Authentication.Models
 
         public ProductModel updateProduct { get; set;}
 
-        public int CategoryID { get; set; }
+        public List<SelectListItem> DrinkCategories { get; set; }
 
-        public ProductModel categoryDivID { get; set; }
-
+        
     }
 }
