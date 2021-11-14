@@ -39,7 +39,7 @@ namespace LoveYouALatte_Authentication.Controllers
 
 
 
-        string connectionString = "server=identitytest.cjiyeakoxxft.us-east-1.rds.amazonaws.com; port=3306; database=loveyoualattedb; uid=test; pwd=orange1234;";
+        string connectionString = "server=authtest.cjiyeakoxxft.us-east-1.rds.amazonaws.com; port=3306; database=loveyoualattedb; uid=test; pwd=orange1234;";
 
         [HttpGet]
         [Authorize(Roles = "Employee")]
@@ -196,7 +196,7 @@ namespace LoveYouALatte_Authentication.Controllers
 
             updateMenuItem.DrinkCategories = categoriesList;
 
-            updateMenuItem.categoryDivID = productList;
+            
 
             using (var dbContext = new loveyoualattedbContext())
             {
