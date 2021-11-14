@@ -10,17 +10,22 @@ using Microsoft.AspNetCore.Authorization;
 using LoveYouALatte.Data.Entities;
 using MySql.Data.MySqlClient;
 using System.Security.Claims;
-
+using Microsoft.AspNetCore.Identity;
+using LoveYouALatte_Authentication.Data;
 
 namespace LoveYouALatte_Authentication.Controllers
 {
     public class HomeController : Controller
     {
+
+        private readonly SignInManager<ApplicationUser> _signInManager;
+
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(SignInManager<ApplicationUser> signInManager, ILogger<HomeController> logger)
         {
             _logger = logger;
+            _signInManager = signInManager;;
         }
 
         public IActionResult Index()
@@ -76,27 +81,14 @@ namespace LoveYouALatte_Authentication.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        //string connectionString = "server=authtest.cjiyeakoxxft.us-east-1.rds.amazonaws.com; port=3306; database=loveyoualattedb; uid=test; pwd=orange1234;";
-
-        //[HttpPost]
-        //public ActionResult AddTime()
-        //{
-        //    DateTime utcTime = DateTime.UtcNow;
-        //    var easternTime = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
-        //    DateTime currentTime = TimeZoneInfo.ConvertTimeFromUtc(utcTime, easternTime);
-
-        //    MySqlDatabase db = new MySqlDatabase(connectionString);
-        //    using (MySqlConnection conn = db.Connection)
-        //    {
-        //        var cmd = conn.CreateCommand() as MySqlCommand;
-        //        cmd.CommandText = @"INSERT INTO log_time(log_time) VALUES ('" + currentTime.ToString("yyyy/MM/dd HH:mm:ss") + "')";
-
-        //        cmd.ExecuteNonQuery();
-        //    }
-
-
-
-        //    return RedirectToAction("Index", "Home", new { currentTime = currentTime });
-        //}
+        
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            _logger.LogInformation("User logged out.");
+            
+            return RedirectToAction("HomePage");
+            
+        }
     }
 }

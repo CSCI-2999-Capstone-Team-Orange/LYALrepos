@@ -687,30 +687,47 @@ namespace LoveYouALatte_Authentication.Controllers
         [HttpGet]
         public ActionResult Remove(int cartid)
         {
-            //userId of the user that is currently logged in
-            var UserID = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (this.User.Identity.IsAuthenticated)
+            { //userId of the user that is currently logged in
+                var UserID = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            MenuViewModel vm = new MenuViewModel();
+                MenuViewModel vm = new MenuViewModel();
 
-            MySqlDatabase db = new MySqlDatabase(connectionString);
-            using (MySqlConnection conn = db.Connection) { 
+                MySqlDatabase db = new MySqlDatabase(connectionString);
+                using (MySqlConnection conn = db.Connection)
+                {
 
-                
-            var cmd = conn.CreateCommand() as MySqlCommand;
-            cmd.CommandText = @"DELETE FROM loveyoualattedb.CartTable cart
+
+                    var cmd = conn.CreateCommand() as MySqlCommand;
+                    cmd.CommandText = @"DELETE FROM loveyoualattedb.CartTable cart
                                 WHERE (cart.idCartTable = " + cartid + " AND cart.idUser = '" + UserID + "')";
-            int result = cmd.ExecuteNonQuery();
+                    int result = cmd.ExecuteNonQuery();
 
-            if (result > 0)
-            {
-                return Content("Success");
+                    if (result > 0)
+                    {
+                        return Content("Success");
+                    }
+                    else
+                    {
+                        return Content("Error");
+                    }
+                }
             }
             else
             {
-                return Content("Error");
-            }
-            }
+                var guestUserId = HttpContext.Request.Cookies["guestUserId"];
 
+                var result = Remove(cartid, guestUserId);
+                if (result > 0)
+                {
+                    return Content("Success");
+                }
+                else
+                {
+                    return Content("Error");
+                }
+
+            }
         }
 
         //Needs to be updated with guest access

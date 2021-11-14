@@ -445,7 +445,7 @@ namespace LoveYouALatte_Authentication.Controllers
         }
 
 
-        public IActionResult GuestUserOrderReceipt(int guestUserOrderId)
+        public IActionResult GuestUserOrderReceipt(int Id)
         {
             ReceiptModel receipt = new ReceiptModel();
             using (var dbContext = new loveyoualattedbContext())
@@ -457,12 +457,12 @@ namespace LoveYouALatte_Authentication.Controllers
                 var addOnList = dbContext.AddOnItemLists.ToList();
 
 
-                var userOrder = dbContext.UserOrders.SingleOrDefault(uo => uo.UserOrderId == guestUserOrderId);
+                var userOrder = dbContext.UserOrders.SingleOrDefault(uo => uo.UserOrderId == Id);
                 receipt.OrderDate = userOrder.OrderDate;
                 receipt.UserId = userOrder.UserId;
                 receipt.UserOrderId = userOrder.UserOrderId;
 
-                var orderItems = dbContext.OrderItems.Where(oi => oi.UserOrderId == guestUserOrderId);
+                var orderItems = dbContext.OrderItems.Where(oi => oi.UserOrderId == Id);
 
                 foreach (var item in orderItems)
                 {
