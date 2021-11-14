@@ -1,7 +1,7 @@
 ﻿$(document).ready(function () {
     console.log("ready!");
 
-    $('#productTable').DataTable({
+    $('#GuestOrderTable').DataTable({
         processing: true,
         ordering: true,
         paging: true,
@@ -11,7 +11,6 @@
     });
 
    
-    });
 
 
 });

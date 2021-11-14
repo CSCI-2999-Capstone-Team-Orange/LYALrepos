@@ -52,6 +52,9 @@ $(document).ready(function () {
         
     });
 
+    
+
+
     $("#menuTable").on("click",".updateButton", function () {
         onUpdateClick($(this).parents("tr"));
     });
