@@ -19,7 +19,7 @@ namespace LoveYouALatte_Authentication.Controllers
 {
     public class CartController : Controller
     {
-        string connectionString = "server=identitytest.cjiyeakoxxft.us-east-1.rds.amazonaws.com; port=3306; database=loveyoualattedb; uid=test; pwd=orange1234;";
+        string connectionString = "server=authtest.cjiyeakoxxft.us-east-1.rds.amazonaws.com; port=3306; database=loveyoualattedb; uid=test; pwd=orange1234;";
 
 
         private bool AddAddOns(List<AddOnModel> drinkAddOns, string guestUserId)
