@@ -91,6 +91,25 @@ namespace LoveYouALatte_Authentication.Controllers
             }
 
         }
+        public int UpdateCartQuantityMethod(int cartid, int quantity, decimal totalPrice, decimal lineTax, decimal lineCost, string guestUserId)
+        {
+            var UserID = guestUserId;
+
+            MenuViewModel vm = new MenuViewModel();
+
+            MySqlDatabase db = new MySqlDatabase(connectionString);
+            using (MySqlConnection conn = db.Connection)
+            {
+                var cmd = conn.CreateCommand() as MySqlCommand;
+                cmd.CommandText = @"UPDATE loveyoualattedb.CartTable cart
+                                    SET cart.quantity = " + quantity + ", cart.lineitemcost = " + totalPrice + ", cart.lineTax = " + lineTax + ", lineCost = " + lineCost +
+                                    " WHERE (cart.idCartTable = " + cartid + " AND cart.guestUserId = '" + UserID + "')";
+                int result = cmd.ExecuteNonQuery();
+
+                return (result);
+
+            }
+        }
 
         private int AddToCartMethod(int productid, int quantity, decimal totalPrice, decimal lineTax, decimal lineCost, string guestUserId)
         {
