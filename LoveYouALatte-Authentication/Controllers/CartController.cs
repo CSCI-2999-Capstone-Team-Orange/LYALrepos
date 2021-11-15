@@ -761,16 +761,33 @@ namespace LoveYouALatte_Authentication.Controllers
         [HttpPost]
         public ActionResult ClearCart()
         {
-            var UserID = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            using (var dbContext = new loveyoualattedbContext())
+            if (this.User.Identity.IsAuthenticated)
             {
-                var dbCart = dbContext.CartTables.Where(s => s.IdUser == UserID).ToList();
-                dbContext.CartTables.RemoveRange(dbCart);
-                dbContext.SaveChanges();
-            }
+                var UserID = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            return RedirectToAction("Checkout");
+                using (var dbContext = new loveyoualattedbContext())
+                {
+                    var dbCart = dbContext.CartTables.Where(s => s.IdUser == UserID).ToList();
+                    dbContext.CartTables.RemoveRange(dbCart);
+                    dbContext.SaveChanges();
+                }
+
+                return RedirectToAction("Checkout");
+            }
+            else
+            {
+                var guestUserId = HttpContext.Request.Cookies["guestUserId"];
+                var UserID = guestUserId;
+                using (var dbContext = new loveyoualattedbContext())
+                {
+                    var dbCart = dbContext.CartTables.Where(s => s.GuestUserId == UserID).ToList();
+                    dbContext.CartTables.RemoveRange(dbCart);
+                    dbContext.SaveChanges();
+                }
+
+                return RedirectToAction("Checkout");
+
+            }
         }
 
         //Needs to be updated with guest access
