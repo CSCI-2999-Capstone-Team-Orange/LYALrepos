@@ -100,7 +100,7 @@
             <div class="modal-body">
                 <p>To place an order please either <a asp-area="Identity" asp-page="/Account/Login">login</a> with your account or <a asp-area="Identity" asp-page="/Account/Register">register</a> for a new account. If you would like to checkout as a guest, please provide the information below</p>
 
-                <form method="post" asp-action="createGuestAccount" asp-controller="cart">
+                <form method="post" id="guestUserSignInForm">
                     <div class="form-group row">
                         <label class="col-lg-3" asp-for="NewGuestUser.FirstName"></label>
                         <input class="form-control col-lg-9" id="guestUserFirstName" asp-for="NewGuestUser.FirstName" /><br />
@@ -114,16 +114,15 @@
                     <div class="form-group row">
                         <label class="col-lg-3" asp-for="NewGuestUser.Email"></label>
                         <input class="form-control col-lg-9" id="guestUserEmail" asp-for="NewGuestUser.Email" /><br />
-                        <span asp-validation-for="NewGuestUser.LastName" class="text-danger"></span><br />
+                        <span asp-validation-for="NewGuestUser.Email" class="text-danger"></span><br />
                     </div>
                 </form>
-
-                <div class="modal-footer">
-                    <input class="btn btn-orange" type="button" id="guestUserSignIn" value="Sign in as Guest" />
-                </div>
-
+                    <div class="modal-footer">
+                        <button class="btn btn-orange" type="submit" id="guestUserSignInButton">Sign in as Guest</button>
+                    </div>
+                
             </div>
-
+            
         </div>
     </div>
 </div>
@@ -181,32 +180,42 @@
 
        });
 
+        
 
         /*GuestUser AJAX CALL*/
-        $('#guestUserSignIn').click(function () {
+            $('#guestUserSignInButton').click(function () {
 
-            let NewGuestUser = {}
+                var $form = $("#guestUserSignInForm");
+                $.validator.unobtrusive.parse($form);
+                $form.validate();
+            if ($form.valid()) {
 
-            NewGuestUser.FirstName = $("#guestUserFirstName").val();
-            NewGuestUser.LastName = $("#guestUserLastName").val();
-            NewGuestUser.Email = $("#guestUserEmail").val();
+                let NewGuestUser = {}
 
-           $.ajax({
-               type: "POST",
-               url: '@Url.Action("createGuestAccount", "Cart")',
-               contentType: "application/json; charset=utf-8",
-               dataType: "json",
-               data: JSON.stringify(NewGuestUser),
-                success: function (response) {
-                    alert(response.responseText);
-                    $(".modal").hide();
-                    window.$isGuestUser = response.gUserId;
+                NewGuestUser.FirstName = $("#guestUserFirstName").val();
+                NewGuestUser.LastName = $("#guestUserLastName").val();
+                NewGuestUser.Email = $("#guestUserEmail").val();
 
-                },
-                error: function (response) {
-                    alert('Error: ' + response.responseText);
-                }
-            });
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("createGuestAccount", "Cart")',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: JSON.stringify(NewGuestUser),
+                    success: function (response) {
+                        alert(response.responseText);
+                        $(".modal").hide();
+                        window.$isGuestUser = response.gUserId;
+
+                    },
+                    error: function (response) {
+                        alert('Error: Please provide the required guest user information to proceed.');
+                        $(".modal").show();
+
+                    }
+                });
+
+            }
 
        });
 
@@ -274,3 +283,7 @@
     });
 
 </script>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
