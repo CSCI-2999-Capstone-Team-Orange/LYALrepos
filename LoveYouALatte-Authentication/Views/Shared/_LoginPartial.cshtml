@@ -6,12 +6,12 @@
 @if (SignInManager.IsSignedIn(User))
 {   <form>
     <a asp-area="Identity" asp-page="/Account/Manage/Index" title="Account"><i class="fa fa-user"></i></a>
-    <a asp-area="Identity" asp-page="/Account/Logout" title="Logout">Signout</a>
+    @*<a asp-area="Identity" asp-page="/Account/Logout" title="Logout">Signout</a>*@
 
-    <button type="submit" class="nav-link btn btn-link text-dark"><i class="fa fa-sign-out-alt"></i></button>
+    @*<button type="submit" class="nav-link btn btn-link text-dark"><i class="fa fa-sign-out-alt"></i></button>*@
 
     <!--NEW ONE CLICK SIGN OUT BUTTON. The corresponding action in the home controler would need to copied to each controller for this function across the site.-->
-    @*<a asp-action="Logout" asp-controller="Home">Signout</a>*@
+    <a asp-action="Logout" asp-controller="Home">Signout</a>
     </form>
 }
 else

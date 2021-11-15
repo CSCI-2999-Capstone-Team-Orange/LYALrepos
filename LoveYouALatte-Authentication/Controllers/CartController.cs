@@ -824,61 +824,125 @@ namespace LoveYouALatte_Authentication.Controllers
         [HttpGet]
         public ActionResult Receipt(int id)
         {
-            
 
-            ReceiptModel receipt = new ReceiptModel();
-            using (var dbContext = new loveyoualattedbContext())
+            if (this.User.Identity.IsAuthenticated)
             {
-                var products = dbContext.Products.ToList();
-                var sizes = dbContext.Sizes.ToList();
-                var drinks = dbContext.Drinks.ToList();
-                var addOnItems = dbContext.AddOns.ToList();
-                var addOnList = dbContext.AddOnItemLists.ToList();
-
-
-                var userOrder = dbContext.UserOrders.SingleOrDefault(uo => uo.UserOrderId == id);
-                receipt.OrderDate = userOrder.OrderDate;
-                receipt.UserId = userOrder.UserId;
-                receipt.UserOrderId = userOrder.UserOrderId;
-
-                var orderItems = dbContext.OrderItems.Where(oi => oi.UserOrderId == id);
-               
-                foreach (var item in orderItems)
+                ReceiptModel receipt = new ReceiptModel();
+                using (var dbContext = new loveyoualattedbContext())
                 {
-                    var product = products.Single(p => p.IdProduct == item.ProductId);
-                    var addOns = addOnList.Where(i => i.CartAddOnItemId == item.CartAddOnItemId).ToList();
-                    List<ReceiptAddOnModel> orderAddOns = new List<ReceiptAddOnModel>();
-                    foreach (var addon in addOns)
+                    var products = dbContext.Products.ToList();
+                    var sizes = dbContext.Sizes.ToList();
+                    var drinks = dbContext.Drinks.ToList();
+                    var addOnItems = dbContext.AddOns.ToList();
+                    var addOnList = dbContext.AddOnItemLists.ToList();
+
+
+                    var userOrder = dbContext.UserOrders.SingleOrDefault(uo => uo.UserOrderId == id);
+                    receipt.OrderDate = userOrder.OrderDate;
+                    receipt.UserId = userOrder.UserId;
+                    receipt.UserOrderId = userOrder.UserOrderId;
+
+                    var orderItems = dbContext.OrderItems.Where(oi => oi.UserOrderId == id);
+
+                    foreach (var item in orderItems)
                     {
-                        orderAddOns.Add(new ReceiptAddOnModel() { 
-                      
-                            addOnType = addOnItems.Single(a => a.AddOnId == addon.AddOnId).AddOnType,
-                            addOnDescription = addOnItems.Single(a => a.AddOnId == addon.AddOnId).AddOnDescription
+                        var product = products.Single(p => p.IdProduct == item.ProductId);
+                        var addOns = addOnList.Where(i => i.CartAddOnItemId == item.CartAddOnItemId).ToList();
+                        List<ReceiptAddOnModel> orderAddOns = new List<ReceiptAddOnModel>();
+                        foreach (var addon in addOns)
+                        {
+                            orderAddOns.Add(new ReceiptAddOnModel()
+                            {
+
+                                addOnType = addOnItems.Single(a => a.AddOnId == addon.AddOnId).AddOnType,
+                                addOnDescription = addOnItems.Single(a => a.AddOnId == addon.AddOnId).AddOnDescription
+                            });
+
+                        }
+
+                        receipt.Items.Add(new ReceiptItemModel
+                        {
+                            ProductId = item.ProductId,
+                            ProductDescription = drinks.Single(d => d.IdDrinks == product.IdDrink).DrinkName,
+                            sizeDescription = sizes.Single(s => s.IdSize == product.IdSize).Size1,
+                            unitCost = item.LineItemCost,
+                            addOnList = orderAddOns,
+                            quantity = item.Quantity,
+                            tax = item.Tax,
+                            totalCost = item.TotalCost,
+                            UserOrderId = userOrder.UserOrderId
                         });
 
                     }
 
-                    receipt.Items.Add(new ReceiptItemModel
-                    {
-                        ProductId = item.ProductId,
-                        ProductDescription = drinks.Single(d => d.IdDrinks == product.IdDrink).DrinkName,
-                        sizeDescription = sizes.Single(s => s.IdSize == product.IdSize).Size1, 
-                        unitCost = item.LineItemCost,
-                        addOnList = orderAddOns,
-                        quantity = item.Quantity,
-                        tax = item.Tax,
-                        totalCost = item.TotalCost,
-                        UserOrderId = userOrder.UserOrderId
-                    });
-                    
+
                 }
-                
+
+                receipt.GrandTotal = receipt.Items.Sum(i => i.totalCost);
+
+                return View(receipt);
+            }
+            else
+            {
+                var guestUserId = HttpContext.Request.Cookies["guestUserId"];
+                var UserID = guestUserId;
+
+                ReceiptModel receipt = new ReceiptModel();
+                using (var dbContext = new loveyoualattedbContext())
+                {
+                    var products = dbContext.Products.ToList();
+                    var sizes = dbContext.Sizes.ToList();
+                    var drinks = dbContext.Drinks.ToList();
+                    var addOnItems = dbContext.AddOns.ToList();
+                    var addOnList = dbContext.AddOnItemLists.ToList();
+
+
+                    var userOrder = dbContext.UserOrders.SingleOrDefault(uo => uo.UserOrderId == id);
+                    receipt.OrderDate = userOrder.OrderDate;
+                    receipt.UserId = userOrder.GuestUserId;
+                    receipt.UserOrderId = userOrder.UserOrderId;
+
+                    var orderItems = dbContext.OrderItems.Where(oi => oi.UserOrderId == id);
+
+                    foreach (var item in orderItems)
+                    {
+                        var product = products.Single(p => p.IdProduct == item.ProductId);
+                        var addOns = addOnList.Where(i => i.CartAddOnItemId == item.CartAddOnItemId).ToList();
+                        List<ReceiptAddOnModel> orderAddOns = new List<ReceiptAddOnModel>();
+                        foreach (var addon in addOns)
+                        {
+                            orderAddOns.Add(new ReceiptAddOnModel()
+                            {
+
+                                addOnType = addOnItems.Single(a => a.AddOnId == addon.AddOnId).AddOnType,
+                                addOnDescription = addOnItems.Single(a => a.AddOnId == addon.AddOnId).AddOnDescription
+                            });
+
+                        }
+
+                        receipt.Items.Add(new ReceiptItemModel
+                        {
+                            ProductId = item.ProductId,
+                            ProductDescription = drinks.Single(d => d.IdDrinks == product.IdDrink).DrinkName,
+                            sizeDescription = sizes.Single(s => s.IdSize == product.IdSize).Size1,
+                            unitCost = item.LineItemCost,
+                            addOnList = orderAddOns,
+                            quantity = item.Quantity,
+                            tax = item.Tax,
+                            totalCost = item.TotalCost,
+                            UserOrderId = userOrder.UserOrderId
+                        });
+
+                    }
+
+
+                }
+
+                receipt.GrandTotal = receipt.Items.Sum(i => i.totalCost);
+
+                return View(receipt);
 
             }
-
-            receipt.GrandTotal = receipt.Items.Sum(i => i.totalCost);
-
-            return View(receipt);
         }
 
 

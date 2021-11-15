@@ -89,34 +89,40 @@
 
 
 <div class="modal bd-example-modal-lg" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-lg text-center">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
-            <div style="padding:4px;">
-                <button type="button" class="close" data-dismiss="modal" style="float:right; padding:4px;">x</button>
-                <h2>Log In or Checkout as Guest</h2>
+            <div class="modal-header">
+                <h2 class="modal-title">Continue as Guest?</h2>
+                <div style="padding:4px;">
+                    <button type="button" class="close" data-dismiss="modal" style="float:right; padding:4px;">x</button>
+                </div>
             </div>
+            <div class="modal-body">
+                <p>To place an order please either <a asp-area="Identity" asp-page="/Account/Login">login</a> with your account or <a asp-area="Identity" asp-page="/Account/Register">register</a> for a new account. If you would like to checkout as a guest, please provide the information below</p>
 
-            <p>To Place and order please either <a asp-area="Identity" asp-page="/Account/Login">login</a> with your account or <a asp-area="Identity" asp-page="/Account/Register">register</a> for a new account. If you would like to checkout as a guest, please provide the information below</p>
+                <form method="post" asp-action="createGuestAccount" asp-controller="cart">
+                    <div class="form-group row">
+                        <label class="col-lg-3" asp-for="NewGuestUser.FirstName"></label>
+                        <input class="form-control col-lg-9" id="guestUserFirstName" asp-for="NewGuestUser.FirstName" /><br />
+                        <span asp-validation-for="NewGuestUser.FirstName" class="text-danger"></span><br />
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-lg-3" asp-for="NewGuestUser.LastName"></label>
+                        <input class="form-control col-lg-9" id="guestUserLastName" asp-for="NewGuestUser.LastName" /><br />
+                        <span asp-validation-for="NewGuestUser.LastName" class="text-danger"></span><br />
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-lg-3" asp-for="NewGuestUser.Email"></label>
+                        <input class="form-control col-lg-9" id="guestUserEmail" asp-for="NewGuestUser.Email" /><br />
+                        <span asp-validation-for="NewGuestUser.LastName" class="text-danger"></span><br />
+                    </div>
+                </form>
 
-            <form method="post" asp-action="createGuestAccount" asp-controller="cart">
-                <label asp-for="NewGuestUser.FirstName"></label>
-                <input id="guestUserFirstName" asp-for="NewGuestUser.FirstName" /><br />
-                <span asp-validation-for="NewGuestUser.FirstName" class="text-danger"></span><br />
+                <div class="modal-footer">
+                    <input class="btn btn-orange" type="button" id="guestUserSignIn" value="Sign in as Guest" />
+                </div>
 
-                <label asp-for="NewGuestUser.LastName"></label>
-                <input id="guestUserLastName" asp-for="NewGuestUser.LastName" /><br />
-                <span asp-validation-for="NewGuestUser.LastName" class="text-danger"></span><br />
-
-                <label asp-for="NewGuestUser.Email"></label>
-                <input id="guestUserEmail" asp-for="NewGuestUser.Email" /><br />
-                <span asp-validation-for="NewGuestUser.LastName" class="text-danger"></span><br />
-
-
-                <input type="button" id="guestUserSignIn" value="Sign in as Guest" />
-            </form>
-
-
-
+            </div>
 
         </div>
     </div>
@@ -143,6 +149,9 @@
                 })
             })
 
+           $("#signInBtn").click(function () {
+                window.location.href = '@Url.Action("Menu", "Cart")?catid=' + ID;
+           })
 
            $.ajax({
                type: "POST",
@@ -227,7 +236,7 @@
 
     $('.btn-add').click(function () {
         var isLoggedIn = "@this.User.Identity.IsAuthenticated";
-        
+
 
         if (isLoggedIn == "True" || $isGuestUser != '') {
             var ID = $(this).data('productid');
