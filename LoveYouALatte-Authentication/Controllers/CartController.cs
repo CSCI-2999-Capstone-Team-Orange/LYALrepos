@@ -292,19 +292,36 @@ namespace LoveYouALatte_Authentication.Controllers
         public ActionResult UpdateCartQuantity(int cartid, int quantity, decimal totalPrice, decimal lineTax, decimal lineCost)
         {
             //userId of the user that is currently logged in
-            var UserID = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            MenuViewModel vm = new MenuViewModel();
-
-            MySqlDatabase db = new MySqlDatabase(connectionString);
-            using (MySqlConnection conn = db.Connection)
+            if (this.User.Identity.IsAuthenticated)
             {
-                var cmd = conn.CreateCommand() as MySqlCommand;
-                cmd.CommandText = @"UPDATE loveyoualattedb.CartTable cart
-                                    SET cart.quantity = " + quantity + ", cart.lineitemcost = " + totalPrice + ", cart.lineTax = " + lineTax + ", lineCost = " + lineCost + 
-                                    " WHERE (cart.idCartTable = " + cartid + " AND cart.idUser = '" + UserID + "')";
-                int result = cmd.ExecuteNonQuery();
+                var UserID = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
+                MenuViewModel vm = new MenuViewModel();
+
+                MySqlDatabase db = new MySqlDatabase(connectionString);
+                using (MySqlConnection conn = db.Connection)
+                {
+                    var cmd = conn.CreateCommand() as MySqlCommand;
+                    cmd.CommandText = @"UPDATE loveyoualattedb.CartTable cart
+                                    SET cart.quantity = " + quantity + ", cart.lineitemcost = " + totalPrice + ", cart.lineTax = " + lineTax + ", lineCost = " + lineCost +
+                                        " WHERE (cart.idCartTable = " + cartid + " AND cart.idUser = '" + UserID + "')";
+                    int result = cmd.ExecuteNonQuery();
+
+                    if (result > 0)
+                    {
+                        return Content("Success");
+                    }
+                    else
+                    {
+                        return Content("Error");
+                    }
+                }
+            }
+            else
+            {
+                var guestUserId = HttpContext.Request.Cookies["guestUserId"];
+
+                var result = UpdateCartQuantityMethod(cartid, quantity, totalPrice, lineTax, lineCost, guestUserId);
                 if (result > 0)
                 {
                     return Content("Success");
@@ -313,9 +330,11 @@ namespace LoveYouALatte_Authentication.Controllers
                 {
                     return Content("Error");
                 }
+
+
             }
         }
-       
+
         [HttpGet]
         public ActionResult Category()
         {
