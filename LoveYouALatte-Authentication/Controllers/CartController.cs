@@ -507,7 +507,7 @@ namespace LoveYouALatte_Authentication.Controllers
                     }
                     else
                     {
-                        return Json(new { success = false, responseText = "Addons were not added" });
+                        return Content("Error"); ;
                     }
 
                 }
@@ -652,7 +652,7 @@ namespace LoveYouALatte_Authentication.Controllers
         }
 
 
-        //Needs to be updated with guest access
+        
 
         [HttpPost]
         public ActionResult Purchase()
@@ -794,7 +794,7 @@ namespace LoveYouALatte_Authentication.Controllers
 
             }
         }
-        //Needs to be updated with guest access
+        
 
         [HttpPost]
         public ActionResult ClearCart()
@@ -828,7 +828,7 @@ namespace LoveYouALatte_Authentication.Controllers
             }
         }
 
-        //Needs to be updated with guest access
+        
         [HttpGet]
         public ActionResult Remove(int cartid)
         {
@@ -875,7 +875,7 @@ namespace LoveYouALatte_Authentication.Controllers
             }
         }
 
-        //Needs to be updated with guest access
+        
         [HttpGet]
         public ActionResult Receipt(int id)
         {
@@ -1004,8 +1004,10 @@ namespace LoveYouALatte_Authentication.Controllers
         [HttpPost]
         public ActionResult createGuestAccount([FromBody] GuestUserModel NewGuestUser)
         {
-            var guestuser = NewGuestUser;
-            
+            if (ModelState.IsValid)
+            {
+                var guestuser = NewGuestUser;
+
                 var guestUserId = $"{DateTime.Now}{guestuser.FirstName}{guestuser.LastName}";
                 using (var dbContext = new loveyoualattedbContext())
                 {
@@ -1021,20 +1023,25 @@ namespace LoveYouALatte_Authentication.Controllers
                     dbContext.SaveChanges();
 
 
-                //CookieOptions cookieOptions = new CookieOptions();
-                //cookieOptions.Expires = new DateTimeOffset(DateTime.Now.AddHours(24));cookieOptions
-                HttpContext.Response.Cookies.Append("guestUserId", $"{guestUserId}");
-                var cookieGuestUserId = HttpContext.Request.Cookies["guestUserId"];
+                    //CookieOptions cookieOptions = new CookieOptions();
+                    //cookieOptions.Expires = new DateTimeOffset(DateTime.Now.AddHours(24));cookieOptions
+                    HttpContext.Response.Cookies.Append("guestUserId", $"{guestUserId}");
+                    var cookieGuestUserId = HttpContext.Request.Cookies["guestUserId"];
 
-                if (addGuestUser != null)
-                {
-                    return Json(new { success = true, responseText = "Logged in as Guest", gUserId = guestUserId});
-                }
-                else
-                {
-                    return Json(new { success = false, responseText = "Guest user was not added" });
-                }
+                    if (addGuestUser != null)
+                    {
+                        return Json(new { success = true, responseText = "Logged in as Guest", gUserId = guestUserId });
+                    }
+                    else
+                    {
+                        return Json(new { success = false, responseText = "Guest user was not added" });
+                    }
 
+                }
+            }
+            else
+            {
+                return Content("Error");
             }
             
            
