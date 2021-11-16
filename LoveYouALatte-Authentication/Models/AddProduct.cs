@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -52,8 +53,10 @@ namespace LoveYouALatte_Authentication.Models
         [Required]
         [Display(Name = "Category Name")]
         public int CategoryID { get; set; }
-
         public CategoryModel categoryDivID { get; set; }
+        [Required]
+        [Display(Name = "Upload Image")]
+        public IFormFile MyImage { set; get; }
 
     }
 }
