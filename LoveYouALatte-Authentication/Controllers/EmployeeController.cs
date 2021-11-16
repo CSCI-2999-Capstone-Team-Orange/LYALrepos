@@ -15,7 +15,8 @@ using Microsoft.AspNetCore.WebUtilities;
 using System.Text;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Identity.UI.Services;
-
+using System.IO;
+using Microsoft.AspNetCore.Hosting;
 
 namespace LoveYouALatte_Authentication.Controllers
 {
@@ -26,15 +27,14 @@ namespace LoveYouALatte_Authentication.Controllers
         private readonly UserManager<ApplicationUser> userManager;
         private readonly SignInManager<ApplicationUser> signInManager;
         private readonly IEmailSender _emailSender;
-
-
-        public EmployeeController(RoleManager<IdentityRole> roleManager,
-                                            UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IEmailSender emailSender)
+        private readonly IWebHostEnvironment hostingEnvironment;
+        public EmployeeController(RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IEmailSender emailSender, IWebHostEnvironment environment)
         {
             this.roleManager = roleManager;
             this.userManager = userManager;
             this.signInManager = signInManager;
             _emailSender = emailSender;
+            hostingEnvironment = environment;
         }
 
 
@@ -323,6 +323,20 @@ namespace LoveYouALatte_Authentication.Controllers
         {
             if (ModelState.IsValid)
             {
+                if (vm.MyImage != null)
+                {
+                    var img = vm.MyImage;
+
+                    //Getting file meta data
+                    string source_file_ext = Path.GetExtension(vm.MyImage.FileName);
+                    var fileName = vm.DrinkName + source_file_ext;
+                    var contentType = vm.MyImage.ContentType;
+
+                    var uploads = Path.Combine(hostingEnvironment.WebRootPath, "Images");
+                    var filePath = Path.Combine(uploads, fileName);
+                    vm.MyImage.CopyTo(new FileStream(filePath, FileMode.Create));
+                }
+
                 MySqlDatabase db = new MySqlDatabase(connectionString);
                 using (MySqlConnection conn = db.Connection)
                 {
@@ -373,6 +387,19 @@ namespace LoveYouALatte_Authentication.Controllers
         {
             if (ModelState.IsValid)
             {
+                if (vm.MyImage != null)
+                {
+                    var img = vm.MyImage;
+
+                    //Getting file meta data
+                    string source_file_ext = Path.GetExtension(vm.MyImage.FileName);
+                    var fileName = vm.CategoryName + source_file_ext;
+                    var contentType = vm.MyImage.ContentType;
+
+                    var uploads = Path.Combine(hostingEnvironment.WebRootPath, "Images");
+                    var filePath = Path.Combine(uploads, fileName);
+                    vm.MyImage.CopyTo(new FileStream(filePath, FileMode.Create));
+                }
                 MySqlDatabase db = new MySqlDatabase(connectionString);
                 using (MySqlConnection conn = db.Connection)
                 {
@@ -613,7 +640,6 @@ namespace LoveYouALatte_Authentication.Controllers
 
             return View(confirmNewEmployee);
         }
-
         
 
 

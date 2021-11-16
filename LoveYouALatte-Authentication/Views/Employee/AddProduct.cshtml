@@ -7,7 +7,7 @@
 
 <h2>Add Menu Item Form</h2>
 <div id="addProductDiv">
-    @using (Html.BeginForm("AddProduct", "Employee", FormMethod.Post))
+    @using (Html.BeginForm("AddProduct", "Employee", FormMethod.Post, new { enctype = "multipart/form-data" }))
     {
         @if (Model != null)
         {
@@ -29,15 +29,6 @@
             <div class="form-group col-lg-4">
                 @Html.LabelFor(m => m.CategoryID)
                 @Html.DropDownListFor(m => m.CategoryID, new SelectList(Model.categoryDivID.categoryIdList, "IdCategory", "CategoryName", Model.CategoryID), "--Select Category--", new { @class = "form-control" })
-
-                @*@Html.DropDownList("Categories", ViewBag.Categories as List<SelectListItem>, "Select Category")*@
-
-                @*@Html.DropDownListFor(m => m.CategoryID, new List<SelectListItem>
-        {
-            new SelectListItem{ Text = "Hot Drinks", Value = "1"},
-            new SelectListItem{ Text = "Iced Drinks", Value = "2"},
-            new SelectListItem{ Text = "Frozen Drinks", Value = "3"}
-        }, "Select Category", new { @class = "form-control" })*@
                 @Html.ValidationMessageFor(m => m.CategoryID, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -75,6 +66,12 @@
                 @Html.ValidationMessageFor(m => m.LargeSKU, "", new { @class = "text-danger" })
             </div>
         </div>
+        <div class="form-row">
+            <div class="form-group col-lg-3">
+                @Html.LabelFor(m => m.MyImage)
+                @Html.TextBoxFor(m => m.MyImage, new { type = "file" })
+            </div>
+        </div>
         <input type="submit" value="Add" class="btn btn-orange" />
-    }
-</div>
+        }
+    </div>
