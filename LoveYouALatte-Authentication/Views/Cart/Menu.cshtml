@@ -76,6 +76,22 @@
 
                 </div>
             }
+
+            @*<h2>Sweetners</h2>
+
+            @for (int i = 5; i < Model.addOns.addOnList.Count; i++)
+            {
+                <div>
+                    <input class="hello" data-addOn='@Json.Serialize(@Model.addOns.addOnList[i])' type="hidden" asp-for="@Model.addOns.addOnList[i].addOnId" />
+                    <input type="hidden" asp-for="@Model.addOns.addOnList[i].addOnType" />
+                    <input type="hidden" asp-for="@Model.addOns.addOnList[i].addOnDescription" />
+                    <input class="add-on-checkbox" data-addOn='@Json.Serialize(@Model.addOns.addOnList[i])' data-addOnId='@Model.addOns.addOnList[i].addOnId' type="checkbox" asp-for="@Model.addOns.addOnList[i].isSelected" />
+                    <label class="form-check-label">
+                        @Model.addOns.addOnList[i].addOnDescription
+                    </label>
+
+                </div>
+            }*@
             <br />
             <input class="btn btn-orange submit" id="addOnSubmit" type="button" value="Add to Drink" /><br /><br />
             <input class="btn btn-primary submit" type="button" value="No Thank You" />
