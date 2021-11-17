@@ -55,8 +55,8 @@ namespace LoveYouALatte_Authentication.Controllers
             {
                 var cmd = conn.CreateCommand() as MySqlCommand;
                 cmd.CommandText = @"
-                    SELECT idProduct, idDrink, size.idSize, price, drink_name, drink_description, size.size FROM loveyoualattedb.product prod
-                    INNER JOIN loveyoualattedb.drinks drink ON prod.idDrink = drink.idDrinks
+                    SELECT idProduct, idDrinkFood, size.idSize, price, drink_name, drink_description, size.size FROM loveyoualattedb.product prod
+                    INNER JOIN loveyoualattedb.drinkFood drink ON prod.idDrinkFood = drink.idDrinkFood
                     INNER JOIN loveyoualattedb.size size ON prod.idSize = size.idSize";
 
                 using (MySqlDataReader dr = cmd.ExecuteReader())
@@ -66,7 +66,7 @@ namespace LoveYouALatte_Authentication.Controllers
                         Models.ProductKG prod = new Models.ProductKG();
 
                         prod.ProductId = dr["idProduct"] as int? ?? default(int);
-                        prod.DrinkId = dr["idDrink"] as int? ?? default(int);
+                        prod.DrinkId = dr["idDrinkFood"] as int? ?? default(int);
                         prod.SizeId = dr["idSize"] as int? ?? default(int);
                         prod.Price = dr["price"] as decimal? ?? default(decimal);
                         prod.DrinkName = dr["drink_name"] as String ?? string.Empty;
@@ -341,7 +341,7 @@ namespace LoveYouALatte_Authentication.Controllers
                 using (MySqlConnection conn = db.Connection)
                 {
                     var val = conn.CreateCommand() as MySqlCommand;
-                    val.CommandText = @"SELECT drink_name FROM loveyoualattedb.drinks WHERE drink_name = '" + vm.DrinkName + "';";
+                    val.CommandText = @"SELECT drink_name FROM loveyoualattedb.drinkFood WHERE drink_name = '" + vm.DrinkName + "';";
                     var validDrink = val.ExecuteScalar();
                     if (validDrink != null)
                     {
@@ -354,14 +354,14 @@ namespace LoveYouALatte_Authentication.Controllers
                     else
                     {
                         var cmd1 = conn.CreateCommand() as MySqlCommand;
-                        cmd1.CommandText = @"INSERT INTO loveyoualattedb.drinks (idCategory, drink_name, drink_description) VALUES ('" + vm.CategoryID + "', '" + vm.DrinkName + "', '" + vm.DrinkDescription + "');" +
+                        cmd1.CommandText = @"INSERT INTO loveyoualattedb.drinkFood (idCategory, drink_name, drink_description) VALUES ('" + vm.CategoryID + "', '" + vm.DrinkName + "', '" + vm.DrinkDescription + "');" +
                             "SELECT LAST_INSERT_ID();";
                         var drinkID = cmd1.ExecuteScalar();
 
                         var cmd2 = conn.CreateCommand() as MySqlCommand;
-                        cmd2.CommandText = @"INSERT INTO loveyoualattedb.product (idDrink, idSize, productSKU, price) VALUES ('" + drinkID + "', '1', '" + vm.SmallSKU + "','" + vm.SmallPrice + "');" +
-                            "INSERT INTO loveyoualattedb.product (idDrink, idSize, productSKU, price) VALUES ('" + drinkID + "', '2', '" + vm.MediumSKU + "','" + vm.MediumPrice + "');" +
-                            "INSERT INTO loveyoualattedb.product (idDrink, idSize, productSKU, price) VALUES ('" + drinkID + "', '3', '" + vm.LargeSKU + "','" + vm.LargePrice + "');";
+                        cmd2.CommandText = @"INSERT INTO loveyoualattedb.product (idDrinkFood, idSize, productSKU, price) VALUES ('" + drinkID + "', '1', '" + vm.SmallSKU + "','" + vm.SmallPrice + "');" +
+                            "INSERT INTO loveyoualattedb.product (idDrinkFood, idSize, productSKU, price) VALUES ('" + drinkID + "', '2', '" + vm.MediumSKU + "','" + vm.MediumPrice + "');" +
+                            "INSERT INTO loveyoualattedb.product (idDrinkFood, idSize, productSKU, price) VALUES ('" + drinkID + "', '3', '" + vm.LargeSKU + "','" + vm.LargePrice + "');";
                         cmd2.ExecuteNonQuery();
 
                         vm.AddProductSuccess = "Succesfully added product!";

@@ -366,7 +366,7 @@ namespace LoveYouALatte_Authentication.Controllers
             {
                 var cmd = conn.CreateCommand() as MySqlCommand;
                 cmd.CommandText = @"
-                    SELECT idDrinks, cat.idCategory, cat.categoryName, cat.categoryDescription, drink_name, drink_description FROM loveyoualattedb.drinks drink
+                    SELECT idDrinkFood, cat.idCategory, cat.categoryName, cat.categoryDescription, drink_name, drink_description FROM loveyoualattedb.drinkFood drink
                     INNER JOIN loveyoualattedb.category cat ON drink.idCategory = cat.idCategory";
 
                 using (MySqlDataReader dr = cmd.ExecuteReader())
@@ -375,7 +375,7 @@ namespace LoveYouALatte_Authentication.Controllers
                     {
                         CategoryModel cat = new CategoryModel();
 
-                        cat.IdDrinks = dr["idDrinks"] as int? ?? default(int);
+                        cat.IdDrinks = dr["idDrinkFood"] as int? ?? default(int);
                         cat.IdCategory = dr["idCategory"] as int? ?? default(int);
                         cat.CategoryName = dr["categoryName"] as String ?? string.Empty;
                         cat.CategoryDescription = dr["categoryDescription"] as String ?? string.Empty;
@@ -403,8 +403,8 @@ namespace LoveYouALatte_Authentication.Controllers
             {
                 var cmd = conn.CreateCommand() as MySqlCommand;
                 cmd.CommandText = @"
-                    SELECT idProduct, idDrink, size.idSize, price, drink_name, drink_description, cat.categoryName, size.size FROM loveyoualattedb.product prod 
-                        INNER JOIN loveyoualattedb.drinks drink ON prod.idDrink = drink.idDrinks
+                    SELECT idProduct, prod.idDrinkFood, size.idSize, price, drink_name, drink_description, cat.categoryName, size.size FROM loveyoualattedb.product prod 
+                        INNER JOIN loveyoualattedb.drinkFood drink ON prod.idDrinkFood = drink.idDrinkFood
                         INNER JOIN loveyoualattedb.size size ON prod.idSize = size.idSize
                         INNER JOIN loveyoualattedb.category cat ON drink.idCategory = cat.idCategory
                     WHERE cat.idCategory = " + catid;
@@ -416,7 +416,7 @@ namespace LoveYouALatte_Authentication.Controllers
                         ProductKG prod = new ProductKG();
 
                         prod.ProductId = dr["idProduct"] as int? ?? default(int);
-                        prod.DrinkId = dr["idDrink"] as int? ?? default(int);
+                        prod.DrinkId = dr["idDrinkFood"] as int? ?? default(int);
                         prod.SizeId = dr["idSize"] as int? ?? default(int);
                         prod.Price = dr["price"] as decimal? ?? default(decimal);
                         prod.DrinkName = dr["drink_name"] as String ?? string.Empty;
@@ -561,7 +561,7 @@ namespace LoveYouALatte_Authentication.Controllers
                     cmd.CommandText = @"
                     SELECT idCartTable, idUser, prod.idProduct, quantity, prod.price, lineItemCost, lineTax, lineCost, size.size, drink.drink_name FROM loveyoualattedb.CartTable cart
                     Inner JOIN loveyoualattedb.product prod ON cart.idProduct = prod.idProduct
-                    INNER JOIN loveyoualattedb.drinks drink ON prod.idDrink = drink.idDrinks
+                    INNER JOIN loveyoualattedb.drinkFood drink ON prod.idDrinkFood = drink.idDrinkFood
                     INNER JOIN loveyoualattedb.size size ON prod.idSize = size.idSize
                     WHERE idUser = '" + UserID + "'";
 
