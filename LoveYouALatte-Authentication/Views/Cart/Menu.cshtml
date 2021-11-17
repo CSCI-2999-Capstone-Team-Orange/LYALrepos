@@ -32,14 +32,22 @@
                     <ul class="list-group list-group-flush">
                         @foreach (var item in prod)
                         {
-                            <li class="list-group-item text-center">
+                        <li class="list-group-item text-center">
+                            @if (item.SizeId == 4)
+                            {
+                                <h5>$@(item.Price)</h5>
+                            }
+                            else
+                            {
                                 <h5>@(item.SizeName): $@(item.Price)</h5>
-                                <p hidden id="price_@item.ProductId">@(item.Price)</p>
+                            }
+                            <p hidden id="price_@item.ProductId">@(item.Price)</p>
+                            <p hidden id="size_@item.ProductId">@(item.SizeId)</p>
 
-                                <label for="quantity_@item.ProductId">Quantity: <input data-productid="@item.ProductId" type="number" class="w-50 quantityNum" id="quantity_@item.ProductId" oninput="validity.valid||(value='');" name="quantity_@item.ProductId" min="1" max="10" step="1" size="2" /></label>
-                                <button disabled data-productid="@item.ProductId" class="btn btn-orange btn-add" id="btn_add_@item.ProductId">Add To Cart<i class="fa fa-coffee"></i></button>
-                                <br />
-                            </li>
+                            <label for="quantity_@item.ProductId">Quantity: <input data-productid="@item.ProductId" type="number" class="w-50 quantityNum" id="quantity_@item.ProductId" oninput="validity.valid||(value='');" name="quantity_@item.ProductId" min="1" max="10" step="1" size="2" /></label>
+                            <button disabled data-productid="@item.ProductId" class="btn btn-orange btn-add" id="btn_add_@item.ProductId">Add To Cart<i class="fa fa-coffee"></i></button>
+                            <br />
+                        </li>
                         }
                     </ul>
                 </div>
@@ -269,6 +277,7 @@
         if (isLoggedIn == "True" || $isGuestUser != '') {
             var ID = $(this).data('productid');
             var price = $('#price_' + ID).text();
+            var size = $('#size_' + ID).text();
             var quantity = $('#quantity_' + ID).val();
 
             var totalPrice = price * quantity;
@@ -288,8 +297,13 @@
                 },
                 success: function () {
                     alert("Succesfully added to cart!");
-                    $("#addOn").show("slow");
-
+                    if (size != 4) {
+                        $("#addOn").show("slow");
+                    } else {
+                        $(".quantityNum").each(function () {
+                            $(this).val("");
+                        })
+                    }
                 },
                 error: function (data) {
                     alert('Error: ' + data.statusText);
