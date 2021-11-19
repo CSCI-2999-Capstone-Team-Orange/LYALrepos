@@ -57,6 +57,7 @@ namespace LoveYouALatte_Authentication.Areas.Identity.Pages.Account
 
             [Required]
             [EmailAddress]
+            [RegularExpression(@"^[@\.a-z0-9]+$", ErrorMessage = "Your email address cannot have uppercase letters.")]
             [Display(Name = "Email")]
             public string Email { get; set; }
 

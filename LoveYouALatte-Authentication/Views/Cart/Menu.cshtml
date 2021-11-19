@@ -9,6 +9,7 @@
 @{
     var products = Model.Products.GroupBy(x => new { x.DrinkName, x.DrinkDescription });
     var categories = Model.Products.GroupBy(x => new { x.DrinkCategory });
+ 
 }
 <h1>@ViewData["Title"]</h1>
 
@@ -73,7 +74,7 @@
 
             @for (int i = 0; i < 5; i++)
             {
-                
+
                 <div>
                     <input class="hello" data-addOn='@Json.Serialize(@Model.addOns.addOnList[i])' type="hidden" asp-for="@Model.addOns.addOnList[i].addOnId" />
                     <input type="hidden" asp-for="@Model.addOns.addOnList[i].addOnType" />
@@ -102,6 +103,27 @@
                     </label>
 
                 </div>
+            }
+
+            <h2>Syrup</h2>
+
+            @for (int i = 9; i < 13; i++)
+            {
+
+        <div>
+            <input class="hello" data-addOn='@Json.Serialize(@Model.addOns.addOnList[i])' type="hidden" asp-for="@Model.addOns.addOnList[i].addOnId" />
+            <input type="hidden" asp-for="@Model.addOns.addOnList[i].addOnType" />
+            <input type="hidden" asp-for="@Model.addOns.addOnList[i].addOnDescription" />
+            <input type="hidden" asp-for="@Model.addOns.addOnList[i].addOnUnitPrice" />
+            <input class="add-on-checkbox" data-addOn='@Json.Serialize(@Model.addOns.addOnList[i])' data-addOnId='@Model.addOns.addOnList[i].addOnId' type="checkbox" asp-for="@Model.addOns.addOnList[i].isSelected" />
+            <label class="form-check-label">
+                @Model.addOns.addOnList[i].addOnDescription
+                @Model.addOns.addOnList[i].addOnUnitPrice
+            </label>
+
+        </div>
+
+
             }
             <br />
             <input class="btn btn-orange submit" id="addOnSubmit" type="button" value="Add to Drink" /><br /><br />
@@ -170,8 +192,9 @@
                 drinkAddOns.push({
                     addOnId: $item.data("addonid"),
                     isSelected: $item[0].checked,
-                    addOnType: "creamer",
-                    addOnDescription: "test"
+                    addOnType: "syrup",
+                    addOnDescription: "test",
+                    addOnUnitPrice: "0.25"
                 })
             })
 

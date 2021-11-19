@@ -83,12 +83,12 @@ namespace LoveYouALatte_Authentication.Controllers
             List<DrinkModel> drinkList = new List<DrinkModel>();
             using (var dbContext = new loveyoualattedbContext())
             {
-                var drinks = dbContext.Drinks.ToList();
+                var drinks = dbContext.DrinkFoods.ToList();
                 foreach (var drink in drinks)
                 {
                     drinkList.Add(new DrinkModel
                     {
-                        drinkId = drink.IdDrinks,
+                        drinkId = drink.IdDrinkFood,
                         drinkName = drink.DrinkName,
                     });
                 }
@@ -100,11 +100,11 @@ namespace LoveYouALatte_Authentication.Controllers
             
             using (var dbContext = new loveyoualattedbContext())
             {
-                var drinks = dbContext.Drinks.ToList();
+                var drinks = dbContext.DrinkFoods.ToList();
                 foreach (var drink in drinks) {
                     drinkIds.drinkIdList.Add(new DrinkModel
                     {
-                        drinkId = drink.IdDrinks,
+                        drinkId = drink.IdDrinkFood,
                         drinkName = drink.DrinkName,
                     }) ;
                 }
@@ -144,10 +144,10 @@ namespace LoveYouALatte_Authentication.Controllers
                 using (var dbContext = new loveyoualattedbContext())
                 {
                     var updateThisProduct = dbContext.Products.First(s => s.IdProduct == formInfo.updateProduct.ProductId);
-                    var updateThisDrink = dbContext.Drinks.First(t => t.IdDrinks == formInfo.updateProduct.DrinkId);
+                    var updateThisDrink = dbContext.DrinkFoods.First(t => t.IdDrinkFood == formInfo.updateProduct.DrinkId);
 
                     updateThisProduct.IdProduct = formInfo.updateProduct.ProductId;
-                    updateThisProduct.IdDrink = formInfo.updateProduct.DrinkId;
+                    updateThisProduct.IdDrinkFood = formInfo.updateProduct.DrinkId;
                     updateThisProduct.IdSize = formInfo.updateProduct.SizeId;
                     updateThisProduct.Price = formInfo.updateProduct.Price;
                     updateThisDrink.DrinkName = formInfo.updateProduct.DrinkName;
@@ -202,7 +202,7 @@ namespace LoveYouALatte_Authentication.Controllers
             {
                 var products = dbContext.Products.ToList();
                 var sizes = dbContext.Sizes.ToList();
-                var drinks = dbContext.Drinks.ToList();
+                var drinks = dbContext.DrinkFoods.ToList();
                 var categories = dbContext.Categories.ToList();
                 foreach (var product in products)
                 {
@@ -210,13 +210,13 @@ namespace LoveYouALatte_Authentication.Controllers
                     productList.productList.Add(new ProductModel
                     {
                         ProductId = product.IdProduct,
-                        DrinkId = product.IdDrink,
+                        DrinkId = product.IdDrinkFood,
                         ProductSku = product.ProductSku,
-                        category = (int)drinks.Single(a => a.IdDrinks == product.IdDrink).IdCategory,
-                        CategoryName = categories.Single(n => n.IdCategory == drinks.Single(a => a.IdDrinks == product.IdDrink).IdCategory).CategoryName,
-                        DrinkName = drinks.Single(d => d.IdDrinks == product.IdDrink).DrinkName,
-                        DrinkDescription = drinks.Single(d => d.IdDrinks == product.IdDrink).DrinkDescription,
-                        SizeId = product.IdSize,
+                        category = (int)drinks.Single(a => a.IdDrinkFood == product.IdDrinkFood).IdCategory,
+                        CategoryName = categories.Single(n => n.IdCategory == drinks.Single(a => a.IdDrinkFood == product.IdDrinkFood).IdCategory).CategoryName,
+                        DrinkName = drinks.Single(d => d.IdDrinkFood == product.IdDrinkFood).DrinkName,
+                        DrinkDescription = drinks.Single(d => d.IdDrinkFood == product.IdDrinkFood).DrinkDescription,
+                        SizeId = (int)product.IdSize,
                         SizeName = sizes.Single(s => s.IdSize == product.IdSize).Size1,
                         Price = product.Price
                     }) ;
@@ -240,12 +240,12 @@ namespace LoveYouALatte_Authentication.Controllers
                 using (var dbContext = new loveyoualattedbContext())
                 {
                     var updateThisProduct = dbContext.Products.First(s => s.IdProduct == formInfo.updateProduct.ProductId);
-                    var updateThisDrink = dbContext.Drinks.First(t => t.IdDrinks == formInfo.updateProduct.DrinkId);
+                    var updateThisDrink = dbContext.DrinkFoods.First(t => t.IdDrinkFood == formInfo.updateProduct.DrinkId);
                     
 
                     updateThisProduct.IdProduct = formInfo.updateProduct.ProductId;
                     updateThisProduct.ProductSku = formInfo.updateProduct.ProductSku;
-                    updateThisProduct.IdDrink = formInfo.updateProduct.DrinkId;
+                    updateThisProduct.IdDrinkFood = formInfo.updateProduct.DrinkId;
                     updateThisProduct.IdSize = formInfo.updateProduct.SizeId;
                     updateThisProduct.Price = formInfo.updateProduct.Price;
                     updateThisDrink.DrinkName = formInfo.updateProduct.DrinkName;
@@ -254,42 +254,67 @@ namespace LoveYouALatte_Authentication.Controllers
                     dbContext.SaveChanges();
                     
                 }
-                return RedirectToAction("ManageMenuTable", "Employee", formInfo);
+                return RedirectToAction("ManageMenuTable", "Employee");
 
             }
             else
             {
+
                 ProductModel productList = new ProductModel();
 
                 formInfo.viewProduct = productList;
 
+
+                List<SelectListItem> categoriesList = new List<SelectListItem>();
+
+
                 using (var dbContext = new loveyoualattedbContext())
                 {
-                    var products = dbContext.Products.ToList();
-                    var sizes = dbContext.Sizes.ToList();
-                    var drinks = dbContext.Drinks.ToList();
-
-                    foreach (var product in products)
+                    var categories = dbContext.Categories.ToList();
+                    foreach (var category in categories)
                     {
-
-                        productList.productList.Add(new ProductModel
+                        categoriesList.Add(new SelectListItem()
                         {
-                            ProductId = product.IdProduct,
-                            DrinkId = product.IdDrink,
-                            ProductSku = product.ProductSku,
-                            DrinkName = drinks.Single(d => d.IdDrinks == product.IdDrink).DrinkName,
-                            DrinkDescription = drinks.Single(d => d.IdDrinks == product.IdDrink).DrinkDescription,
-                            SizeId = product.IdSize,
-                            SizeName = sizes.Single(s => s.IdSize == product.IdSize).Size1,
-                            Price = product.Price
+                            Value = $"{category.IdCategory}",
+                            Text = category.CategoryName
+
                         });
-
-
-
 
                     }
 
                 }
+
+                formInfo.DrinkCategories = categoriesList;
+
+                using (var dbContext = new loveyoualattedbContext())
+            {
+                var products = dbContext.Products.ToList();
+                var sizes = dbContext.Sizes.ToList();
+                var drinks = dbContext.DrinkFoods.ToList();
+                var categories = dbContext.Categories.ToList();
+                foreach (var product in products)
+                {
+
+                    productList.productList.Add(new ProductModel
+                    {
+                        ProductId = product.IdProduct,
+                        DrinkId = product.IdDrinkFood,
+                        ProductSku = product.ProductSku,
+                        category = (int)drinks.Single(a => a.IdDrinkFood == product.IdDrinkFood).IdCategory,
+                        CategoryName = categories.Single(n => n.IdCategory == drinks.Single(a => a.IdDrinkFood == product.IdDrinkFood).IdCategory).CategoryName,
+                        DrinkName = drinks.Single(d => d.IdDrinkFood == product.IdDrinkFood).DrinkName,
+                        DrinkDescription = drinks.Single(d => d.IdDrinkFood == product.IdDrinkFood).DrinkDescription,
+                        SizeId = (int)product.IdSize,
+                        SizeName = sizes.Single(s => s.IdSize == product.IdSize).Size1,
+                        Price = product.Price
+                    }) ;
+
+                    
+
+
+                }
+
+            }
 
                 
 
@@ -464,7 +489,7 @@ namespace LoveYouALatte_Authentication.Controllers
             {
                 var products = dbContext.Products.ToList();
                 var sizes = dbContext.Sizes.ToList();
-                var drinks = dbContext.Drinks.ToList();
+                var drinks = dbContext.DrinkFoods.ToList();
                 var addOnItems = dbContext.AddOns.ToList();
                 var addOnList = dbContext.AddOnItemLists.ToList();
 
@@ -495,7 +520,7 @@ namespace LoveYouALatte_Authentication.Controllers
                     receipt.Items.Add(new ReceiptItemModel
                     {
                         ProductId = item.ProductId,
-                        ProductDescription = drinks.Single(d => d.IdDrinks == product.IdDrink).DrinkName,
+                        ProductDescription = drinks.Single(d => d.IdDrinkFood == product.IdDrinkFood).DrinkName,
                         sizeDescription = sizes.Single(s => s.IdSize == product.IdSize).Size1,
                         unitCost = item.LineItemCost,
                         addOnList = orderAddOns,

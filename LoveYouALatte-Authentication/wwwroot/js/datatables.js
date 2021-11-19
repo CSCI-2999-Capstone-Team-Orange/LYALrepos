@@ -12,7 +12,7 @@
     $("[name='updateProduct.DrinkDescription']", $editRow).val(rowData.drinkDescription);
     $("[name='updateProduct.SizeId']", $editRow).val(rowData.sizeId);
     $("[name='updateProduct.SizeName']", $editRow).val(rowData.sizeName);
-    $("[name='updateProduct.Price']", $editRow).val(rowData.price);
+    $("[name='updateProduct.Price']", $editRow).val(parseFloat(rowData.price).toFixed(2));
    
 
     $("#menuTable").find(".updateButton").hide();
@@ -27,16 +27,7 @@ function onCancelClick($tr) {
     $(".updateButton").show();
 }
 
-//function onUpdateClick($row) {
-//    // jquery ajax post with values from the form fields
-//    rowData = {};
-//    $.post("url", rowData);
-//    // callback for post success
-//    {
-//        // reverse the editClick
 
-//    }
-//}
 
 
 
