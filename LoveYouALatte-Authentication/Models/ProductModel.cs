@@ -26,7 +26,7 @@ namespace LoveYouALatte_Authentication.Models
         public int DrinkId { get; set; }
 
         [Required]
-        [Range(1, 3, ErrorMessage = "This size Id must be a value from 1-3.")]
+        //[Range(1, 3, ErrorMessage = "This size Id must be a value from 1-3.")]
         public int SizeId { get; set; }
 
         [Required(ErrorMessage = "Product SKU is required and cannot be longer than 15 characters.")]
@@ -34,7 +34,7 @@ namespace LoveYouALatte_Authentication.Models
         public string ProductSku { get; set;}
 
         [Required(ErrorMessage = "Product category is required and cannot be longer than 15 characters.")]
-        [Range(1, 3, ErrorMessage = "Product category must be already lister")]
+        //[Range(1, 3, ErrorMessage = "Product category must be already listed")]
         public int category { get; set; }
 
         public string CategoryName { get; set; }

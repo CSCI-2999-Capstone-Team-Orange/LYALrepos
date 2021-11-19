@@ -15,6 +15,7 @@ namespace LoveYouALatte.Data.Entities
         public int AddOnId { get; set; }
         public string AddOnType { get; set; }
         public string AddOnDescription { get; set; }
+        public decimal AddOnUnitPrice { get; set; }
 
         public virtual ICollection<AddOnItemList> AddOnItemLists { get; set; }
     }

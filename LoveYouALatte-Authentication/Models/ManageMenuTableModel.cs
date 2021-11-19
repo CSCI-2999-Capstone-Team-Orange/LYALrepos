@@ -14,6 +14,7 @@ namespace LoveYouALatte_Authentication.Models
 
         public List<SelectListItem> DrinkCategories { get; set; }
 
+
         
     }
 }

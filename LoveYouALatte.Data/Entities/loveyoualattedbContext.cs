@@ -29,7 +29,7 @@ namespace LoveYouALatte.Data.Entities
         public virtual DbSet<CartAddOnItem> CartAddOnItems { get; set; }
         public virtual DbSet<CartTable> CartTables { get; set; }
         public virtual DbSet<Category> Categories { get; set; }
-        public virtual DbSet<Drink> Drinks { get; set; }
+        public virtual DbSet<DrinkFood> DrinkFoods { get; set; }
         public virtual DbSet<EfmigrationsHistory> EfmigrationsHistories { get; set; }
         public virtual DbSet<GuestUser> GuestUsers { get; set; }
         public virtual DbSet<OrderItem> OrderItems { get; set; }
@@ -63,6 +63,10 @@ namespace LoveYouALatte.Data.Entities
                     .IsRequired()
                     .HasMaxLength(40)
                     .HasColumnName("addOnType");
+
+                entity.Property(e => e.AddOnUnitPrice)
+                    .HasColumnType("decimal(13,2)")
+                    .HasColumnName("addOnUnitPrice");
             });
 
             modelBuilder.Entity<AddOnItemList>(entity =>
@@ -80,7 +84,17 @@ namespace LoveYouALatte.Data.Entities
 
                 entity.Property(e => e.AddOnId).HasColumnName("addOnId");
 
+                entity.Property(e => e.AddOnTotalPrice)
+                    .HasColumnType("decimal(13,2)")
+                    .HasColumnName("addOnTotalPrice");
+
+                entity.Property(e => e.AddOnUnitPrice)
+                    .HasColumnType("decimal(13,2)")
+                    .HasColumnName("addOnUnitPrice");
+
                 entity.Property(e => e.CartAddOnItemId).HasColumnName("cartAddOnItemId");
+
+                entity.Property(e => e.Quantity).HasColumnName("quantity");
 
                 entity.HasOne(d => d.AddOn)
                     .WithMany(p => p.AddOnItemLists)
@@ -356,16 +370,16 @@ namespace LoveYouALatte.Data.Entities
                     .HasColumnName("categoryName");
             });
 
-            modelBuilder.Entity<Drink>(entity =>
+            modelBuilder.Entity<DrinkFood>(entity =>
             {
-                entity.HasKey(e => e.IdDrinks)
+                entity.HasKey(e => e.IdDrinkFood)
                     .HasName("PRIMARY");
 
-                entity.ToTable("drinks");
+                entity.ToTable("drinkFood");
 
                 entity.HasIndex(e => e.IdCategory, "FKfromdcategories");
 
-                entity.Property(e => e.IdDrinks).HasColumnName("idDrinks");
+                entity.Property(e => e.IdDrinkFood).HasColumnName("idDrinkFood");
 
                 entity.Property(e => e.DrinkDescription)
                     .IsRequired()
@@ -379,7 +393,7 @@ namespace LoveYouALatte.Data.Entities
                 entity.Property(e => e.IdCategory).HasColumnName("idCategory");
 
                 entity.HasOne(d => d.IdCategoryNavigation)
-                    .WithMany(p => p.Drinks)
+                    .WithMany(p => p.DrinkFoods)
                     .HasForeignKey(d => d.IdCategory)
                     .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FKfromdcategories");
@@ -474,13 +488,13 @@ namespace LoveYouALatte.Data.Entities
 
                 entity.ToTable("product");
 
-                entity.HasIndex(e => e.IdDrink, "FKfromdrinks");
+                entity.HasIndex(e => e.IdDrinkFood, "FKfromdrinks");
 
                 entity.HasIndex(e => e.IdSize, "FKfromsize");
 
                 entity.Property(e => e.IdProduct).HasColumnName("idProduct");
 
-                entity.Property(e => e.IdDrink).HasColumnName("idDrink");
+                entity.Property(e => e.IdDrinkFood).HasColumnName("idDrinkFood");
 
                 entity.Property(e => e.IdSize).HasColumnName("idSize");
 
@@ -493,14 +507,15 @@ namespace LoveYouALatte.Data.Entities
                     .HasMaxLength(15)
                     .HasColumnName("productSKU");
 
-                entity.HasOne(d => d.IdDrinkNavigation)
+                entity.HasOne(d => d.IdDrinkFoodNavigation)
                     .WithMany(p => p.Products)
-                    .HasForeignKey(d => d.IdDrink)
+                    .HasForeignKey(d => d.IdDrinkFood)
                     .HasConstraintName("FKfromdrinks");
 
                 entity.HasOne(d => d.IdSizeNavigation)
                     .WithMany(p => p.Products)
                     .HasForeignKey(d => d.IdSize)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FKfromsize");
             });
 

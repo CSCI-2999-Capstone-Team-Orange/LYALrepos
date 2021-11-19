@@ -146,7 +146,7 @@ namespace LoveYouALatte_Authentication.Controllers
             {
                 var products = dbContext.Products.ToList();
                 var sizes = dbContext.Sizes.ToList();
-                var drinks = dbContext.Drinks.ToList();
+                var drinks = dbContext.DrinkFoods.ToList();
                 var cartItems = dbContext.CartTables.Where(a => a.GuestUserId == UserID).ToList();
                 var check = products.Single(a => a.IdProduct == 25).Price;
                         
@@ -164,7 +164,7 @@ namespace LoveYouALatte_Authentication.Controllers
                         LineTax = item.LineTax,
                         LineCost = item.LineCost,
                         SizeName = sizes.Single(s => s.IdSize == products.Single(a => a.IdProduct == item.IdProduct).IdSize).Size1,
-                        DrinkName = drinks.Single(d => d.IdDrinks == products.Single(a => a.IdProduct == item.IdProduct).IdDrink).DrinkName,
+                        DrinkName = drinks.Single(d => d.IdDrinkFood == products.Single(a => a.IdProduct == item.IdProduct).IdDrinkFood).DrinkName,
 
 
                     });
@@ -208,7 +208,7 @@ namespace LoveYouALatte_Authentication.Controllers
 
                 var products = dbContext.Products.ToList();
                 var sizes = dbContext.Sizes.ToList();
-                var drinks = dbContext.Drinks.ToList();
+                var drinks = dbContext.DrinkFoods.ToList();
                 var addOnItems = dbContext.AddOns.ToList();
                 var addOnList = dbContext.AddOnItemLists.ToList();
 
@@ -234,7 +234,7 @@ namespace LoveYouALatte_Authentication.Controllers
                     {
                         cartTableId = item.IdCartTable,
                         ProductId = item.IdProduct,
-                        ProductDescription = drinks.Single(d => d.IdDrinks == product.IdDrink).DrinkName,
+                        ProductDescription = drinks.Single(d => d.IdDrinkFood == product.IdDrinkFood).DrinkName,
                         sizeDescription = sizes.Single(s => s.IdSize == product.IdSize).Size1,
                         unitCost = item.LineItemCost,
                         addOnList = orderAddOns,
@@ -595,7 +595,7 @@ namespace LoveYouALatte_Authentication.Controllers
 
                     var products = dbContext.Products.ToList();
                     var sizes = dbContext.Sizes.ToList();
-                    var drinks = dbContext.Drinks.ToList();
+                    var drinks = dbContext.DrinkFoods.ToList();
                     var addOnItems = dbContext.AddOns.ToList();
                     var addOnList = dbContext.AddOnItemLists.ToList();
 
@@ -621,7 +621,7 @@ namespace LoveYouALatte_Authentication.Controllers
                         {
                             cartTableId = item.IdCartTable,
                             ProductId = item.IdProduct,
-                            ProductDescription = drinks.Single(d => d.IdDrinks == product.IdDrink).DrinkName,
+                            ProductDescription = drinks.Single(d => d.IdDrinkFood == product.IdDrinkFood).DrinkName,
                             sizeDescription = sizes.Single(s => s.IdSize == product.IdSize).Size1,
                             unitCost = item.LineItemCost,
                             addOnList = orderAddOns,
@@ -681,18 +681,35 @@ namespace LoveYouALatte_Authentication.Controllers
 
                         var products = dbContext.Products.ToList();
 
+                        
+
                         foreach (var cartItem in dbCart)
                         {
-                            newUserOrder.OrderItems.Add(
-                                new OrderItem()
-                                {
-                                    ProductId = cartItem.IdProduct,
-                                    Quantity = cartItem.Quantity,
-                                    CartAddOnItemId = cartItem.CartAddOnItemId,
-                                    LineItemCost = (cartItem.LineItemCost / cartItem.Quantity),
-                                    Tax = (cartItem.LineItemCost * 0.075m),
-                                    TotalCost = (cartItem.LineItemCost * 0.075m) + cartItem.LineItemCost,
-                                });
+                            if (cartItem.CartAddOnItemId != null)
+                            {
+                                newUserOrder.OrderItems.Add(
+                                    new OrderItem()
+                                    {
+                                        ProductId = cartItem.IdProduct,
+                                        Quantity = cartItem.Quantity,
+                                        CartAddOnItemId = cartItem.CartAddOnItemId,
+                                        LineItemCost = (cartItem.LineItemCost / cartItem.Quantity),
+                                        Tax = (cartItem.LineItemCost * 0.075m),
+                                        TotalCost = (cartItem.LineItemCost * 0.075m) + cartItem.LineItemCost,
+                                    });
+                            }
+                            else
+                            {
+                                newUserOrder.OrderItems.Add(
+                                    new OrderItem()
+                                    {
+                                        ProductId = cartItem.IdProduct,
+                                        Quantity = cartItem.Quantity,
+                                        LineItemCost = (cartItem.LineItemCost / cartItem.Quantity),
+                                        Tax = (cartItem.LineItemCost * 0.075m),
+                                        TotalCost = (cartItem.LineItemCost * 0.075m) + cartItem.LineItemCost,
+                                    });
+                            }
                         }
 
 
@@ -703,9 +720,11 @@ namespace LoveYouALatte_Authentication.Controllers
 
                         foreach (var orderItem in newUserOrder.OrderItems)
                         {
-                            var addOnItemOrderId = dbContext.CartAddOnItems.Single(a => a.CartAddOnItemId == orderItem.CartAddOnItemId);
-
-                            addOnItemOrderId.OrderItemId = orderItem.OrderItemId;
+                            if (orderItem.CartAddOnItemId != null)
+                            {
+                                var addOnItemOrderId = dbContext.CartAddOnItems.Single(a => a.CartAddOnItemId == orderItem.CartAddOnItemId);
+                                addOnItemOrderId.OrderItemId = orderItem.OrderItemId;
+                            }
                         }
 
 
@@ -752,16 +771,31 @@ namespace LoveYouALatte_Authentication.Controllers
 
                         foreach (var cartItem in dbCart)
                         {
-                            newUserOrder.OrderItems.Add(
-                                new OrderItem()
-                                {
-                                    ProductId = cartItem.IdProduct,
-                                    Quantity = cartItem.Quantity,
-                                    CartAddOnItemId = cartItem.CartAddOnItemId,
-                                    LineItemCost = (cartItem.LineItemCost / cartItem.Quantity),
-                                    Tax = (cartItem.LineItemCost * 0.075m),
-                                    TotalCost = (cartItem.LineItemCost * 0.075m) + cartItem.LineItemCost,
-                                });
+                            if (cartItem.CartAddOnItemId != null)
+                            {
+                                newUserOrder.OrderItems.Add(
+                                    new OrderItem()
+                                    {
+                                        ProductId = cartItem.IdProduct,
+                                        Quantity = cartItem.Quantity,
+                                        CartAddOnItemId = cartItem.CartAddOnItemId,
+                                        LineItemCost = (cartItem.LineItemCost / cartItem.Quantity),
+                                        Tax = (cartItem.LineItemCost * 0.075m),
+                                        TotalCost = (cartItem.LineItemCost * 0.075m) + cartItem.LineItemCost,
+                                    });
+                            }
+                            else
+                            {
+                                newUserOrder.OrderItems.Add(
+                                    new OrderItem()
+                                    {
+                                        ProductId = cartItem.IdProduct,
+                                        Quantity = cartItem.Quantity,
+                                        LineItemCost = (cartItem.LineItemCost / cartItem.Quantity),
+                                        Tax = (cartItem.LineItemCost * 0.075m),
+                                        TotalCost = (cartItem.LineItemCost * 0.075m) + cartItem.LineItemCost,
+                                    });
+                            }
                         }
 
 
@@ -772,9 +806,12 @@ namespace LoveYouALatte_Authentication.Controllers
 
                         foreach (var orderItem in newUserOrder.OrderItems)
                         {
+                            if (orderItem.CartAddOnItemId != null) { 
                             var addOnItemOrderId = dbContext.CartAddOnItems.Single(a => a.CartAddOnItemId == orderItem.CartAddOnItemId);
 
-                            addOnItemOrderId.OrderItemId = orderItem.OrderItemId;
+                            
+                                addOnItemOrderId.OrderItemId = orderItem.OrderItemId;
+                            }
                         }
 
 
@@ -887,7 +924,7 @@ namespace LoveYouALatte_Authentication.Controllers
                 {
                     var products = dbContext.Products.ToList();
                     var sizes = dbContext.Sizes.ToList();
-                    var drinks = dbContext.Drinks.ToList();
+                    var drinks = dbContext.DrinkFoods.ToList();
                     var addOnItems = dbContext.AddOns.ToList();
                     var addOnList = dbContext.AddOnItemLists.ToList();
 
@@ -918,7 +955,7 @@ namespace LoveYouALatte_Authentication.Controllers
                         receipt.Items.Add(new ReceiptItemModel
                         {
                             ProductId = item.ProductId,
-                            ProductDescription = drinks.Single(d => d.IdDrinks == product.IdDrink).DrinkName,
+                            ProductDescription = drinks.Single(d => d.IdDrinkFood == product.IdDrinkFood).DrinkName,
                             sizeDescription = sizes.Single(s => s.IdSize == product.IdSize).Size1,
                             unitCost = item.LineItemCost,
                             addOnList = orderAddOns,
@@ -947,7 +984,7 @@ namespace LoveYouALatte_Authentication.Controllers
                 {
                     var products = dbContext.Products.ToList();
                     var sizes = dbContext.Sizes.ToList();
-                    var drinks = dbContext.Drinks.ToList();
+                    var drinks = dbContext.DrinkFoods.ToList();
                     var addOnItems = dbContext.AddOns.ToList();
                     var addOnList = dbContext.AddOnItemLists.ToList();
 
@@ -978,7 +1015,7 @@ namespace LoveYouALatte_Authentication.Controllers
                         receipt.Items.Add(new ReceiptItemModel
                         {
                             ProductId = item.ProductId,
-                            ProductDescription = drinks.Single(d => d.IdDrinks == product.IdDrink).DrinkName,
+                            ProductDescription = drinks.Single(d => d.IdDrinkFood == product.IdDrinkFood).DrinkName,
                             sizeDescription = sizes.Single(s => s.IdSize == product.IdSize).Size1,
                             unitCost = item.LineItemCost,
                             addOnList = orderAddOns,
