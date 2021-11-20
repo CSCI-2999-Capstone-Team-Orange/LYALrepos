@@ -403,10 +403,11 @@ namespace LoveYouALatte_Authentication.Controllers
             {
                 var cmd = conn.CreateCommand() as MySqlCommand;
                 cmd.CommandText = @"
-                    SELECT idProduct, prod.idDrinkFood, size.idSize, price, drink_name, drink_description, cat.categoryName, size.size FROM loveyoualattedb.product prod 
+                    SELECT idProduct, prod.idDrinkFood, size.idSize, size.size, price, drink_name, drink_description, cat.categoryName  FROM loveyoualattedb.product prod 
                         INNER JOIN loveyoualattedb.drinkFood drink ON prod.idDrinkFood = drink.idDrinkFood
-                        INNER JOIN loveyoualattedb.size size ON prod.idSize = size.idSize
                         INNER JOIN loveyoualattedb.category cat ON drink.idCategory = cat.idCategory
+                        LEFT JOIN loveyoualattedb.size size
+                        ON prod.idsize = size.idSize
                     WHERE cat.idCategory = " + catid;
 
                 using (MySqlDataReader dr = cmd.ExecuteReader())

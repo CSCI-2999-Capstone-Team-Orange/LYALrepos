@@ -37,14 +37,23 @@
                     <input data-cartid="@cartItem.CartId" type="number" value="@cartItem.Quantity" class="w-50 quantityNumUpdate" id="quantity_@cartItem.CartId"
                            oninput="validity.valid||(value='');" name="quantity_@cartItem.IdProduct" min="1" max="10" step="1" size="2" />
                 </td>
-                <td>@cartItem.SizeName</td>
+                @if (cartItem.SizeName == null || cartItem.SizeName == "")
+                {
+                    <td>n/a</td>
+                }
+                else
+                {
+                    <td>@cartItem.SizeName</td>
+                }
                 <td>@cartItem.Price.ToString("C")</td>
                 <td hidden id="price_@cartItem.CartId">@cartItem.Price</td>
                 <td>@cartItem.TotalPrice.ToString("C")</td>
                 <td>@cartItem.LineTax.ToString("C")</td>
                 <td>@cartItem.LineCost.ToString("C")</td>
-                <td><button disabled data-cartid="@cartItem.CartId" class="btn btn-orange btn-quantity" id="btn_quantity_@cartItem.CartId">Update Quantity</button>
-                <button data-cartid="@cartItem.CartId" class="btn btn-orange btn-remove" id="btn_quantity_@cartItem.CartId">Remove</button></td>
+                <td>
+                    <button disabled data-cartid="@cartItem.CartId" class="btn btn-orange btn-quantity" id="btn_quantity_@cartItem.CartId">Update Quantity</button>
+                    <button data-cartid="@cartItem.CartId" class="btn btn-orange btn-remove" id="btn_quantity_@cartItem.CartId">Remove</button>
+                </td>
             </tr>
             <tr>
                 <th>Add Ons</th>
