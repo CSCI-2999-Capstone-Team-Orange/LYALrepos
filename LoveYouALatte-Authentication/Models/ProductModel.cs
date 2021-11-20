@@ -54,7 +54,8 @@ namespace LoveYouALatte_Authentication.Models
         [Required]
         [StringLength(255)]
         public string SizeName { get; set; }
-      
+
+        public int cartAddOnItemId { get; set; }
 
         public List<ProductModel> productList { get; set; }
 

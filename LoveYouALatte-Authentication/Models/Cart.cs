@@ -17,5 +17,7 @@ namespace LoveYouALatte_Authentication.Models
         public decimal LineCost { get; set; }
         public string SizeName { get; set; }
         public string DrinkName { get; set; }
+
+        public int cartAddOnItemId { get; set; }
     }
 }

@@ -19,5 +19,6 @@ namespace LoveYouALatte_Authentication.Models
         public string CategoryDescription { get; set; }
         public string DrinkName { get; set; }
         public string DrinkDescription { get; set; }
+        public int CartAddOnItemId { get; set; }
     }
 }

@@ -11,6 +11,7 @@ namespace LoveYouALatte_Authentication.Models
  
         public int addOnId { get; set; }
 
+        public int cartAddOnItemId { get; set; }
         public bool isSelected { get; set; }
 
         public List<CartAddOnModel> addOnList { get; set; }

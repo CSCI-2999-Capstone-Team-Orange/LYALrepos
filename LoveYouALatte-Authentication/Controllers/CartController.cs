@@ -260,7 +260,7 @@ namespace LoveYouALatte_Authentication.Controllers
 
 
         [HttpGet]
-        public ActionResult AddToCart(int productid, int quantity, decimal totalPrice, decimal lineTax, decimal lineCost)
+        public ActionResult AddToCart(int productid, int quantity, decimal totalPrice, decimal lineTax, decimal lineCost, decimal cartAddOnItemId)
         {
 
             if (this.User.Identity.IsAuthenticated) { 
@@ -273,7 +273,7 @@ namespace LoveYouALatte_Authentication.Controllers
             using (MySqlConnection conn = db.Connection)
             {
                 var cmd = conn.CreateCommand() as MySqlCommand;
-                cmd.CommandText = @"INSERT INTO loveyoualattedb.CartTable(idUser, idProduct, quantity, lineItemCost, lineTax, lineCost) VALUES ('" + UserID + "', " + productid + ", " + quantity + ", " + totalPrice + ", " + lineTax + ", " + lineCost + ")";
+                cmd.CommandText = @"INSERT INTO loveyoualattedb.CartTable(idUser, idProduct, quantity, lineItemCost, lineTax, lineCost, cartAddOnItemId) VALUES ('" + UserID + "', " + productid + ", " + quantity + ", " + totalPrice + ", " + lineTax + ", " + lineCost + ", " + cartAddOnItemId + ")";
                 int result = cmd.ExecuteNonQuery();
 
                 if (result > 0)
@@ -581,6 +581,8 @@ namespace LoveYouALatte_Authentication.Controllers
                             cart.LineCost = dr["lineCost"] as decimal? ?? default(decimal);
                             cart.SizeName = dr["size"] as String ?? string.Empty;
                             cart.DrinkName = dr["drink_name"] as String ?? string.Empty;
+                            cart.cartAddOnItemId = dr["idCartTable"] as int? ?? default(int);
+
 
                             cartList.Add(cart);
                         }

@@ -21,6 +21,7 @@ namespace LoveYouALatte.Data.Entities
         public decimal LineItemCost { get; set; }
         public decimal LineTax { get; set; }
         public decimal LineCost { get; set; }
+        public decimal AddOnId { get; set; }
 
         public virtual CartAddOnItem CartAddOnItem { get; set; }
         public virtual GuestUser GuestUser { get; set; }
