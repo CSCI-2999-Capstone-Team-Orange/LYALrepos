@@ -216,8 +216,8 @@ namespace LoveYouALatte_Authentication.Controllers
                         CategoryName = categories.Single(n => n.IdCategory == drinks.Single(a => a.IdDrinkFood == product.IdDrinkFood).IdCategory).CategoryName,
                         DrinkName = drinks.Single(d => d.IdDrinkFood == product.IdDrinkFood).DrinkName,
                         DrinkDescription = drinks.Single(d => d.IdDrinkFood == product.IdDrinkFood).DrinkDescription,
-                        SizeId = (int)product.IdSize,
-                        SizeName = sizes.Single(s => s.IdSize == product.IdSize).Size1,
+                        SizeId = product.IdSize,
+                        SizeName = sizes.SingleOrDefault(s => s.IdSize == product.IdSize)?.Size1 ?? "n/a",
                         Price = product.Price
                     }) ;
 
@@ -304,8 +304,8 @@ namespace LoveYouALatte_Authentication.Controllers
                         CategoryName = categories.Single(n => n.IdCategory == drinks.Single(a => a.IdDrinkFood == product.IdDrinkFood).IdCategory).CategoryName,
                         DrinkName = drinks.Single(d => d.IdDrinkFood == product.IdDrinkFood).DrinkName,
                         DrinkDescription = drinks.Single(d => d.IdDrinkFood == product.IdDrinkFood).DrinkDescription,
-                        SizeId = (int)product.IdSize,
-                        SizeName = sizes.Single(s => s.IdSize == product.IdSize).Size1,
+                        SizeId = product?.IdSize ?? null,
+                        SizeName = sizes.SingleOrDefault(s => s.IdSize == product.IdSize)?.Size1 ?? "n/a",
                         Price = product.Price
                     }) ;
 
@@ -521,7 +521,7 @@ namespace LoveYouALatte_Authentication.Controllers
                     {
                         ProductId = item.ProductId,
                         ProductDescription = drinks.Single(d => d.IdDrinkFood == product.IdDrinkFood).DrinkName,
-                        sizeDescription = sizes.Single(s => s.IdSize == product.IdSize).Size1,
+                        sizeDescription = sizes.SingleOrDefault(s => s.IdSize == product.IdSize)?.Size1 ?? "n/a",
                         unitCost = item.LineItemCost,
                         addOnList = orderAddOns,
                         quantity = item.Quantity,

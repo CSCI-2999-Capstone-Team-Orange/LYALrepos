@@ -163,7 +163,7 @@ namespace LoveYouALatte_Authentication.Controllers
                         TotalPrice = item.LineItemCost,
                         LineTax = item.LineTax,
                         LineCost = item.LineCost,
-                        SizeName = sizes.Single(s => s.IdSize == products.Single(a => a.IdProduct == item.IdProduct).IdSize).Size1,
+                        SizeName = sizes.SingleOrDefault(s => s.IdSize == products.Single(a => a.IdProduct == item.IdProduct).IdSize)?.Size1 ?? string.Empty,
                         DrinkName = drinks.Single(d => d.IdDrinkFood == products.Single(a => a.IdProduct == item.IdProduct).IdDrinkFood).DrinkName,
 
 
@@ -235,7 +235,7 @@ namespace LoveYouALatte_Authentication.Controllers
                         cartTableId = item.IdCartTable,
                         ProductId = item.IdProduct,
                         ProductDescription = drinks.Single(d => d.IdDrinkFood == product.IdDrinkFood).DrinkName,
-                        sizeDescription = sizes.Single(s => s.IdSize == product.IdSize).Size1,
+                        sizeDescription = sizes.SingleOrDefault(s => s.IdSize == products.Single(a => a.IdProduct == item.IdProduct).IdSize)?.Size1 ?? string.Empty,
                         unitCost = item.LineItemCost,
                         addOnList = orderAddOns,
                         quantity = item.Quantity,
@@ -555,38 +555,68 @@ namespace LoveYouALatte_Authentication.Controllers
                 var cartList = new List<Cart>();
                 //cart info passed to list
 
-                MySqlDatabase db = new MySqlDatabase(connectionString);
-                using (MySqlConnection conn = db.Connection)
+                using (var dbContext = new loveyoualattedbContext())
                 {
-                    var cmd = conn.CreateCommand() as MySqlCommand;
-                    cmd.CommandText = @"
-                    SELECT idCartTable, idUser, prod.idProduct, quantity, prod.price, lineItemCost, lineTax, lineCost, size.size, drink.drink_name FROM loveyoualattedb.CartTable cart
-                    Inner JOIN loveyoualattedb.product prod ON cart.idProduct = prod.idProduct
-                    INNER JOIN loveyoualattedb.drinkFood drink ON prod.idDrinkFood = drink.idDrinkFood
-                    INNER JOIN loveyoualattedb.size size ON prod.idSize = size.idSize
-                    WHERE idUser = '" + UserID + "'";
+                    var products = dbContext.Products.ToList();
+                    var sizes = dbContext.Sizes.ToList();
+                    var drinks = dbContext.DrinkFoods.ToList();
+                    var cartItems = dbContext.CartTables.Where(a => a.IdUser == UserID).ToList();
+                    var check = products.Single(a => a.IdProduct == 25).Price;
 
-                    using (MySqlDataReader dr = cmd.ExecuteReader())
+
+                    foreach (var item in cartItems)
                     {
-                        while (dr.Read())
+                        cartList.Add(new Cart()
                         {
-                            Cart cart = new Cart();
+                            CartId = item.IdCartTable,
+                            IdUser = item.GuestUserId,
+                            IdProduct = item.IdProduct,
+                            Quantity = item.Quantity,
+                            Price = products.Single(a => a.IdProduct == item.IdProduct).Price,
+                            TotalPrice = item.LineItemCost,
+                            LineTax = item.LineTax,
+                            LineCost = item.LineCost,
+                            SizeName = sizes.SingleOrDefault(s => s.IdSize == products.Single(a => a.IdProduct == item.IdProduct).IdSize)?.Size1 ?? string.Empty,
+                            DrinkName = drinks.Single(d => d.IdDrinkFood == products.Single(a => a.IdProduct == item.IdProduct).IdDrinkFood).DrinkName,
 
-                            cart.CartId = dr["idCartTable"] as int? ?? default(int);
-                            cart.IdUser = dr["idUser"] as String ?? string.Empty;
-                            cart.IdProduct = dr["idProduct"] as int? ?? default(int);
-                            cart.Quantity = dr["quantity"] as int? ?? default(int);
-                            cart.Price = dr["price"] as decimal? ?? default(decimal);
-                            cart.TotalPrice = dr["lineItemCost"] as decimal? ?? default(decimal);
-                            cart.LineTax = dr["lineTax"] as decimal? ?? default(decimal);
-                            cart.LineCost = dr["lineCost"] as decimal? ?? default(decimal);
-                            cart.SizeName = dr["size"] as String ?? string.Empty;
-                            cart.DrinkName = dr["drink_name"] as String ?? string.Empty;
 
-                            cartList.Add(cart);
-                        }
+                        });
                     }
+
                 }
+
+                //MySqlDatabase db = new MySqlDatabase(connectionString);
+                //using (MySqlConnection conn = db.Connection)
+                //{
+                //    var cmd = conn.CreateCommand() as MySqlCommand;
+                //    cmd.CommandText = @"
+                //    SELECT idCartTable, idUser, prod.idProduct, quantity, prod.price, lineItemCost, lineTax, lineCost, size.size, drink.drink_name FROM loveyoualattedb.CartTable cart
+                //    Inner JOIN loveyoualattedb.product prod ON cart.idProduct = prod.idProduct
+                //    INNER JOIN loveyoualattedb.drinkFood drink ON prod.idDrinkFood = drink.idDrinkFood
+                //    INNER JOIN loveyoualattedb.size size ON prod.idSize = size.idSize
+                //    WHERE idUser = '" + UserID + "'";
+
+                //    using (MySqlDataReader dr = cmd.ExecuteReader())
+                //    {
+                //        while (dr.Read())
+                //        {
+                //            Cart cart = new Cart();
+
+                //            cart.CartId = dr["idCartTable"] as int? ?? default(int);
+                //            cart.IdUser = dr["idUser"] as String ?? string.Empty;
+                //            cart.IdProduct = dr["idProduct"] as int? ?? default(int);
+                //            cart.Quantity = dr["quantity"] as int? ?? default(int);
+                //            cart.Price = dr["price"] as decimal? ?? default(decimal);
+                //            cart.TotalPrice = dr["lineItemCost"] as decimal? ?? default(decimal);
+                //            cart.LineTax = dr["lineTax"] as decimal? ?? default(decimal);
+                //            cart.LineCost = dr["lineCost"] as decimal? ?? default(decimal);
+                //            cart.SizeName = dr["size"] as String ?? string.Empty;
+                //            cart.DrinkName = dr["drink_name"] as String ?? string.Empty;
+
+                //            cartList.Add(cart);
+                //        }
+                //    }
+                //}
 
                 List<CheckoutItemModel> checkoutItemList = new List<CheckoutItemModel>();
 
@@ -623,7 +653,7 @@ namespace LoveYouALatte_Authentication.Controllers
                             cartTableId = item.IdCartTable,
                             ProductId = item.IdProduct,
                             ProductDescription = drinks.Single(d => d.IdDrinkFood == product.IdDrinkFood).DrinkName,
-                            sizeDescription = sizes.Single(s => s.IdSize == product.IdSize).Size1,
+                            sizeDescription = sizes.SingleOrDefault(s => s.IdSize == product.IdSize)?.Size1 ?? "n/a",
                             unitCost = item.LineItemCost,
                             addOnList = orderAddOns,
                             quantity = item.Quantity,
@@ -957,7 +987,7 @@ namespace LoveYouALatte_Authentication.Controllers
                         {
                             ProductId = item.ProductId,
                             ProductDescription = drinks.Single(d => d.IdDrinkFood == product.IdDrinkFood).DrinkName,
-                            sizeDescription = sizes.Single(s => s.IdSize == product.IdSize).Size1,
+                            sizeDescription = sizes.SingleOrDefault(s => s.IdSize == product.IdSize)?.Size1 ??string.Empty,
                             unitCost = item.LineItemCost,
                             addOnList = orderAddOns,
                             quantity = item.Quantity,
@@ -1017,7 +1047,7 @@ namespace LoveYouALatte_Authentication.Controllers
                         {
                             ProductId = item.ProductId,
                             ProductDescription = drinks.Single(d => d.IdDrinkFood == product.IdDrinkFood).DrinkName,
-                            sizeDescription = sizes.Single(s => s.IdSize == product.IdSize).Size1,
+                            sizeDescription = sizes.SingleOrDefault(s => s.IdSize == product.IdSize)?.Size1 ?? "n/a",
                             unitCost = item.LineItemCost,
                             addOnList = orderAddOns,
                             quantity = item.Quantity,

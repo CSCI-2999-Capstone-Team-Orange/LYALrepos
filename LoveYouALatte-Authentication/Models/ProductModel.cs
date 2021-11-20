@@ -25,9 +25,9 @@ namespace LoveYouALatte_Authentication.Models
         [Range(1, 1000)]
         public int DrinkId { get; set; }
 
-        [Required]
+        //[Required]
         //[Range(1, 3, ErrorMessage = "This size Id must be a value from 1-3.")]
-        public int SizeId { get; set; }
+        public int? SizeId { get; set; }
 
         [Required(ErrorMessage = "Product SKU is required and cannot be longer than 15 characters.")]
         [StringLength (15)]
