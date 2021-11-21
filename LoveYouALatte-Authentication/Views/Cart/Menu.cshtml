@@ -75,8 +75,7 @@
             {
 
         <div>
-            <input class="add-on-quantity" data-addOn='@Json.Serialize(@Model.addOns.addOnList[i])' data-addOnId='@Model.addOns.addOnList[i].addOnId' type="checkbox" asp-for="@Model.addOns.addOnList[i].isSelected" />
-            <input asp-for="@Model.addOns.addOnList[i].quantity" />
+            <input class="add-on-quantity" data-addOnId='@Model.addOns.addOnList[i].addOnId' asp-for="@Model.addOns.addOnList[i].quantity" min="0" max="99" />
             <label class="form-check-label">
                 @Model.addOns.addOnList[i].addOnDescription
             </label>
@@ -91,8 +90,7 @@
             @for (int i = 5; i < 9; i++)
             {
         <div>
-            <input class="add-on-quantity" data-addOn='@Json.Serialize(@Model.addOns.addOnList[i])' data-addOnId='@Model.addOns.addOnList[i].addOnId' type="checkbox" asp-for="@Model.addOns.addOnList[i].isSelected" />
-            <input asp-for="@Model.addOns.addOnList[i].quantity" />
+            <input class="add-on-quantity" data-addOnId='@Model.addOns.addOnList[i].addOnId' asp-for="@Model.addOns.addOnList[i].quantity" min="0" max="99" />
             <label class="form-check-label">
                 @Model.addOns.addOnList[i].addOnDescription
             </label>
@@ -106,8 +104,7 @@
             {
 
         <div>          
-            <input class="add-on-quantity" data-addOn='@Json.Serialize(@Model.addOns.addOnList[i])' data-addOnId='@Model.addOns.addOnList[i].addOnId' type="checkbox" asp-for="@Model.addOns.addOnList[i].isSelected" />
-            <input asp-for="@Model.addOns.addOnList[i].quantity" />
+            <input class="add-on-quantity" data-addOnId='@Model.addOns.addOnList[i].addOnId' asp-for="@Model.addOns.addOnList[i].quantity" min="0" max="99"/>
             <label class="form-check-label">
                 @Model.addOns.addOnList[i].addOnDescription
             </label>
@@ -184,16 +181,15 @@
                 var $item = $(item);
                 drinkAddOns.push({
                     addOnId: $item.data("addonid"),
-                    isSelected: $item[0].checked,
-                    addOnType: "creamer",
-                    addOnDescription: "test",
-                    quantity: $item[0].val()
+                    addOnType: "",
+                    addOnDescription: "",
+                    quantity: $item.val()
                 })
             })
 
-           $("#signInBtn").click(function () {
+           @*$("#signInBtn").click(function () {
                 window.location.href = '@Url.Action("Menu", "Cart")?catid=' + ID;
-           })
+           })*@
 
            $.ajax({
                type: "POST",
