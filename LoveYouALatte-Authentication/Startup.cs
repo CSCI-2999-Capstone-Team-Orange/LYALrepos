@@ -1,3 +1,4 @@
+using FoolProof.Core;
 using LoveYouALatte_Authentication.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -46,8 +47,8 @@ namespace LoveYouALatte_Authentication
 
             services.AddControllersWithViews();
             services.AddRazorPages();
+            services.AddFoolProof();
 
-          
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using FoolProof.Core;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -16,45 +17,56 @@ namespace LoveYouALatte_Authentication.Models
         public string AddProductError { get; set; }
         public string AddProductSuccess { get; set; }
 
-        [Required]
+        [RequiredIf("CategoryID", Operator.NotEqualTo, 5, ErrorMessage = "Small Price is required.")]
         [Display(Name = "Small Price")]
-        [RegularExpression(@"^[0-9]+(\.[0-9]{1,2})$", ErrorMessage = "Valid price with a maximum of 2 decimal places is required.")]
+        [RegularExpressionIf(@"^[0-9]+(\.[0-9]{1,2})$", "CategoryID", Operator.NotEqualTo, 5, ErrorMessage = "Valid small price with a maximum of 2 decimal places is required.")]
+        //[RegularExpression(@"^[0-9]+(\.[0-9]{1,2})$", ErrorMessage = "Valid price with a maximum of 2 decimal places is required.")]
         public decimal SmallPrice { get; set; }
 
-        [Required]
+        [RequiredIf("CategoryID", Operator.NotEqualTo, 5, ErrorMessage = "Medium Price is required.")]
         [Display(Name = "Medium Price")]
-        [RegularExpression(@"^[0-9]+(\.[0-9]{1,2})$", ErrorMessage = "Valid price with a maximum of 2 decimal places is required.")]
+        [RegularExpressionIf(@"^[0-9]+(\.[0-9]{1,2})$", "CategoryID", Operator.NotEqualTo, 5, ErrorMessage = "Valid medium price with a maximum of 2 decimal places is required.")]
+        //[RegularExpression(@"^[0-9]+(\.[0-9]{1,2})$", ErrorMessage = "Valid price with a maximum of 2 decimal places is required.")]
         public decimal MediumPrice { get; set; }
 
-        [Required]
+        [RequiredIf("CategoryID", Operator.NotEqualTo, 5, ErrorMessage = "Large Price is required.")]
         [Display(Name = "Large Price")]
-        [RegularExpression(@"^[0-9]+(\.[0-9]{1,2})$", ErrorMessage = "Valid price with a maximum of 2 decimal places is required.")]
+        [RegularExpressionIf(@"^[0-9]+(\.[0-9]{1,2})$", "CategoryID", Operator.NotEqualTo, 5, ErrorMessage = "Valid large price with a maximum of 2 decimal places is required.")]
+        //[RegularExpression(@"^[0-9]+(\.[0-9]{1,2})$", ErrorMessage = "Valid price with a maximum of 2 decimal places is required.")]
         public decimal LargePrice { get; set; }
 
-        [Required]
+        [RequiredIf("CategoryID", Operator.NotEqualTo, 5, ErrorMessage = "Small SKU is required.")]
         [Display(Name = "Small SKU")]
         public string SmallSKU { get; set; }
 
-        [Required]
+        [RequiredIf("CategoryID", Operator.NotEqualTo, 5, ErrorMessage = "Medium SKU is required.")]
         [Display(Name = "Medium SKU")]
         public string MediumSKU { get; set; }
 
-        [Required]
+        [RequiredIf("CategoryID", Operator.NotEqualTo, 5, ErrorMessage = "Large SKU is required.")]
         [Display(Name = "Large SKU")]
         public string LargeSKU { get; set; }
 
+        [RequiredIf("CategoryID", Operator.EqualTo, 5, ErrorMessage = "Item Price is required.")]
+        [Display(Name = "Item Price")]
+        [RegularExpressionIf(@"^[0-9]+(\.[0-9]{1,2})$", "CategoryID", Operator.EqualTo, 5, ErrorMessage = "Valid item price with a maximum of 2 decimal places is required.")]
+        public decimal ItemPrice { get; set; }
+
+        [RequiredIf("CategoryID", Operator.EqualTo, 5, ErrorMessage = "Item SKU is required.")]
+        [Display(Name = "Large SKU")]
+        public string ItemSKU { get; set; }
         [Required]
-        [Display(Name = "Drink Description")]
+        [Display(Name = "Item Description")]
         public string DrinkDescription { get; set; }
 
         [Required]
-        [Display(Name = "Drink Name")]
+        [Display(Name = "Item Name")]
         public string DrinkName { get; set; }
         [Required]
-        [Display(Name = "Category Name")]
+        [Display(Name = "Category")]
         public int CategoryID { get; set; }
         public CategoryModel categoryDivID { get; set; }
-        [Required]
+        //[Required]
         [Display(Name = "Upload Image")]
         public IFormFile MyImage { set; get; }
 

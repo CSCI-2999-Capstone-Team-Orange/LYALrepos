@@ -21,7 +21,7 @@ namespace LoveYouALatte_Authentication.Models
         [Required]
         [Display(Name = "Category Description")]
         public string CategoryDescription { get; set; }
-        [Required]
+        //[Required]
         [Display(Name = "Upload Image")]
         public IFormFile MyImage { set; get; }
     }

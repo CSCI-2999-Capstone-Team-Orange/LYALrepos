@@ -372,8 +372,7 @@ namespace LoveYouALatte_Authentication.Controllers
                     {
                         if (vm.DrinkName.ToLower() == validDrink.ToString().ToLower())
                         {
-                            ModelState.AddModelError("AddProductError", "Duplicate drink.");
-                            return View(vm);
+                            ModelState.AddModelError("AddProductError", "Duplicate item.");
                         }
                     }
                     else
@@ -382,21 +381,63 @@ namespace LoveYouALatte_Authentication.Controllers
                         cmd1.CommandText = @"INSERT INTO loveyoualattedb.drinkFood (idCategory, drink_name, drink_description) VALUES ('" + vm.CategoryID + "', '" + vm.DrinkName + "', '" + vm.DrinkDescription + "');" +
                             "SELECT LAST_INSERT_ID();";
                         var drinkID = cmd1.ExecuteScalar();
-
+                        
                         var cmd2 = conn.CreateCommand() as MySqlCommand;
-                        cmd2.CommandText = @"INSERT INTO loveyoualattedb.product (idDrinkFood, idSize, productSKU, price) VALUES ('" + drinkID + "', '1', '" + vm.SmallSKU + "','" + vm.SmallPrice + "');" +
+                        if (vm.CategoryID != 5) //if not food category
+                        {
+                            cmd2.CommandText = @"INSERT INTO loveyoualattedb.product (idDrinkFood, idSize, productSKU, price) VALUES ('" + drinkID + "', '1', '" + vm.SmallSKU + "','" + vm.SmallPrice + "');" +
                             "INSERT INTO loveyoualattedb.product (idDrinkFood, idSize, productSKU, price) VALUES ('" + drinkID + "', '2', '" + vm.MediumSKU + "','" + vm.MediumPrice + "');" +
                             "INSERT INTO loveyoualattedb.product (idDrinkFood, idSize, productSKU, price) VALUES ('" + drinkID + "', '3', '" + vm.LargeSKU + "','" + vm.LargePrice + "');";
+                        }
+                        else
+                        {
+                            cmd2.CommandText = @"INSERT INTO loveyoualattedb.product (idDrinkFood, productSKU, price) VALUES ('" + drinkID + "', '" + vm.ItemSKU + "','" + vm.ItemPrice + "');";
+                        }
                         cmd2.ExecuteNonQuery();
 
                         vm.AddProductSuccess = "Succesfully added product!";
+                        //repopulate dropdown
+                        CategoryModel categoryIds = new CategoryModel();
+
+                        using (var dbContext = new loveyoualattedbContext())
+                        {
+                            var categories = dbContext.Categories.ToList();
+                            foreach (var category in categories)
+                            {
+                                categoryIds.categoryIdList.Add(new CategoryModel
+                                {
+                                    IdCategory = category.IdCategory,
+                                    CategoryName = category.CategoryName
+                                });
+                            }
+                        }
+
+                        vm.categoryDivID = categoryIds;
 
                         return View(vm);
                     }
                 }
             }
-            else
+            if (!ModelState.IsValid)
             {
+                //repopulate dropdown
+
+                CategoryModel categoryIds = new CategoryModel();
+
+                using (var dbContext = new loveyoualattedbContext())
+                {
+                    var categories = dbContext.Categories.ToList();
+                    foreach (var category in categories)
+                    {
+                        categoryIds.categoryIdList.Add(new CategoryModel
+                        {
+                            IdCategory = category.IdCategory,
+                            CategoryName = category.CategoryName
+                        });
+                    }
+                }
+
+                vm.categoryDivID = categoryIds;
                 return View(vm);
             }
             

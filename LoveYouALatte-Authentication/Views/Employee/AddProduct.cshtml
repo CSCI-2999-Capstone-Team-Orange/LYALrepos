@@ -7,14 +7,16 @@
 
 <h2>Add Menu Item Form</h2>
 <div id="addProductDiv">
-    @using (Html.BeginForm("AddProduct", "Employee", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    @using (Html.BeginForm("AddProduct", "Employee", FormMethod.Post, new { @class = "addProdForm", enctype = "multipart/form-data" }))
     {
         @if (Model != null)
         {
             <div class="text-success">@Model.AddProductSuccess</div>
         }
         @Html.ValidationMessageFor(m => m.AddProductError, "", new { @class = "text-danger" })
-
+        <span class="text-danger">
+            @Html.ValidationSummary()
+        </span>
         <div class="form-row">
             <div class="form-group col-lg-4">
                 @Html.LabelFor(m => m.DrinkName)
@@ -32,47 +34,109 @@
                 @Html.ValidationMessageFor(m => m.CategoryID, "", new { @class = "text-danger" })
             </div>
         </div>
-        <div class="form-row">
-            <div class="form-group col-lg-4">
-                @Html.LabelFor(m => m.SmallPrice)
-                @Html.TextBoxFor(m => m.SmallPrice, new { @class = "form-control" })
-                @Html.ValidationMessageFor(m => m.SmallPrice, "", new { @class = "text-danger" })
-            </div>
-            <div class="form-group col-lg-4">
-                @Html.LabelFor(m => m.MediumPrice)
-                @Html.TextBoxFor(m => m.MediumPrice, new { @class = "form-control" })
-                @Html.ValidationMessageFor(m => m.MediumPrice, "", new { @class = "text-danger" })
-            </div>
-            <div class="form-group col-lg-4">
-                @Html.LabelFor(m => m.LargePrice)
-                @Html.TextBoxFor(m => m.LargePrice, new { @class = "form-control" })
-                @Html.ValidationMessageFor(m => m.LargePrice, "", new { @class = "text-danger" })
-            </div>
-        </div>
-        <div class="form-row">
-            <div class="form-group col-lg-4">
-                @Html.LabelFor(m => m.SmallSKU)
-                @Html.TextBoxFor(m => m.SmallSKU, new { @class = "form-control" })
-                @Html.ValidationMessageFor(m => m.SmallSKU, "", new { @class = "text-danger" })
-            </div>
-            <div class="form-group col-lg-4">
-                @Html.LabelFor(m => m.MediumSKU)
-                @Html.TextBoxFor(m => m.MediumSKU, new { @class = "form-control" })
-                @Html.ValidationMessageFor(m => m.MediumSKU, "", new { @class = "text-danger" })
-            </div>
-            <div class="form-group col-lg-4">
-                @Html.LabelFor(m => m.LargeSKU)
-                @Html.TextBoxFor(m => m.LargeSKU, new { @class = "form-control" })
-                @Html.ValidationMessageFor(m => m.LargeSKU, "", new { @class = "text-danger" })
+        <div id="sizePrices">
+            <div class="form-row">
+                <div class="form-group col-lg-4">
+                    @Html.LabelFor(m => m.SmallPrice)
+                    @Html.TextBoxFor(m => m.SmallPrice, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.SmallPrice, "", new { @class = "text-danger" })
+                </div>
+                <div class="form-group col-lg-4">
+                    @Html.LabelFor(m => m.MediumPrice)
+                    @Html.TextBoxFor(m => m.MediumPrice, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.MediumPrice, "", new { @class = "text-danger" })
+                </div>
+                <div class="form-group col-lg-4">
+                    @Html.LabelFor(m => m.LargePrice)
+                    @Html.TextBoxFor(m => m.LargePrice, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.LargePrice, "", new { @class = "text-danger" })
+                </div>
             </div>
         </div>
-        <div class="form-row">
-            <div class="form-group col-lg-3">
-                @Html.LabelFor(m => m.MyImage)
-                @Html.TextBoxFor(m => m.MyImage, new { type = "file" })
+        <div id="sizeSKUS">
+            <div class="form-row">
+                <div class="form-group col-lg-4">
+                    @Html.LabelFor(m => m.SmallSKU)
+                    @Html.TextBoxFor(m => m.SmallSKU, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.SmallSKU, "", new { @class = "text-danger" })
+                </div>
+                <div class="form-group col-lg-4">
+                    @Html.LabelFor(m => m.MediumSKU)
+                    @Html.TextBoxFor(m => m.MediumSKU, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.MediumSKU, "", new { @class = "text-danger" })
+                </div>
+                <div class="form-group col-lg-4">
+                    @Html.LabelFor(m => m.LargeSKU)
+                    @Html.TextBoxFor(m => m.LargeSKU, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.LargeSKU, "", new { @class = "text-danger" })
+                </div>
             </div>
         </div>
+        <div id="foodForm">
+            <div class="form-row">
+                <div class="form-group col-lg-4">
+                    @Html.LabelFor(m => m.ItemPrice)
+                    @Html.TextBoxFor(m => m.ItemPrice, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.ItemPrice, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="form-group col-lg-4">
+                    @Html.LabelFor(m => m.ItemSKU)
+                    @Html.TextBoxFor(m => m.ItemSKU, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.ItemSKU, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+            
+        @*<div class="form-row">
+                <div class="form-group col-lg-3">
+                    @Html.LabelFor(m => m.MyImage)
+                    @Html.TextBoxFor(m => m.MyImage, new { type = "file" })
+                </div>
+            </div>*@
         <input type="submit" value="Add" class="btn btn-orange" />
         <input type="button" value="Back" class="btn btn-orange" onclick="location.href='ManageMenuTable';" />
     }
 </div>
+
+<script>
+    $(document).ready(function () {
+        //$("#foodForm").hide();
+        hideShowForm();
+
+        $('#CategoryID').on('change mouseup keyup load', function () {
+            hideShowForm();
+        });
+    });
+    function hideShowForm() {
+        var selection = $("#CategoryID").val();
+        if (selection == "5") { //if food, hide multiple prices/skus
+            $("#sizePrices").hide();
+            $("#sizeSKUS").hide();
+            $("#foodForm").show();
+        }
+        else {
+            $("#sizeSKUS").show();
+            $("#sizePrices").show();
+            $("#foodForm").hide();
+
+        }
+    }
+    
+
+
+    //$(".addProdForm").data("validator").settings.ignore = ".ignore, :hidden";
+
+
+    //$('.quantityNumUpdate').on('input change mouseup keyup', function () {
+    //    var ID = $(this).data('cartid');
+
+    //    var quantity = $('#quantity_' + ID).val();
+    //    if (quantity == "") {
+    //        $("#btn_quantity_" + ID).prop("disabled", true);
+    //    }
+    //    else {
+    //        $("#btn_quantity_" + ID).prop("disabled", false);
+    //    }
+    //});
+</script>
