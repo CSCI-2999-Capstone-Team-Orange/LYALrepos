@@ -987,7 +987,7 @@ namespace LoveYouALatte_Authentication.Controllers
                         {
                             ProductId = item.ProductId,
                             ProductDescription = drinks.Single(d => d.IdDrinkFood == product.IdDrinkFood).DrinkName,
-                            sizeDescription = sizes.SingleOrDefault(s => s.IdSize == product.IdSize)?.Size1 ??string.Empty,
+                            sizeDescription = sizes.SingleOrDefault(s => s.IdSize == product.IdSize)?.Size1 ??"n/a",
                             unitCost = item.LineItemCost,
                             addOnList = orderAddOns,
                             quantity = item.Quantity,
