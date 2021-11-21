@@ -645,7 +645,11 @@ namespace LoveYouALatte_Authentication.Controllers
                             orderAddOns.Add(new ReceiptAddOnModel()
                             {
                                 addOnType = addOnItems.Single(a => a.AddOnId == addon.AddOnId).AddOnType,
-                                addOnDescription = addOnItems.Single(a => a.AddOnId == addon.AddOnId).AddOnDescription
+                                addOnDescription = addOnItems.Single(a => a.AddOnId == addon.AddOnId).AddOnDescription,
+                                quantity = addOnItems.Single(a => a.AddOnId == addon.AddOnId).quantity,
+                                addOnUnitPrice = addOnItems.Single(a => a.AddOnId == addon.AddOnId).AddOnUnitPrice,
+
+
                             });
 
                         }
@@ -980,7 +984,9 @@ namespace LoveYouALatte_Authentication.Controllers
                             {
 
                                 addOnType = addOnItems.Single(a => a.AddOnId == addon.AddOnId).AddOnType,
-                                addOnDescription = addOnItems.Single(a => a.AddOnId == addon.AddOnId).AddOnDescription
+                                addOnDescription = addOnItems.Single(a => a.AddOnId == addon.AddOnId).AddOnDescription,
+                                quantity = addOnItems.Single(a => a.AddOnId == addon.AddOnId).quantity
+
                             });
 
                         }
@@ -1040,7 +1046,11 @@ namespace LoveYouALatte_Authentication.Controllers
                             {
 
                                 addOnType = addOnItems.Single(a => a.AddOnId == addon.AddOnId).AddOnType,
-                                addOnDescription = addOnItems.Single(a => a.AddOnId == addon.AddOnId).AddOnDescription
+                                addOnDescription = addOnItems.Single(a => a.AddOnId == addon.AddOnId).AddOnDescription,
+                                quantity = addOnItems.Single(a => a.AddOnId == addon.AddOnId).quantity,
+                                addOnUnitPrice = addOnItems.Single(a => a.AddOnId == addon.AddOnId).AddOnUnitPrice
+
+
                             });
 
                         }

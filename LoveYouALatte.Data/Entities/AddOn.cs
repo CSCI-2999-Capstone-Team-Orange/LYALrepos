@@ -7,6 +7,8 @@ namespace LoveYouALatte.Data.Entities
 {
     public partial class AddOn
     {
+        public int quantity;
+
         public AddOn()
         {
             AddOnItemLists = new HashSet<AddOnItemList>();
