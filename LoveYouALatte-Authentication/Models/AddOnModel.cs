@@ -10,6 +10,7 @@ namespace LoveYouALatte_Authentication.Models
         public int addOnId { get; set; }
         public string addOnType { get; set; }
         public string addOnDescription { get; set; }
+        public int quantity { get; set; }
         public bool isSelected { get; set; }
     }
 }
