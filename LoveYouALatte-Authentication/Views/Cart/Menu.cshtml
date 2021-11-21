@@ -59,7 +59,7 @@
 
 
 
-<div style="display: none; float: right; right: 0px; top: 0px; " id="addOn" class="z-index-2 w-25 h-100 position-fixed bg-secondary text-light">
+<div style="display: none; float: right; right: 0px; top: 0px; " id="addOn" class="z-index-2 w-50 h-100 position-fixed bg-secondary text-light">
     <div class="overlay-content text-center">
         <br /><br />
         <h1>Addons</h1>
@@ -75,10 +75,7 @@
             {
 
                 <div>
-                    <input class="hello" data-addOn='@Json.Serialize(@Model.addOns.addOnList[i])' type="hidden" asp-for="@Model.addOns.addOnList[i].addOnId" />
-                    <input type="hidden" asp-for="@Model.addOns.addOnList[i].addOnType" />
-                    <input type="hidden" asp-for="@Model.addOns.addOnList[i].addOnDescription" />
-                    <input class="add-on-checkbox" data-addOn='@Json.Serialize(@Model.addOns.addOnList[i])' data-addOnId='@Model.addOns.addOnList[i].addOnId' type="checkbox" asp-for="@Model.addOns.addOnList[i].isSelected" />
+                    <input class="add-on-quantity"  data-addOnId='@Model.addOns.addOnList[i].addOnId' asp-for="@Model.addOns.addOnList[i].quantity" min="0" max="99"/>
                     <label class="form-check-label">
                         @Model.addOns.addOnList[i].addOnDescription
                     </label>
@@ -92,16 +89,13 @@
 
             @for (int i = 5; i < 9; i++)
             {
-                <div>
-                    <input class="hello" data-addOn='@Json.Serialize(@Model.addOns.addOnList[i])' type="hidden" asp-for="@Model.addOns.addOnList[i].addOnId" />
-                    <input type="hidden" asp-for="@Model.addOns.addOnList[i].addOnType" />
-                    <input type="hidden" asp-for="@Model.addOns.addOnList[i].addOnDescription" />
-                    <input class="add-on-checkbox" data-addOn='@Json.Serialize(@Model.addOns.addOnList[i])' data-addOnId='@Model.addOns.addOnList[i].addOnId' type="checkbox" asp-for="@Model.addOns.addOnList[i].isSelected" />
-                    <label class="form-check-label">
-                        @Model.addOns.addOnList[i].addOnDescription
-                    </label>
+        <div>
+            <input class="add-on-quantity" data-addOnId='@Model.addOns.addOnList[i].addOnId' asp-for="@Model.addOns.addOnList[i].quantity" min="0" max="99" />
+            <label class="form-check-label">
+                @Model.addOns.addOnList[i].addOnDescription
+            </label>
 
-                </div>
+        </div>
             }
 
             <h2>Syrups</h2>
@@ -109,19 +103,10 @@
             @for (int i = 9; i < 13; i++)
             {
         <div>
-            <input class="hello" data-addOn='@Json.Serialize(@Model.addOns.addOnList[i])' type="hidden" asp-for="@Model.addOns.addOnList[i].addOnId" />
-            <input type="hidden" asp-for="@Model.addOns.addOnList[i].addOnType" />
-            <input type="hidden" asp-for="@Model.addOns.addOnList[i].addOnDescription" />
-            <input class="add-on-checkbox" data-addOn='@Json.Serialize(@Model.addOns.addOnList[i])' data-addOnId='@Model.addOns.addOnList[i].addOnId' type="checkbox" asp-for="@Model.addOns.addOnList[i].isSelected" />
+            <input class="add-on-quantity" data-addOnId='@Model.addOns.addOnList[i].addOnId' asp-for="@Model.addOns.addOnList[i].quantity" min="0" max="99" />
             <label class="form-check-label">
                 @Model.addOns.addOnList[i].addOnDescription
             </label>
-            <div id="addons">
-                Pumps $0.25 per pump
-                <button type="button" id="sub" class="sub">-</button>
-                <input type="number" id="1" value="1" min="1" max="999" />
-                <button type="button" id="add" class="add">+</button>
-            </div>
 
         </div>
             }
@@ -193,23 +178,24 @@
     var $isGuestUser = '@HttpContextAccessor.HttpContext.Request.Cookies["guestUserId"]';
     $(document).ready(function () {
 
-       /*Addon AJAX CALL*/
+       /*Addon AJAX Query*/
        $('.submit').click(function () {
             drinkAddOns = [];
 
-            $(".add-on-checkbox").each(function (i, item) {
+           $(".add-on-quantity").each(function (i, item) {
                 var $item = $(item);
                 drinkAddOns.push({
                     addOnId: $item.data("addonid"),
-                    isSelected: $item[0].checked,
+                    
                     addOnType: "creamer",
-                    addOnDescription: "test"
+                    addOnDescription: "test",
+                    quantity: $item.val()
                 })
             })
 
-           $("#signInBtn").click(function () {
+           @*$("#signInBtn").click(function () {
                 window.location.href = '@Url.Action("Menu", "Cart")?catid=' + ID;
-           })
+           })*@
 
            $.ajax({
                type: "POST",
@@ -241,7 +227,7 @@
 
         
 
-        /*GuestUser AJAX CALL*/
+        /*GuestUser AJAX Query*/
             $('#guestUserSignInButton').click(function () {
 
                 var $form = $("#guestUserSignInForm");
@@ -325,8 +311,7 @@
                     quantity: quantity,
                     totalPrice: totalPrice,
                     lineTax: lineTax,
-                    lineCost: lineCost,
-                    cartAddOnItemId: cartAddOnItemId
+                    lineCost: lineCost
                 },
                 success: function () {
                     alert("Succesfully added to cart!");

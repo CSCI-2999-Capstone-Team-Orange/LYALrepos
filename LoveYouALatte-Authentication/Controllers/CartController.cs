@@ -464,7 +464,7 @@ namespace LoveYouALatte_Authentication.Controllers
             if (isLoggedIn)
             {
 
-                var addOns = drinkAddOns.Where(a => a.isSelected == true).ToList();
+                var addOns = drinkAddOns.Where(a => a.quantity >0).ToList();
                 
 
                 using (var dbContext = new loveyoualattedbContext())
@@ -485,7 +485,8 @@ namespace LoveYouALatte_Authentication.Controllers
                     {
                         newCartItemId.AddOnItemLists.Add(new AddOnItemList()
                         {
-                            AddOnId = addOn.addOnId
+                            AddOnId = addOn.addOnId,
+                            Quantity = addOn.quantity
                         });
                     }
 
