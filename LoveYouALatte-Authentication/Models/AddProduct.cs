@@ -53,7 +53,7 @@ namespace LoveYouALatte_Authentication.Models
         public decimal ItemPrice { get; set; }
 
         [RequiredIf("CategoryID", Operator.EqualTo, 5, ErrorMessage = "Item SKU is required.")]
-        [Display(Name = "Large SKU")]
+        [Display(Name = "Item SKU")]
         public string ItemSKU { get; set; }
         [Required]
         [Display(Name = "Item Description")]
