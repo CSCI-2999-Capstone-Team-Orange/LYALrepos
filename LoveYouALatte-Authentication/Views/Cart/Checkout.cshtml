@@ -55,31 +55,59 @@
                         <button data-cartid="@cartItem.CartId" class="btn btn-orange btn-remove" id="btn_quantity_@cartItem.CartId">Remove</button>
                     </td>
                 </tr>
-                    @foreach (var item in Model.checkoutItems)
-                    {
-                        <tr>
+                @foreach (var item in Model.checkoutItems)
+                {
+                    <tr>
 
-                            @if (item.cartTableId == cartItem.CartId)
+                        @if (item.cartTableId == cartItem.CartId)
+                        {
+                            if (item.addOnList.Count > 0)
                             {
-                                if (item.addOnList.Count > 0)
+                                <td class="font-weight-bold">Add Ons:</td>
+
+
+                                // Add TR for the types and then fill in underneath types with each item (i.e. Creamers/ all creamers Sweetner/ all sweetners)
+                                foreach (var addons in item.addOnList)
                                 {
-                                    <td class="font-weight-bold">Add Ons:</td>
-
-                                    foreach (var addons in item.addOnList)
+                                    if (addons != null)
                                     {
-                                        @if (addons != null)
+                                        if (addons.addOnType == "Creamer")
                                         {
+                                        <tr>
                                             <td>@addons.addOnDescription</td>
-                                        }
+                                        </tr>
                                     }
-                                }
+                                    if (addons.addOnType == "Sweetner")
+                                    {
+                                        <tr>
+                                            <td>@addons.addOnDescription</td>
+                                        </tr>
+                                    }
+                                    if (addons.addOnType == "Syrup")
+                                    {
+                                        <tr>
+                                            <td>@addons.addOnDescription</td>
+                                        </tr>
+                                    }
+                                    if (addons.addOnType == "Esspresso")
+                                    {
+                                        <tr>
+                                            <td>@addons.addOnDescription</td> 
+                                        </tr>
+                                    }
 
+
+
+                                }
                             }
+                        }
+
+                    }
                         </tr>
 
                     }
 
-                
+
 
 
 

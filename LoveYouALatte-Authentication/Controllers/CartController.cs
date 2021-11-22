@@ -365,10 +365,11 @@ namespace LoveYouALatte_Authentication.Controllers
         [HttpGet]
         public ActionResult Menu(int catid)
         {
+            var categoryId = catid;
 
-            
             MenuViewModel vm = new MenuViewModel();
 
+            vm.CategoryId = categoryId;
             var productList = new List<ProductKG>();
 
             MySqlDatabase db = new MySqlDatabase(connectionString);
@@ -434,78 +435,80 @@ namespace LoveYouALatte_Authentication.Controllers
         [HttpPost]
         public ActionResult addAddOns([FromBody]List<AddOnModel> drinkAddOns) {
 
-            var isLoggedIn = this.User.Identity.IsAuthenticated;
-            if (isLoggedIn)
+            if (ModelState.IsValid)
             {
-
-                var addOns = drinkAddOns.Where(a => a.Quantity > 0).ToList();
-                
-
-                using (var dbContext = new loveyoualattedbContext())
+                var isLoggedIn = this.User.Identity.IsAuthenticated;
+                if (isLoggedIn)
                 {
-                    var addOnInfo = dbContext.AddOns.ToList();
 
-                    var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-                    var cartTable = dbContext.CartTables.Where(a => a.IdUser == userId).ToList();
-                    var lastCartTableId = cartTable.OrderBy(ct => ct.IdCartTable).LastOrDefault().IdCartTable;
+                    var addOns = drinkAddOns.Where(a => a.Quantity > 0).ToList();
 
-                    var newCartItemId = new CartAddOnItem()
+
+                    using (var dbContext = new loveyoualattedbContext())
                     {
-                        IdCartTable = lastCartTableId
-                    };
+                        var addOnInfo = dbContext.AddOns.ToList();
 
+                        var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                        var cartTable = dbContext.CartTables.Where(a => a.IdUser == userId).ToList();
+                        var lastCartTableId = cartTable.OrderBy(ct => ct.IdCartTable).LastOrDefault().IdCartTable;
 
-
-                    foreach (var addOn in addOns)
-                    {
-                        newCartItemId.AddOnItemLists.Add(new AddOnItemList()
+                        var newCartItemId = new CartAddOnItem()
                         {
-                            AddOnId = addOn.addOnId,
-                            Quantity = addOn.Quantity,
-                            AddOnUnitPrice = addOnInfo.SingleOrDefault(a =>a.AddOnId == addOn.addOnId).AddOnUnitPrice,
-                            AddOnTotalPrice = (addOnInfo.SingleOrDefault(a => a.AddOnId == addOn.addOnId).AddOnUnitPrice) * addOn.Quantity
+                            IdCartTable = lastCartTableId
+                        };
 
-                        });
+
+
+                        foreach (var addOn in addOns)
+                        {
+                            newCartItemId.AddOnItemLists.Add(new AddOnItemList()
+                            {
+                                AddOnId = addOn.addOnId,
+                                Quantity = addOn.Quantity,
+                                AddOnUnitPrice = addOnInfo.SingleOrDefault(a => a.AddOnId == addOn.addOnId).AddOnUnitPrice,
+                                AddOnTotalPrice = (addOnInfo.SingleOrDefault(a => a.AddOnId == addOn.addOnId).AddOnUnitPrice) * addOn.Quantity
+
+                            });
+                        }
+
+                        //Save addons to list
+                        dbContext.CartAddOnItems.Add(newCartItemId);
+                        dbContext.SaveChanges();
+
+                        // Calculating Addon Total Cost and AddOn Total Tax
+                        var addOnCombinedTotal = (newCartItemId.AddOnItemLists.Sum(a => a.AddOnTotalPrice));
+                        var addOnCombinedTotalTax = addOnCombinedTotal * 0.075m;
+
+
+                        // Update CartTable with addon info
+                        int cartItemId = newCartItemId.CartAddOnItemId;
+                        var lastCartTableItem = dbContext.CartTables.Single(id => id.IdCartTable == lastCartTableId);
+                        lastCartTableItem.CartAddOnItem = newCartItemId;
+                        lastCartTableItem.LineTax += addOnCombinedTotalTax;
+                        lastCartTableItem.LineCost += addOnCombinedTotal + addOnCombinedTotalTax;
+
+                        dbContext.SaveChanges();
+
+                        if (addOns.Count() == 0)
+                        {
+                            return Json(new { success = true, responseText = "No Addons were added" });
+                        }
+                        else if (addOns.Count > 0)
+                        {
+                            return Json(new { success = true, responseText = "Addons have been added" });
+                        }
+                        else
+                        {
+                            return Content("Error"); ;
+                        }
+
                     }
-
-                    //Save addons to list
-                    dbContext.CartAddOnItems.Add(newCartItemId);
-                    dbContext.SaveChanges();
-
-                    // Calculating Addon Total Cost and AddOn Total Tax
-                    var addOnCombinedTotal = (newCartItemId.AddOnItemLists.Sum(a => a.AddOnTotalPrice));
-                    var addOnCombinedTotalTax = addOnCombinedTotal * 0.075m;
-
-
-                    // Update CartTable with addon info
-                    int cartItemId = newCartItemId.CartAddOnItemId;
-                    var lastCartTableItem = dbContext.CartTables.Single(id => id.IdCartTable == lastCartTableId);
-                    lastCartTableItem.CartAddOnItem = newCartItemId;
-                    lastCartTableItem.LineTax += addOnCombinedTotalTax;
-                    lastCartTableItem.LineCost += addOnCombinedTotal;
-
-                    dbContext.SaveChanges();
-
-                    if (addOns.Count() == 0)
-                    {
-                        return Json(new { success = true, responseText = "No Addons were added" });
-                    }
-                    else if (addOns.Count > 0)
-                    {
-                        return Json(new { success = true, responseText = "Addons have been added" });
-                    }
-                    else
-                    {
-                        return Content("Error"); ;
-                    }
-
                 }
-            }
-            else
-            {
-                var guestUserId = HttpContext.Request.Cookies["guestUserId"];
+                else
+                {
+                    var guestUserId = HttpContext.Request.Cookies["guestUserId"];
 
-                 var confirm = AddAddOns(drinkAddOns, guestUserId);
+                    var confirm = AddAddOns(drinkAddOns, guestUserId);
 
 
                     if (confirm)
@@ -523,6 +526,11 @@ namespace LoveYouALatte_Authentication.Controllers
 
 
                 }
+            }
+            else
+            {
+                return RedirectToAction("Menu", "Cart");
+            }
             
         } 
 

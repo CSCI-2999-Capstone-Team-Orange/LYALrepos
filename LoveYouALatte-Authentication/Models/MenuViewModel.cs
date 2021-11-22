@@ -22,6 +22,8 @@ namespace LoveYouALatte_Authentication.Models
         public CheckoutItemModel checkoutItems { get; set; }
 
         public GuestUserModel NewGuestUser { get; set; }
+
+        public int CategoryId { get; set; }
        
     }
 }

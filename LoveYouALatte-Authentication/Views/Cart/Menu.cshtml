@@ -67,7 +67,7 @@
         <p> Here are the creamer options we have at love you a latte!</p>
         <br />
 
-        <form method="post" asp-action="addAddOns" asp-controller="cart">
+        <form id="addOnForm" method="post" asp-action="addAddOns" asp-controller="cart">
 
             <h2>Creamers</h2>
 
@@ -75,7 +75,7 @@
             {
 
                 <div>
-                    <input class="add-on-quantity" data-addOnId='@Model.addOns.addOnList[i].addOnId' asp-for="@Model.addOns.addOnList[i].Quantity" />
+                    <input class="add-on-quantity" data-addOnId='@Model.addOns.addOnList[i].addOnId' asp-for="@Model.addOns.addOnList[i].Quantity" min="0" max="10"/>
                     <label>
                         @Model.addOns.addOnList[i].addOnDescription
                     </label>
@@ -90,7 +90,7 @@
             @for (int i = 5; i < 9; i++)
             {
                 <div>
-                    <input class="add-on-quantity" data-addOnId='@Model.addOns.addOnList[i].addOnId' asp-for="@Model.addOns.addOnList[i].Quantity" />
+                    <input class="add-on-quantity" data-addOnId='@Model.addOns.addOnList[i].addOnId' asp-for="@Model.addOns.addOnList[i].Quantity" min="0" max="10" />
                     <label>
                         @Model.addOns.addOnList[i].addOnDescription
                     </label>
@@ -101,11 +101,11 @@
 
             <h2>Syrups</h2>
 
-            @for (int i = 10; i < 13; i++)
+            @for (int i = 9; i < 13; i++)
             {
 
                 <div>
-                    <input class="add-on-quantity" data-addOnId='@Model.addOns.addOnList[i].addOnId' asp-for="@Model.addOns.addOnList[i].Quantity" />
+                    <input class="add-on-quantity" data-addOnId='@Model.addOns.addOnList[i].addOnId' asp-for="@Model.addOns.addOnList[i].Quantity"  min="0" max="10"/>
                     <label>
                         @Model.addOns.addOnList[i].addOnDescription
                     </label>
@@ -113,20 +113,21 @@
                 </div>
             }
 
+            @if(Model.CategoryId < 3){
 
             <h2>Espresso Shot</h2>
             @for (int i = 13; i < Model.addOns.addOnList.Count(); i++)
             {
 
                 <div>
-                    <input class="add-on-quantity" data-addOnId='@Model.addOns.addOnList[i].addOnId' asp-for="@Model.addOns.addOnList[i].Quantity" />
+                    <input class="add-on-quantity" data-addOnId='@Model.addOns.addOnList[i].addOnId' asp-for="@Model.addOns.addOnList[i].Quantity"  min="0" max="25"/>
                     <label>
                         @Model.addOns.addOnList[i].addOnDescription
                     </label>
 
                 </div>
             }
-
+            }
 
 
 
@@ -189,7 +190,9 @@
     $(document).ready(function () {
 
        /*Addon AJAX CALL*/
-       $('.submit').click(function () {
+        $('.submit').click(function () {
+            
+
             drinkAddOns = [];
 
            $(".add-on-quantity").each(function (i, item) {
