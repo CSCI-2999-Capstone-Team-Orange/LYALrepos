@@ -171,34 +171,7 @@ namespace LoveYouALatte_Authentication.Controllers
                 }
 
             }
-            //    cmd.CommandText = @"
-            //        SELECT idCartTable, guestUserId, prod.idProduct, quantity, prod.price, lineItemCost, lineTax, lineCost, size.size, drink.drink_name FROM loveyoualattedb.CartTable cart
-            //        Inner JOIN loveyoualattedb.product prod ON cart.idProduct = prod.idProduct
-            //        INNER JOIN loveyoualattedb.drinks drink ON prod.idDrink = drink.idDrinks
-            //        INNER JOIN loveyoualattedb.size size ON prod.idSize = size.idSize
-            //        WHERE idUser = '" + UserID + "'";
-
-            //    using (MySqlDataReader dr = cmd.ExecuteReader())
-            //    {
-            //        while (dr.Read())
-            //        {
-            //            Cart cart = new Cart();
-
-            //            cart.CartId = dr["idCartTable"] as int? ?? default(int);
-            //            cart.IdUser = dr["guestUserId"] as String ?? string.Empty;
-            //            cart.IdProduct = dr["idProduct"] as int? ?? default(int);
-            //            cart.Quantity = dr["quantity"] as int? ?? default(int);
-            //            cart.Price = dr["price"] as decimal? ?? default(decimal);
-            //            cart.TotalPrice = dr["lineItemCost"] as decimal? ?? default(decimal);
-            //            cart.LineTax = dr["lineTax"] as decimal? ?? default(decimal);
-            //            cart.LineCost = dr["lineCost"] as decimal? ?? default(decimal);
-            //            cart.SizeName = dr["size"] as String ?? string.Empty;
-            //            cart.DrinkName = dr["drink_name"] as String ?? string.Empty;
-
-            //            cartList.Add(cart);
-            //        }
-            //    }
-            //}
+            
 
             List<CheckoutItemModel> checkoutItemList = new List<CheckoutItemModel>();
 
@@ -465,11 +438,12 @@ namespace LoveYouALatte_Authentication.Controllers
             if (isLoggedIn)
             {
 
-                var addOns = drinkAddOns.Where(a => a.isSelected == true).ToList();
+                var addOns = drinkAddOns.Where(a => a.Quantity > 0).ToList();
                 
 
                 using (var dbContext = new loveyoualattedbContext())
                 {
+                    var addOnInfo = dbContext.AddOns.ToList();
 
                     var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
                     var cartTable = dbContext.CartTables.Where(a => a.IdUser == userId).ToList();
@@ -486,16 +460,30 @@ namespace LoveYouALatte_Authentication.Controllers
                     {
                         newCartItemId.AddOnItemLists.Add(new AddOnItemList()
                         {
-                            AddOnId = addOn.addOnId
+                            AddOnId = addOn.addOnId,
+                            Quantity = addOn.Quantity,
+                            AddOnUnitPrice = addOnInfo.SingleOrDefault(a =>a.AddOnId == addOn.addOnId).AddOnUnitPrice,
+                            AddOnTotalPrice = (addOnInfo.SingleOrDefault(a => a.AddOnId == addOn.addOnId).AddOnUnitPrice) * addOn.Quantity
+
                         });
                     }
 
+                    //Save addons to list
                     dbContext.CartAddOnItems.Add(newCartItemId);
                     dbContext.SaveChanges();
 
+                    // Calculating Addon Total Cost and AddOn Total Tax
+                    var addOnCombinedTotal = (newCartItemId.AddOnItemLists.Sum(a => a.AddOnTotalPrice));
+                    var addOnCombinedTotalTax = addOnCombinedTotal * 0.075m;
+
+
+                    // Update CartTable with addon info
                     int cartItemId = newCartItemId.CartAddOnItemId;
                     var lastCartTableItem = dbContext.CartTables.Single(id => id.IdCartTable == lastCartTableId);
                     lastCartTableItem.CartAddOnItem = newCartItemId;
+                    lastCartTableItem.LineTax += addOnCombinedTotalTax;
+                    lastCartTableItem.LineCost += addOnCombinedTotal;
+
                     dbContext.SaveChanges();
 
                     if (addOns.Count() == 0)

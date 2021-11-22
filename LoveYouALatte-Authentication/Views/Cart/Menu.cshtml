@@ -73,13 +73,10 @@
 
             @for (int i = 0; i < 5; i++)
             {
-                
+
                 <div>
-                    <input class="hello" data-addOn='@Json.Serialize(@Model.addOns.addOnList[i])' type="hidden" asp-for="@Model.addOns.addOnList[i].addOnId" />
-                    <input type="hidden" asp-for="@Model.addOns.addOnList[i].addOnType" />
-                    <input type="hidden" asp-for="@Model.addOns.addOnList[i].addOnDescription" />
-                    <input class="add-on-checkbox" data-addOn='@Json.Serialize(@Model.addOns.addOnList[i])' data-addOnId='@Model.addOns.addOnList[i].addOnId' type="checkbox" asp-for="@Model.addOns.addOnList[i].isSelected" />
-                    <label class="form-check-label">
+                    <input class="add-on-quantity" data-addOnId='@Model.addOns.addOnList[i].addOnId' asp-for="@Model.addOns.addOnList[i].Quantity" />
+                    <label>
                         @Model.addOns.addOnList[i].addOnDescription
                     </label>
 
@@ -93,16 +90,46 @@
             @for (int i = 5; i < 9; i++)
             {
                 <div>
-                    <input class="hello" data-addOn='@Json.Serialize(@Model.addOns.addOnList[i])' type="hidden" asp-for="@Model.addOns.addOnList[i].addOnId" />
-                    <input type="hidden" asp-for="@Model.addOns.addOnList[i].addOnType" />
-                    <input type="hidden" asp-for="@Model.addOns.addOnList[i].addOnDescription" />
-                    <input class="add-on-checkbox" data-addOn='@Json.Serialize(@Model.addOns.addOnList[i])' data-addOnId='@Model.addOns.addOnList[i].addOnId' type="checkbox" asp-for="@Model.addOns.addOnList[i].isSelected" />
-                    <label class="form-check-label">
+                    <input class="add-on-quantity" data-addOnId='@Model.addOns.addOnList[i].addOnId' asp-for="@Model.addOns.addOnList[i].Quantity" />
+                    <label>
                         @Model.addOns.addOnList[i].addOnDescription
                     </label>
 
                 </div>
             }
+
+
+            <h2>Syrups</h2>
+
+            @for (int i = 10; i < 13; i++)
+            {
+
+                <div>
+                    <input class="add-on-quantity" data-addOnId='@Model.addOns.addOnList[i].addOnId' asp-for="@Model.addOns.addOnList[i].Quantity" />
+                    <label>
+                        @Model.addOns.addOnList[i].addOnDescription
+                    </label>
+
+                </div>
+            }
+
+
+            <h2>Espresso Shot</h2>
+            @for (int i = 13; i < Model.addOns.addOnList.Count(); i++)
+            {
+
+                <div>
+                    <input class="add-on-quantity" data-addOnId='@Model.addOns.addOnList[i].addOnId' asp-for="@Model.addOns.addOnList[i].Quantity" />
+                    <label>
+                        @Model.addOns.addOnList[i].addOnDescription
+                    </label>
+
+                </div>
+            }
+
+
+
+
             <br />
             <input class="btn btn-orange submit" id="addOnSubmit" type="button" value="Add to Drink" /><br /><br />
             <input class="btn btn-primary submit" type="button" value="No Thank You" />
@@ -165,13 +192,11 @@
        $('.submit').click(function () {
             drinkAddOns = [];
 
-            $(".add-on-checkbox").each(function (i, item) {
+           $(".add-on-quantity").each(function (i, item) {
                 var $item = $(item);
                 drinkAddOns.push({
                     addOnId: $item.data("addonid"),
-                    isSelected: $item[0].checked,
-                    addOnType: "creamer",
-                    addOnDescription: "test"
+                    Quantity: $item.val()
                 })
             })
 
