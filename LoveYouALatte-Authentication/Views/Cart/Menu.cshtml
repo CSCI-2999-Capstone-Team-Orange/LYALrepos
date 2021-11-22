@@ -74,13 +74,15 @@
             @for (int i = 0; i < 5; i++)
             {
 
-                <div>
-                    <input class="add-on-quantity" data-addOnId='@Model.addOns.addOnList[i].addOnId' asp-for="@Model.addOns.addOnList[i].Quantity" min="0" max="10"/>
-                    <label>
-                        @Model.addOns.addOnList[i].addOnDescription
-                    </label>
+            <div>
+                <input asp-for="@Model.addOns.addOnList[i].addOnId" value="@Model.addOns.addOnList[i].addOnId" hidden />
+                <input class="add-on-quantity" data-addOnId='@Model.addOns.addOnList[i].addOnId' asp-for="@Model.addOns.addOnList[i].Quantity" min="0" max="10" />
+                <label>
+                    @Model.addOns.addOnList[i].addOnDescription
+                </label>
+                <span asp-validation-for="@Model.addOns.addOnList[i].Quantity" class="text-danger"></span><br />
 
-                </div>
+            </div>
 
 
             }
@@ -89,13 +91,14 @@
 
             @for (int i = 5; i < 9; i++)
             {
-                <div>
-                    <input class="add-on-quantity" data-addOnId='@Model.addOns.addOnList[i].addOnId' asp-for="@Model.addOns.addOnList[i].Quantity" min="0" max="10" />
-                    <label>
-                        @Model.addOns.addOnList[i].addOnDescription
-                    </label>
+            <div>
+                <input class="add-on-quantity" data-addOnId='@Model.addOns.addOnList[i].addOnId' asp-for="@Model.addOns.addOnList[i].Quantity" min="0" max="10" />
+                <label>
+                    @Model.addOns.addOnList[i].addOnDescription
+                </label>
+                <span asp-validation-for="@Model.addOns.addOnList[i].Quantity" class="text-danger"></span><br />
 
-                </div>
+            </div>
             }
 
 
@@ -104,14 +107,15 @@
             @for (int i = 9; i < 13; i++)
             {
 
-                <div>
-                    <input class="add-on-quantity" data-addOnId='@Model.addOns.addOnList[i].addOnId' asp-for="@Model.addOns.addOnList[i].Quantity"  min="0" max="10"/>
-                    <label>
-                        @Model.addOns.addOnList[i].addOnDescription
-                    </label>
+            <div>
+                <input class="add-on-quantity" data-addOnId='@Model.addOns.addOnList[i].addOnId' asp-for="@Model.addOns.addOnList[i].Quantity" min="0" max="10" />
+                <label>
+                    @Model.addOns.addOnList[i].addOnDescription
+                </label>
+                <span asp-validation-for="@Model.addOns.addOnList[i].Quantity" class="text-danger"></span><br />
 
-                </div>
-            }
+            </div>
+                }
 
             @if(Model.CategoryId < 3){
 
@@ -124,6 +128,7 @@
                     <label>
                         @Model.addOns.addOnList[i].addOnDescription
                     </label>
+                    <span asp-validation-for="@Model.addOns.addOnList[i].Quantity" class="text-danger"></span><br />
 
                 </div>
             }
@@ -189,55 +194,60 @@
     var $isGuestUser = '@HttpContextAccessor.HttpContext.Request.Cookies["guestUserId"]';
     $(document).ready(function () {
 
-       /*Addon AJAX CALL*/
+       /*Addon AJAX Query*/
         $('.submit').click(function () {
-            
+            var $form = $("#addOnForm");
+            $.validator.unobtrusive.parse($form);
+            $form.validate();
+            if ($form.valid()) {
 
-            drinkAddOns = [];
 
-           $(".add-on-quantity").each(function (i, item) {
-                var $item = $(item);
-                drinkAddOns.push({
-                    addOnId: $item.data("addonid"),
-                    Quantity: $item.val()
+                drinkAddOns = [];
+
+                $(".add-on-quantity").each(function (i, item) {
+                    var $item = $(item);
+                    drinkAddOns.push({
+                        addOnId: $item.data("addonid"),
+                        Quantity: $item.val()
+                    })
                 })
-            })
 
-           $("#signInBtn").click(function () {
-                window.location.href = '@Url.Action("Menu", "Cart")?catid=' + ID;
-           })
+                $("#signInBtn").click(function () {
+                    window.location.href = '@Url.Action("Menu", "Cart")?catid=' + ID;
+                })
 
-           $.ajax({
-               type: "POST",
-               url: '@Url.Action("addAddOns", "Cart")',
-               contentType: "application/json; charset=utf-8",
-               dataType: "json",
-               data: JSON.stringify(drinkAddOns),
-                success: function (response) {
-                    alert(response.responseText);
-                    $("#addOn").hide("slow");
-                    $(".quantityNum").each(function () {
-                        $(this).val("");
-                    })
-                    $(".add-on-checkbox").each(function () {
-                        $(this).prop("checked", false);
-                    })
-                    $(".btn-add").each(function () {
-                        $(this).prop("disabled", true);
-                    });
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("addAddOns", "Cart")',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: JSON.stringify(drinkAddOns),
+                    success: function (response) {
+                        alert(response.responseText);
+                        $("#addOn").hide("slow");
+                        $(".quantityNum").each(function () {
+                            $(this).val("");
+                        })
+                        $(".add-on-checkbox").each(function () {
+                            $(this).prop("checked", false);
+                        })
+                        $(".btn-add").each(function () {
+                            $(this).prop("disabled", true);
+                        });
 
 
-                },
-                error: function (response) {
-                    alert('Error: ' + response.responseText);
-                }
-            });
+                    },
+                    error: function (response) {
+                        alert('Error: ' + response.responseText);
+                    }
+                });
+            }
 
        });
 
         
 
-        /*GuestUser AJAX CALL*/
+        /*GuestUser AJAX query*/
             $('#guestUserSignInButton').click(function () {
 
                 var $form = $("#guestUserSignInForm");

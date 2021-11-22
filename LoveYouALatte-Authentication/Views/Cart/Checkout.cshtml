@@ -11,7 +11,7 @@
 
 
 <P>@ViewBag.ErrorMessage</P>
-          
+
 
 <div class="table-responsive">
     <table class="table">
@@ -32,7 +32,7 @@
             @foreach (var cartItem in Model.Carts)
             {
                 <tr>
-                    <td>@cartItem.DrinkName</td>
+                    <th>@cartItem.DrinkName</th>
                     <td>
                         <input data-cartid="@cartItem.CartId" type="number" value="@cartItem.Quantity" class="w-50 quantityNumUpdate" id="quantity_@cartItem.CartId"
                                oninput="validity.valid||(value='');" name="quantity_@cartItem.IdProduct" min="1" max="10" step="1" size="2" />
@@ -66,7 +66,7 @@
                                 <td class="font-weight-bold">Add Ons:</td>
 
 
-                                // Add TR for the types and then fill in underneath types with each item (i.e. Creamers/ all creamers Sweetner/ all sweetners)
+                                // Add TR for the types and then fill in underneath types
                                 foreach (var addons in item.addOnList)
                                 {
                                     if (addons != null)
@@ -75,24 +75,36 @@
                                         {
                                         <tr>
                                             <td>@addons.addOnDescription</td>
+                                            <td> @addons.UnitPrice</td>
+                                            <td> @addons.Quantity</td>
+                                            <td>@addons.TotalPrice</td>
                                         </tr>
                                     }
                                     if (addons.addOnType == "Sweetner")
                                     {
                                         <tr>
                                             <td>@addons.addOnDescription</td>
+                                            <td> @addons.UnitPrice</td>
+                                            <td> @addons.Quantity</td>
+                                            <td>@addons.TotalPrice</td>
                                         </tr>
                                     }
                                     if (addons.addOnType == "Syrup")
                                     {
                                         <tr>
                                             <td>@addons.addOnDescription</td>
+                                            <td> @addons.UnitPrice</td>
+                                            <td> @addons.Quantity</td>
+                                            <td>@addons.TotalPrice</td>
                                         </tr>
                                     }
                                     if (addons.addOnType == "Esspresso")
                                     {
                                         <tr>
-                                            <td>@addons.addOnDescription</td> 
+                                            <td>@addons.addOnDescription</td>
+                                            <td> @addons.UnitPrice</td>
+                                            <td> @addons.Quantity</td>
+                                            <td>@addons.TotalPrice</td>
                                         </tr>
                                     }
 
@@ -188,7 +200,7 @@ else
                 contentType: "application/json; charset=utf-8",
                 url: '@Url.Action("Remove", "Cart")',
                 data: {
-                cartid: ID            
+                cartid: ID
             },
             success: function () {
                 alert("Item Deleted!");

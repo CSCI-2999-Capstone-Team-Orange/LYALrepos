@@ -15,7 +15,7 @@ namespace LoveYouALatte_Authentication.Models
         public bool isSelected { get; set; }
 
         [Required]
-        [Range(1, 20, ErrorMessage = "Value can't be below 0 and above 20.")]
+        [Range(0, 20, ErrorMessage = "Value can't be below 0 and above 20.")]
         public int Quantity { get; set; }
 
         public decimal UnitPrice { get; set; }

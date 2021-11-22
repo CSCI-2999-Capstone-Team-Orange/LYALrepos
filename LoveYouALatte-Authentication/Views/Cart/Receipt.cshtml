@@ -29,39 +29,38 @@
     <tr>
         @foreach (var orderItem in Model.Items)
         {
-        <tr>
-            <td>@orderItem.ProductDescription</td>
-            @if (orderItem.sizeDescription == null || orderItem.sizeDescription == "")
-            {
-                <td>n/a</td>
-            }
-            else
-            {
-                <td>@orderItem.sizeDescription</td>
-            }
-            <td>@orderItem.unitCost.ToString("C")</td>
-            <td>@orderItem.quantity</td>
-            <td>@orderItem.tax.ToString("C")</td>
-            <td>@orderItem.totalCost.ToString("C")</td>
-        </tr>
-        @if (orderItem.addOnList.Count > 0)
-        {
             <tr>
-                <td></td>
-                <th>Add Ons</th>
-                @foreach (var addOn in orderItem.addOnList)
-                {
-                    <td>
-
-
-                        @addOn.addOnDescription
-
-                    </td>
-                }
+                <td>@orderItem.ProductDescription</td>
+                <td>@orderItem.sizeDescription</td>
+                <td>@orderItem.unitCost.ToString("C")</td>
+                <td>@orderItem.quantity</td>
+                <td>@orderItem.tax.ToString("C")</td>
+                <td>@orderItem.totalCost.ToString("C")</td>
             </tr>
+            @if (orderItem.addOnList.Count > 0)
+            {
+                <tr>
+                    <td></td>
+                    <th>Add Ons</th>
+                    @foreach (var addOn in orderItem.addOnList)
+                    {
+                        <td>
 
-        }
-    }
+
+                            @addOn.addOnDescription
+
+                        </td>
+                        <td> @addOn.UnitPrice</td>
+                        <td> @addOn.Quantity</td>
+                        <td>@addOn.TotalPrice</td>
+                        
+                                            
+                    }
+                </tr>
+
+             }
+
+         }
 
         <tr>
             <td colspan="4"></td>
