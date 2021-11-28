@@ -5,6 +5,16 @@
     var totalCart = Model.Carts.Sum(x => totalTax + x.TotalPrice);
 
 }
+<head>
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <script src="js/jquery.js"></script>
+    <script src="js/bootstrap-collapse.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
 <h1>@ViewData["Title"]<i class="fa fa-shopping-cart"></i></h1>
 
 <h1>Your Cart: </h1>
@@ -13,8 +23,9 @@
 <P>@ViewBag.ErrorMessage</P>
 
 
-<div class="table-responsive">
-    <table class="table">
+<div class="container">
+    
+   <table class="table table-bordered table-striped">
         <thead>
             <tr>
                 <th scope="col">Item Name</th>
@@ -55,87 +66,100 @@
                         <button data-cartid="@cartItem.CartId" class="btn btn-orange btn-remove" id="btn_quantity_@cartItem.CartId">Remove</button>
                     </td>
                 </tr>
+
                 @foreach (var item in Model.checkoutItems)
                 {
                     <tr>
 
+
                         @if (item.cartTableId == cartItem.CartId)
                         {
+
                             if (item.addOnList.Count > 0)
                             {
-                                <td class="font-weight-bold">Add Ons:</td>
+
+                                <td>
+                                    <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#demo">Simple collapsible</button>
+                                </td>
 
 
                                 // Add TR for the types and then fill in underneath types
                                 foreach (var addons in item.addOnList)
                                 {
+
+
                                     if (addons != null)
                                     {
+
+
                                         if (addons.addOnType == "Creamer")
                                         {
-                                        <tr>
-                                            <td>@addons.addOnDescription</td>
-                                            <td> @addons.UnitPrice</td>
-                                            <td> @addons.Quantity</td>
-                                            <td>@addons.TotalPrice</td>
+
+                                        <tr id="demo" class="collapse">
+                                            <td><div>@addons.addOnDescription</div> </td>
+                                            <td><div>@addons.UnitPrice </div> </td>
+                                            <td><div> @addons.Quantity</div> </td>
+                                            <td><div> @addons.TotalPrice</div> </td>
                                         </tr>
+
                                     }
+
                                     if (addons.addOnType == "Sweetner")
                                     {
-                                        <tr>
+                                        <tr id="demo" class="collapse">
                                             <td>@addons.addOnDescription</td>
                                             <td> @addons.UnitPrice</td>
                                             <td> @addons.Quantity</td>
                                             <td>@addons.TotalPrice</td>
                                         </tr>
-                                    }
-                                    if (addons.addOnType == "Syrup")
-                                    {
-                                        <tr>
+
+                                            }
+                                            if (addons.addOnType == "Syrup")
+                                            {
+                                        <tr id="demo" class="collapse">
                                             <td>@addons.addOnDescription</td>
                                             <td> @addons.UnitPrice</td>
                                             <td> @addons.Quantity</td>
                                             <td>@addons.TotalPrice</td>
                                         </tr>
-                                    }
-                                    if (addons.addOnType == "Esspresso")
-                                    {
-                                        <tr>
+                                            }
+                                            if (addons.addOnType == "Esspresso")
+                                            {
+                                        <tr id="demo" class="collapse">
                                             <td>@addons.addOnDescription</td>
                                             <td> @addons.UnitPrice</td>
                                             <td> @addons.Quantity</td>
                                             <td>@addons.TotalPrice</td>
                                         </tr>
-                                    }
+                                            }
 
 
 
-                                }
-                            }
-                        }
+                                            }
+                                            }
+                                        
+                                        }
 
-                    }
-                        </tr>
+                                        }
+                                        </tr>
 
-                    }
-
-
-
+                                        }
 
 
-            }
-            <tr>
+                                        }
 
 
 
-            <tr>
-                <td colspan="6"></td>
-                <td colspan="1" id="totalTax">@totalTax.ToString("C")</td>
-                <td colspan="1" id="totalCost">@totalCart.ToString("C")</td>
-            </tr>
-        </tbody>
-    </table>
+
+                                        <tr>
+                                            <td colspan="6"></td>
+                                            <td colspan="1" id="totalTax">@totalTax.ToString("C")</td>
+                                            <td colspan="1" id="totalCost">@totalCart.ToString("C")</td>
+                                        </tr>
+                                    </tbody>
+        </table>
 </div>
+
 
 
 
@@ -211,4 +235,13 @@ else
             }
             });
     });
+            $(".btn-primary").click(function () {
+                if ($("#collapseme").hasClass("out")) {
+                    $("#collapseme").addClass("in");
+                    $("#collapseme").removeClass("out");
+                } else {
+                    $("#collapseme").addClass("out");
+                    $("#collapseme").removeClass("in");
+                }
+            });
 </script>
