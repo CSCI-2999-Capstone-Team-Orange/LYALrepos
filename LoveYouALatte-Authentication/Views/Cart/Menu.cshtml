@@ -58,139 +58,141 @@
 
 
 
+<div id="addOn" class="modal bd-example-modal-lg" style="display: none;" >
+    <div style="float: right; right: 0px; top: 0px;" class="w-25 h-100 position-fixed bg-secondary text-light">
+        <div class="overlay-content text-center">
+            <br /><br />
+            <h1>Addons</h1>
+            <br />
+            <p> Here are the creamer options we have at love you a latte!</p>
+            <br />
 
-<div style="display: none; float: right; right: 0px; top: 0px; " id="addOn" class="z-index-2 w-25 h-100 position-fixed bg-secondary text-light">
-    <div class="overlay-content text-center">
-        <br /><br />
-        <h1>Addons</h1>
-        <br />
-        <p> Here are the creamer options we have at love you a latte!</p>
-        <br />
+            <form id="addOnForm" method="post" asp-action="addAddOns" asp-controller="cart">
 
-        <form id="addOnForm" method="post" asp-action="addAddOns" asp-controller="cart">
+                <h2>Creamers</h2>
 
-            <h2>Creamers</h2>
+                @for (int i = 0; i < 5; i++)
+                {
 
-            @for (int i = 0; i < 5; i++)
-            {
+                    <div>
+                        <input asp-for="@Model.addOns.addOnList[i].addOnId" value="@Model.addOns.addOnList[i].addOnId" hidden />
+                        <input class="add-on-quantity" data-addOnId='@Model.addOns.addOnList[i].addOnId' asp-for="@Model.addOns.addOnList[i].Quantity" min="0" max="10" />
+                        <label>
+                            @Model.addOns.addOnList[i].addOnDescription
+                        </label>
+                        <span asp-validation-for="@Model.addOns.addOnList[i].Quantity" class="text-danger"></span><br />
 
-            <div>
-                <input asp-for="@Model.addOns.addOnList[i].addOnId" value="@Model.addOns.addOnList[i].addOnId" hidden />
-                <input class="add-on-quantity" data-addOnId='@Model.addOns.addOnList[i].addOnId' asp-for="@Model.addOns.addOnList[i].Quantity" min="0" max="10" />
-                <label>
-                    @Model.addOns.addOnList[i].addOnDescription
-                </label>
-                <span asp-validation-for="@Model.addOns.addOnList[i].Quantity" class="text-danger"></span><br />
-
-            </div>
-
-
-            }
-
-            <h2>Sweetners</h2>
-
-            @for (int i = 5; i < 9; i++)
-            {
-            <div>
-                <input class="add-on-quantity" data-addOnId='@Model.addOns.addOnList[i].addOnId' asp-for="@Model.addOns.addOnList[i].Quantity" min="0" max="10" />
-                <label>
-                    @Model.addOns.addOnList[i].addOnDescription
-                </label>
-                <span asp-validation-for="@Model.addOns.addOnList[i].Quantity" class="text-danger"></span><br />
-
-            </div>
-            }
+                    </div>
 
 
-            <h2>Syrups</h2>
-
-            @for (int i = 9; i < 13; i++)
-            {
-
-            <div>
-                <input class="add-on-quantity" data-addOnId='@Model.addOns.addOnList[i].addOnId' asp-for="@Model.addOns.addOnList[i].Quantity" min="0" max="10" />
-                <label>
-                    @Model.addOns.addOnList[i].addOnDescription
-                </label>
-                <span asp-validation-for="@Model.addOns.addOnList[i].Quantity" class="text-danger"></span><br />
-
-            </div>
                 }
 
-            @if(Model.CategoryId < 3){
+                <h2>Sweetners</h2>
 
-            <h2>Espresso Shot</h2>
-            @for (int i = 13; i < Model.addOns.addOnList.Count(); i++)
-            {
+                @for (int i = 5; i < 9; i++)
+                {
+                    <div>
+                        <input class="add-on-quantity" data-addOnId='@Model.addOns.addOnList[i].addOnId' asp-for="@Model.addOns.addOnList[i].Quantity" min="0" max="10" />
+                        <label>
+                            @Model.addOns.addOnList[i].addOnDescription
+                        </label>
+                        <span asp-validation-for="@Model.addOns.addOnList[i].Quantity" class="text-danger"></span><br />
 
-                <div>
-                    <input class="add-on-quantity" data-addOnId='@Model.addOns.addOnList[i].addOnId' asp-for="@Model.addOns.addOnList[i].Quantity"  min="0" max="25"/>
-                    <label>
-                        @Model.addOns.addOnList[i].addOnDescription
-                    </label>
-                    <span asp-validation-for="@Model.addOns.addOnList[i].Quantity" class="text-danger"></span><br />
-
-                </div>
-            }
-            }
+                    </div>
+                }
 
 
+                <h2>Syrups</h2>
 
-            <br />
-            <input class="btn btn-orange submit" id="addOnSubmit" type="button" value="Add to Drink" /><br /><br />
-            <input class="btn btn-primary submit" type="button" value="No Thank You" />
-        </form>
+                @for (int i = 9; i < 13; i++)
+                {
+
+                    <div>
+                        <input class="add-on-quantity" data-addOnId='@Model.addOns.addOnList[i].addOnId' asp-for="@Model.addOns.addOnList[i].Quantity" min="0" max="10" />
+                        <label>
+                            @Model.addOns.addOnList[i].addOnDescription
+                        </label>
+                        <span asp-validation-for="@Model.addOns.addOnList[i].Quantity" class="text-danger"></span><br />
+
+                    </div>
+                }
+
+                @if (Model.CategoryId < 3)
+                {
+
+                    <h2>Espresso Shot</h2>
+                    @for (int i = 13; i < Model.addOns.addOnList.Count(); i++)
+                    {
+
+                        <div>
+                            <input class="add-on-quantity" data-addOnId='@Model.addOns.addOnList[i].addOnId' asp-for="@Model.addOns.addOnList[i].Quantity" min="0" max="25" />
+                            <label>
+                                @Model.addOns.addOnList[i].addOnDescription
+                            </label>
+                            <span asp-validation-for="@Model.addOns.addOnList[i].Quantity" class="text-danger"></span><br />
+
+                        </div>
+                    }
+                }
+
+
+
+                <br />
+                <input class="btn btn-orange submit" id="addOnSubmit" type="button" value="Add to Drink" /><br /><br />
+                <input class="btn btn-primary submit" type="button" value="No Thank You" />
+            </form>
+
+        </div>
 
     </div>
-
 </div>
 
 
 
 
-<div class="modal bd-example-modal-lg" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">Continue as Guest?</h2>
-                <div style="padding:4px;">
-                    <button type="button" class="close" data-dismiss="modal" style="float:right; padding:4px;">x</button>
+    <div id="guestUserLogin" class="modal bd-example-modal-lg" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Continue as Guest?</h2>
+                    <div style="padding:4px;">
+                        <button type="button" class="close" data-dismiss="modal" style="float:right; padding:4px;">x</button>
+                    </div>
                 </div>
-            </div>
-            <div class="modal-body">
-                <p>To place an order please either <a asp-area="Identity" asp-page="/Account/Login">login</a> with your account or <a asp-area="Identity" asp-page="/Account/Register">register</a> for a new account. If you would like to checkout as a guest, please provide the information below</p>
+                <div class="modal-body">
+                    <p>To place an order please either <a asp-area="Identity" asp-page="/Account/Login">login</a> with your account or <a asp-area="Identity" asp-page="/Account/Register">register</a> for a new account. If you would like to checkout as a guest, please provide the information below</p>
 
-                <form method="post" id="guestUserSignInForm">
-                    <div class="form-group row">
-                        <label class="col-lg-3" asp-for="NewGuestUser.FirstName"></label>
-                        <input class="form-control col-lg-9" id="guestUserFirstName" asp-for="NewGuestUser.FirstName" /><br />
-                        <span asp-validation-for="NewGuestUser.FirstName" class="text-danger"></span><br />
-                    </div>
-                    <div class="form-group row">
-                        <label class="col-lg-3" asp-for="NewGuestUser.LastName"></label>
-                        <input class="form-control col-lg-9" id="guestUserLastName" asp-for="NewGuestUser.LastName" /><br />
-                        <span asp-validation-for="NewGuestUser.LastName" class="text-danger"></span><br />
-                    </div>
-                    <div class="form-group row">
-                        <label class="col-lg-3" asp-for="NewGuestUser.Email"></label>
-                        <input class="form-control col-lg-9" id="guestUserEmail" asp-for="NewGuestUser.Email" /><br />
-                        <span asp-validation-for="NewGuestUser.Email" class="text-danger"></span><br />
-                    </div>
-                </form>
+                    <form method="post" id="guestUserSignInForm">
+                        <div class="form-group row">
+                            <label class="col-lg-3" asp-for="NewGuestUser.FirstName"></label>
+                            <input class="form-control col-lg-9" id="guestUserFirstName" asp-for="NewGuestUser.FirstName" /><br />
+                            <span asp-validation-for="NewGuestUser.FirstName" class="text-danger"></span><br />
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-lg-3" asp-for="NewGuestUser.LastName"></label>
+                            <input class="form-control col-lg-9" id="guestUserLastName" asp-for="NewGuestUser.LastName" /><br />
+                            <span asp-validation-for="NewGuestUser.LastName" class="text-danger"></span><br />
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-lg-3" asp-for="NewGuestUser.Email"></label>
+                            <input class="form-control col-lg-9" id="guestUserEmail" asp-for="NewGuestUser.Email" /><br />
+                            <span asp-validation-for="NewGuestUser.Email" class="text-danger"></span><br />
+                        </div>
+                    </form>
                     <div class="modal-footer">
                         <button class="btn btn-orange" type="submit" id="guestUserSignInButton">Sign in as Guest</button>
                     </div>
-                
+
+                </div>
+
             </div>
-            
         </div>
     </div>
-</div>
 
 
 
 
-<script>
+    <script>
     var $isGuestUser = '@HttpContextAccessor.HttpContext.Request.Cookies["guestUserId"]';
     $(document).ready(function () {
 
@@ -201,6 +203,8 @@
             $form.validate();
             if ($form.valid()) {
 
+                
+                let warning = true;
 
                 drinkAddOns = [];
 
@@ -216,36 +220,49 @@
                     window.location.href = '@Url.Action("Menu", "Cart")?catid=' + ID;
                 })
 
-                $.ajax({
-                    type: "POST",
-                    url: '@Url.Action("addAddOns", "Cart")',
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    data: JSON.stringify(drinkAddOns),
-                    success: function (response) {
-                        alert(response.responseText);
-                        $("#addOn").hide("slow");
-                        $(".quantityNum").each(function () {
-                            $(this).val("");
-                        })
-                        $(".add-on-checkbox").each(function () {
-                            $(this).prop("checked", false);
-                        })
-                        $(".btn-add").each(function () {
-                            $(this).prop("disabled", true);
-                        });
-
-
-                    },
-                    error: function (response) {
-                        alert('Error: ' + response.responseText);
+                
+                if (drinkAddOns.length > 13)
+                {
+                    if (drinkAddOns[13].Quantity > 5) {
+                        warning = confirm("WARNING: By adding more than five (5) shots of espresso to your drink, you have exceeded the daily recommended amount of caffeine by the FDA. Would you like to proceed?");
                     }
-                });
+                }
+
+
+                if (warning) {
+                    $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("addAddOns", "Cart")',
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        data: JSON.stringify(drinkAddOns),
+                        success: function (response) {
+                            alert(response.responseText);
+                            $("#addOn").hide("slow");
+                            $(".quantityNum").each(function () {
+                                $(this).val("");
+                            })
+                            $(".add-on-quantity").each(function () {
+                                $(this).val(0);
+                            })
+                            $(".btn-add").each(function () {
+                                $(this).prop("disabled", true);
+                            });
+
+
+                        },
+                        error: function (response) {
+                            alert('Error: ' + response.responseText);
+                        }
+
+                    });
+                }
+                
             }
 
        });
 
-        
+
 
         /*GuestUser AJAX query*/
             $('#guestUserSignInButton').click(function () {
@@ -349,12 +366,12 @@
             });
         }
         else {
-            $(".modal").show("slow");
+            $("#guestUserLogin").show("slow");
         }
     });
 
-</script>
+    </script>
 
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
+    @section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+    }
