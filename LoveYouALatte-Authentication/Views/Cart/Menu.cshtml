@@ -7,7 +7,7 @@
 @inject UserManager<ApplicationUser> UserManager
 @model MenuViewModel
 @{
-    var products = Model.Products.GroupBy(x => new { x.DrinkName, x.DrinkDescription });
+    var products = Model.Products.GroupBy(x => new { x.DrinkName, x.DrinkDescription, x.Inventory });
     var categories = Model.Products.GroupBy(x => new { x.DrinkCategory });
 }
 <h1>@ViewData["Title"]</h1>
@@ -20,16 +20,18 @@
     <div class="row">
         @foreach (var prod in products)
         {
-            <div class="col-lg-6">
+        <div class="col-lg-6">
+            @if (prod.Key.Inventory == 0) //out of stock menu card
+            {
                 <div class="card mb-2">
-                    <img class="card-img-top" src="~/Images/@(prod.Key.DrinkName).jpg" alt="@(prod.Key.DrinkName)" />
+                    <img class="card-img-top outOfStock" src="~/Images/@(prod.Key.DrinkName).jpg" alt="@(prod.Key.DrinkName)" />
                     <div class="card-img-overlay">
-                        <h4 class="card-title">@(prod.Key.DrinkName)</h4>
+                        <h4 class="card-title text-danger">@(prod.Key.DrinkName) out of stock!</h4>
                     </div>
-                    <h6 class="card-text text-center">@(prod.Key.DrinkDescription)</h6>
+                    <h6 class="card-text text-center outOfStock">@(prod.Key.DrinkDescription)</h6>
 
 
-                    <ul class="list-group list-group-flush">
+                    <ul class="list-group list-group-flush outOfStock">
                         @foreach (var item in prod)
                         {
                         <li class="list-group-item text-center">
@@ -41,17 +43,52 @@
                             {
                                 <h5>@(item.SizeName): $@(item.Price)</h5>
                             }
-                            <p hidden id="price_@item.ProductId">@(item.Price)</p>
+                            @*<p hidden id="price_@item.ProductId">@(item.Price)</p>
                             <p hidden id="size_@item.ProductId">@(item.SizeName)</p>
 
                             <label for="quantity_@item.ProductId">Quantity: <input data-productid="@item.ProductId" type="number" class="w-50 quantityNum" id="quantity_@item.ProductId" oninput="validity.valid||(value='');" name="quantity_@item.ProductId" min="1" max="10" step="1" size="2" /></label>
                             <button disabled data-productid="@item.ProductId" class="btn btn-orange btn-add" id="btn_add_@item.ProductId">Add To Cart<i class="fa fa-coffee"></i></button>
-                            <br />
+                            <br />*@
                         </li>
                         }
                     </ul>
                 </div>
-            </div>
+            }
+            else //in stock menu card
+            {
+                <div class="card mb-2">
+                    <img class="card-img-top" src="~/Images/@(prod.Key.DrinkName).jpg" alt="@(prod.Key.DrinkName)" />
+                    <div class="card-img-overlay">
+                        <h4 class="card-title">@(prod.Key.DrinkName)</h4>
+                    </div>
+                    <h6 class="card-text text-center">@(prod.Key.DrinkDescription)</h6>
+
+
+                    <ul class="list-group list-group-flush">
+                        @foreach (var item in prod)
+                        {
+                            <li class="list-group-item text-center">
+                                @if (item.SizeName == null || item.SizeName == "")
+                                {
+                                    <h5>$@(item.Price)</h5>
+                                }
+                                else
+                                {
+                                    <h5>@(item.SizeName): $@(item.Price)</h5>
+                                }
+                                <p hidden id="price_@item.ProductId">@(item.Price)</p>
+                                <p hidden id="size_@item.ProductId">@(item.SizeName)</p>
+                                <p hidden id="drinkFood_@item.ProductId">@(item.DrinkId)</p>
+
+                                <label for="quantity_@item.ProductId">Quantity: <input data-productid="@item.ProductId" type="number" class="w-50 quantityNum" id="quantity_@item.ProductId" oninput="validity.valid||(value='');" name="quantity_@item.ProductId" min="1" max="10" step="1" size="2" /></label>
+                                <button disabled data-productid="@item.ProductId" class="btn btn-orange btn-add" id="btn_add_@item.ProductId">Add To Cart<i class="fa fa-coffee"></i></button>
+                                <br />
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
+        </div>
         }
     </div>
 </div>
@@ -276,6 +313,7 @@
 
         if (isLoggedIn == "True" || $isGuestUser != '') {
             var ID = $(this).data('productid');
+            var drinkFoodID = $('#drinkFood_' + ID).text();
             var price = $('#price_' + ID).text();
             var size = $('#size_' + ID).text();
             var quantity = $('#quantity_' + ID).val();
@@ -290,6 +328,7 @@
                 url: '@Url.Action("AddToCart", "Cart")',
                 data: {
                     productid: ID,
+                    drinkFoodId: drinkFoodID,
                     quantity: quantity,
                     totalPrice: totalPrice,
                     lineTax: lineTax,

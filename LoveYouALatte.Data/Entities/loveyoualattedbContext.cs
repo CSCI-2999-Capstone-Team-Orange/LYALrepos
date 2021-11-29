@@ -392,6 +392,8 @@ namespace LoveYouALatte.Data.Entities
 
                 entity.Property(e => e.IdCategory).HasColumnName("idCategory");
 
+                entity.Property(e => e.Inventory).HasColumnName("inventory");
+
                 entity.HasOne(d => d.IdCategoryNavigation)
                     .WithMany(p => p.DrinkFoods)
                     .HasForeignKey(d => d.IdCategory)
