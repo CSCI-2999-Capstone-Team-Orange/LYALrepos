@@ -152,6 +152,7 @@ namespace LoveYouALatte_Authentication.Controllers
                     updateThisProduct.Price = formInfo.updateProduct.Price;
                     updateThisDrink.DrinkName = formInfo.updateProduct.DrinkName;
                     updateThisDrink.DrinkDescription = formInfo.updateProduct.DrinkDescription;
+                    updateThisDrink.Inventory = formInfo.updateProduct.Inventory;
                     dbContext.SaveChanges();
 
                 }
@@ -216,6 +217,7 @@ namespace LoveYouALatte_Authentication.Controllers
                         CategoryName = categories.Single(n => n.IdCategory == drinks.Single(a => a.IdDrinkFood == product.IdDrinkFood).IdCategory).CategoryName,
                         DrinkName = drinks.Single(d => d.IdDrinkFood == product.IdDrinkFood).DrinkName,
                         DrinkDescription = drinks.Single(d => d.IdDrinkFood == product.IdDrinkFood).DrinkDescription,
+                        Inventory = drinks.Single(i => i.IdDrinkFood == product.IdDrinkFood).Inventory,
                         SizeId = product.IdSize,
                         SizeName = sizes.SingleOrDefault(s => s.IdSize == product.IdSize)?.Size1 ?? "n/a",
                         Price = product.Price
@@ -251,6 +253,7 @@ namespace LoveYouALatte_Authentication.Controllers
                     updateThisDrink.DrinkName = formInfo.updateProduct.DrinkName;
                     updateThisDrink.IdCategory = formInfo.updateProduct.category;
                     updateThisDrink.DrinkDescription = formInfo.updateProduct.DrinkDescription;
+                    updateThisDrink.Inventory = formInfo.updateProduct.Inventory;
                     dbContext.SaveChanges();
                     
                 }
@@ -304,6 +307,7 @@ namespace LoveYouALatte_Authentication.Controllers
                         CategoryName = categories.Single(n => n.IdCategory == drinks.Single(a => a.IdDrinkFood == product.IdDrinkFood).IdCategory).CategoryName,
                         DrinkName = drinks.Single(d => d.IdDrinkFood == product.IdDrinkFood).DrinkName,
                         DrinkDescription = drinks.Single(d => d.IdDrinkFood == product.IdDrinkFood).DrinkDescription,
+                        Inventory = drinks.Single(i => i.IdDrinkFood == product.IdDrinkFood).Inventory,
                         SizeId = product?.IdSize ?? null,
                         SizeName = sizes.SingleOrDefault(s => s.IdSize == product.IdSize)?.Size1 ?? "n/a",
                         Price = product.Price

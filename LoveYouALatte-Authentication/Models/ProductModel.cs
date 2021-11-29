@@ -46,6 +46,7 @@ namespace LoveYouALatte_Authentication.Models
         [Required (ErrorMessage = "A production description is required.")]
         [StringLength(200)]
         public string DrinkDescription { get; set; }
+        public int Inventory { get; set; }
 
         [Required(ErrorMessage = "A drink name is required.")]
         [StringLength(45)]
