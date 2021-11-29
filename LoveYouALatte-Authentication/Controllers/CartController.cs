@@ -165,6 +165,7 @@ namespace LoveYouALatte_Authentication.Controllers
                         LineCost = item.LineCost,
                         SizeName = sizes.SingleOrDefault(s => s.IdSize == products.Single(a => a.IdProduct == item.IdProduct).IdSize)?.Size1 ?? string.Empty,
                         DrinkName = drinks.Single(d => d.IdDrinkFood == products.Single(a => a.IdProduct == item.IdProduct).IdDrinkFood).DrinkName,
+                        Inventory = drinks.Single(d => d.IdDrinkFood == products.Single(a => a.IdProduct == item.IdProduct).IdDrinkFood).Inventory,
 
 
                     });
@@ -230,16 +231,22 @@ namespace LoveYouALatte_Authentication.Controllers
 
                     }
 
-                    checkoutItemList.Add(new CheckoutItemModel
+                    int inventory = drinks.Single(d => d.IdDrinkFood == product.IdDrinkFood).Inventory;
+                    if (inventory != 0)
                     {
-                        cartTableId = item.IdCartTable,
-                        ProductId = item.IdProduct,
-                        ProductDescription = drinks.Single(d => d.IdDrinkFood == product.IdDrinkFood).DrinkName,
-                        sizeDescription = sizes.SingleOrDefault(s => s.IdSize == products.Single(a => a.IdProduct == item.IdProduct).IdSize)?.Size1 ?? string.Empty,
-                        unitCost = item.LineItemCost,
-                        addOnList = orderAddOns,
-                        quantity = item.Quantity,
-                    });
+                        checkoutItemList.Add(new CheckoutItemModel
+                        {
+                            cartTableId = item.IdCartTable,
+                            ProductId = item.IdProduct,
+                            ProductDescription = drinks.Single(d => d.IdDrinkFood == product.IdDrinkFood).DrinkName,
+                            sizeDescription = sizes.SingleOrDefault(s => s.IdSize == products.Single(a => a.IdProduct == item.IdProduct).IdSize)?.Size1 ?? string.Empty,
+                            unitCost = item.LineItemCost,
+                            addOnList = orderAddOns,
+                            quantity = item.Quantity,
+                            Inventory = (inventory - item.Quantity)
+                        });
+                    }
+                    
 
                 }
 
@@ -260,7 +267,7 @@ namespace LoveYouALatte_Authentication.Controllers
 
 
         [HttpGet]
-        public ActionResult AddToCart(int productid, int quantity, decimal totalPrice, decimal lineTax, decimal lineCost)
+        public ActionResult AddToCart(int productid, int drinkFoodId, int quantity, decimal totalPrice, decimal lineTax, decimal lineCost)
         {
 
             if (this.User.Identity.IsAuthenticated) { 
@@ -270,21 +277,32 @@ namespace LoveYouALatte_Authentication.Controllers
             MenuViewModel vm = new MenuViewModel();
 
             MySqlDatabase db = new MySqlDatabase(connectionString);
-            using (MySqlConnection conn = db.Connection)
-            {
-                var cmd = conn.CreateCommand() as MySqlCommand;
-                cmd.CommandText = @"INSERT INTO loveyoualattedb.CartTable(idUser, idProduct, quantity, lineItemCost, lineTax, lineCost) VALUES ('" + UserID + "', " + productid + ", " + quantity + ", " + totalPrice + ", " + lineTax + ", " + lineCost + ")";
-                int result = cmd.ExecuteNonQuery();
+                using (MySqlConnection conn = db.Connection)
+                {
+                    var inv = conn.CreateCommand() as MySqlCommand;
+                    inv.CommandText = @"SELECT inventory FROM loveyoualattedb.drinkFood WHERE idDrinkFood = '" + drinkFoodId + "';";
+                    var inventory = Convert.ToInt32(inv.ExecuteScalar());
 
-                if (result > 0)
-                {
-                    return Content("Success");
+                    if (inventory > 0)
+                    {
+                        var cmd = conn.CreateCommand() as MySqlCommand;
+                        cmd.CommandText = @"INSERT INTO loveyoualattedb.CartTable(idUser, idProduct, quantity, lineItemCost, lineTax, lineCost) VALUES ('" + UserID + "', " + productid + ", " + quantity + ", " + totalPrice + ", " + lineTax + ", " + lineCost + ")";
+                        int result = cmd.ExecuteNonQuery();
+
+                        if (result > 0)
+                        {
+                            return Content("Success");
+                        }
+                        else
+                        {
+                            return Content("Error");
+                        }
+                    }
+                    else
+                    {
+                        return Content("Out of stock");
+                    }
                 }
-                else
-                {
-                    return Content("Error");
-                }
-            }
             }
             else
             {
@@ -403,7 +421,7 @@ namespace LoveYouALatte_Authentication.Controllers
             {
                 var cmd = conn.CreateCommand() as MySqlCommand;
                 cmd.CommandText = @"
-                    SELECT idProduct, prod.idDrinkFood, size.idSize, size.size, price, drink_name, drink_description, cat.categoryName  FROM loveyoualattedb.product prod 
+                    SELECT idProduct, prod.idDrinkFood, size.idSize, size.size, price, inventory, drink_name, drink_description, cat.categoryName  FROM loveyoualattedb.product prod 
                         INNER JOIN loveyoualattedb.drinkFood drink ON prod.idDrinkFood = drink.idDrinkFood
                         INNER JOIN loveyoualattedb.category cat ON drink.idCategory = cat.idCategory
                         LEFT JOIN loveyoualattedb.size size
@@ -420,6 +438,7 @@ namespace LoveYouALatte_Authentication.Controllers
                         prod.DrinkId = dr["idDrinkFood"] as int? ?? default(int);
                         prod.SizeId = dr["idSize"] as int? ?? default(int);
                         prod.Price = dr["price"] as decimal? ?? default(decimal);
+                        prod.Inventory = dr["inventory"] as int? ?? default(int);
                         prod.DrinkName = dr["drink_name"] as String ?? string.Empty;
                         prod.DrinkDescription = dr["drink_description"] as String ?? string.Empty;
                         prod.DrinkCategory = dr["categoryName"] as String ?? string.Empty;
@@ -572,6 +591,7 @@ namespace LoveYouALatte_Authentication.Controllers
                             IdUser = item.GuestUserId,
                             IdProduct = item.IdProduct,
                             Quantity = item.Quantity,
+                            Inventory = drinks.Single(d => d.IdDrinkFood == products.Single(a => a.IdProduct == item.IdProduct).IdDrinkFood).Inventory,
                             Price = products.Single(a => a.IdProduct == item.IdProduct).Price,
                             TotalPrice = item.LineItemCost,
                             LineTax = item.LineTax,
@@ -637,7 +657,11 @@ namespace LoveYouALatte_Authentication.Controllers
                     {
                         var product = products.Single(p => p.IdProduct == item.IdProduct);
                         var addOns = addOnList.Where(i => i.CartAddOnItemId == item.CartAddOnItemId).ToList();
+                        int inventory = drinks.Single(d => d.IdDrinkFood == product.IdDrinkFood).Inventory;
+                        var quantity = item.Quantity;
                         List<ReceiptAddOnModel> orderAddOns = new List<ReceiptAddOnModel>();
+                        
+                            
                         foreach (var addon in addOns)
                         {
                             orderAddOns.Add(new ReceiptAddOnModel()
@@ -658,10 +682,7 @@ namespace LoveYouALatte_Authentication.Controllers
                             addOnList = orderAddOns,
                             quantity = item.Quantity,
                         });
-
                     }
-
-
                 }
 
                 vm.checkoutItems = checkoutItemList;
@@ -711,35 +732,71 @@ namespace LoveYouALatte_Authentication.Controllers
                         };
 
                         var products = dbContext.Products.ToList();
+                        var drinks = dbContext.DrinkFoods.ToList();
 
-                        
 
                         foreach (var cartItem in dbCart)
                         {
-                            if (cartItem.CartAddOnItemId != null)
+                            var product = products.Single(p => p.IdProduct == cartItem.IdProduct);
+
+                            var quantity = cartItem.Quantity;
+                            int inventory = drinks.Single(d => d.IdDrinkFood == product.IdDrinkFood).Inventory;
+
+                            if (inventory != 0)
                             {
-                                newUserOrder.OrderItems.Add(
-                                    new OrderItem()
+                                if ((inventory - quantity) >= 0)
+                                {
+                                    //update inventory
+                                    var inv = dbContext.DrinkFoods.Single(d => d.IdDrinkFood == product.IdDrinkFood);
+                                    inv.Inventory = (inventory - quantity);
+                                    dbContext.SaveChanges();
+
+                                    if (cartItem.CartAddOnItemId != null)
                                     {
-                                        ProductId = cartItem.IdProduct,
-                                        Quantity = cartItem.Quantity,
-                                        CartAddOnItemId = cartItem.CartAddOnItemId,
-                                        LineItemCost = (cartItem.LineItemCost / cartItem.Quantity),
-                                        Tax = (cartItem.LineItemCost * 0.075m),
-                                        TotalCost = (cartItem.LineItemCost * 0.075m) + cartItem.LineItemCost,
-                                    });
+                                        newUserOrder.OrderItems.Add(
+                                            new OrderItem()
+                                            {
+                                                ProductId = cartItem.IdProduct,
+                                                Quantity = cartItem.Quantity,
+                                                CartAddOnItemId = cartItem.CartAddOnItemId,
+                                                LineItemCost = (cartItem.LineItemCost / cartItem.Quantity),
+                                                Tax = (cartItem.LineItemCost * 0.075m),
+                                                TotalCost = (cartItem.LineItemCost * 0.075m) + cartItem.LineItemCost,
+                                            });
+                                    }
+                                    else
+                                    {
+                                        newUserOrder.OrderItems.Add(
+                                            new OrderItem()
+                                            {
+                                                ProductId = cartItem.IdProduct,
+                                                Quantity = cartItem.Quantity,
+                                                LineItemCost = (cartItem.LineItemCost / cartItem.Quantity),
+                                                Tax = (cartItem.LineItemCost * 0.075m),
+                                                TotalCost = (cartItem.LineItemCost * 0.075m) + cartItem.LineItemCost,
+                                            });
+                                    }
+                                }
+
+                                else
+                                {
+                                    //automatically set the quantity to the amount that is currently in stock.
+                                    cartItem.Quantity = inventory;
+                                    dbContext.SaveChanges();
+
+                                    TempData["Error"] = "Not enough items in stock. The quantity has been adjusted. Please try again.";
+                                    return RedirectToAction("Checkout");
+                                    //return Content("Not enough items in stock. Adjust the quantity and try again.");
+                                    //adjust the quantity here
+                                }
                             }
                             else
                             {
-                                newUserOrder.OrderItems.Add(
-                                    new OrderItem()
-                                    {
-                                        ProductId = cartItem.IdProduct,
-                                        Quantity = cartItem.Quantity,
-                                        LineItemCost = (cartItem.LineItemCost / cartItem.Quantity),
-                                        Tax = (cartItem.LineItemCost * 0.075m),
-                                        TotalCost = (cartItem.LineItemCost * 0.075m) + cartItem.LineItemCost,
-                                    });
+                                dbContext.CartTables.RemoveRange(cartItem); //remove the cart item that is out of stock
+                                dbContext.SaveChanges();
+
+                                TempData["Error"] = "The item you tried to purchase is no longer in stock and has been removed from your cart. Please try again.";
+                                return RedirectToAction("Checkout");
                             }
                         }
 

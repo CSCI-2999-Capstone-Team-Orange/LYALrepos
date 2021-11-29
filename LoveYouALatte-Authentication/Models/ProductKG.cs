@@ -11,6 +11,7 @@ namespace LoveYouALatte_Authentication.Models
         public int DrinkId { get; set; }
         public int SizeId { get; set; }
         public decimal Price { get; set; }
+        public int Inventory { get; set; }
         public string DrinkDescription { get; set; }
         public string DrinkName { get; set; }
         public string DrinkCategory { get; set; }

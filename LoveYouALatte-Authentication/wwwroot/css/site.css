@@ -128,3 +128,7 @@ body {
 .hidden{
     visibility: hidden;
 }
+
+.outOfStock{
+    opacity: 0.5;
+}

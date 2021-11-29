@@ -18,7 +18,7 @@ namespace LoveYouALatte_Authentication.Models
         public int quantity { get; set; }
         public decimal tax { get; set; }
         public decimal totalCost { get; set; }
-
+        public int Inventory { get; set; }
 
     }
 }
