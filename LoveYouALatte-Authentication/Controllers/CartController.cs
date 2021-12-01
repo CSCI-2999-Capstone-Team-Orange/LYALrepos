@@ -773,9 +773,9 @@ namespace LoveYouALatte_Authentication.Controllers
                                                 ProductId = cartItem.IdProduct,
                                                 Quantity = cartItem.Quantity,
                                                 CartAddOnItemId = cartItem.CartAddOnItemId,
-                                                LineItemCost = (cartItem.LineItemCost / cartItem.Quantity),
-                                                Tax = (cartItem.LineItemCost * 0.075m),
-                                                TotalCost = (cartItem.LineItemCost * 0.075m) + cartItem.LineItemCost,
+                                                LineItemCost = cartItem.LineItemCost,
+                                                Tax = cartItem.LineTax,
+                                                TotalCost = cartItem.LineCost
                                             });
                                     }
                                     else
@@ -785,9 +785,9 @@ namespace LoveYouALatte_Authentication.Controllers
                                             {
                                                 ProductId = cartItem.IdProduct,
                                                 Quantity = cartItem.Quantity,
-                                                LineItemCost = (cartItem.LineItemCost / cartItem.Quantity),
-                                                Tax = (cartItem.LineItemCost * 0.075m),
-                                                TotalCost = (cartItem.LineItemCost * 0.075m) + cartItem.LineItemCost,
+                                                LineItemCost = cartItem.LineItemCost,
+                                                Tax = cartItem.LineTax,
+                                                TotalCost = cartItem.LineCost
                                             });
                                     }
                                 }
