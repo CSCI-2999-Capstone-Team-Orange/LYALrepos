@@ -584,7 +584,7 @@ namespace LoveYouALatte_Authentication.Controllers
                             IdProduct = item.IdProduct,
                             Quantity = item.Quantity,
                             Price = products.Single(a => a.IdProduct == item.IdProduct).Price,
-                            TotalPrice = item.LineItemCost,
+                            TotalPrice = item.LineCost,
                             LineTax = item.LineTax,
                             LineCost = item.LineCost,
                             SizeName = sizes.SingleOrDefault(s => s.IdSize == products.Single(a => a.IdProduct == item.IdProduct).IdSize)?.Size1 ?? string.Empty,
@@ -634,12 +634,12 @@ namespace LoveYouALatte_Authentication.Controllers
 
                 using (var dbContext = new loveyoualattedbContext())
                 {
-
                     var products = dbContext.Products.ToList();
                     var sizes = dbContext.Sizes.ToList();
                     var drinks = dbContext.DrinkFoods.ToList();
                     var addOnItems = dbContext.AddOns.ToList();
                     var addOnList = dbContext.AddOnItemLists.ToList();
+                    var addOnTypes = addOnItems.Select(a => a.AddOnType).Distinct().ToList(); 
 
                     var cartItems = dbContext.CartTables.Where(a => a.IdUser == UserID).ToList();
 

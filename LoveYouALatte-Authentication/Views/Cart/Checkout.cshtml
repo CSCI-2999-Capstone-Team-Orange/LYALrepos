@@ -1,8 +1,8 @@
 ﻿@model CheckoutViewModel
 @{
     ViewData["Title"] = "Checkout";
-    var totalTax = Model.Carts.Sum(x => (0.075m * x.TotalPrice));
-    var totalCart = Model.Carts.Sum(x => totalTax + x.TotalPrice);
+    var totalTax = Model.Carts.Sum(x =>x.LineTax);
+    var totalCart = Model.Carts.Sum(x => x.LineCost);
 
 }
 <h1>@ViewData["Title"]<i class="fa fa-shopping-cart"></i></h1>
@@ -28,7 +28,6 @@
             </tr>
         </thead>
         <tbody>
-
             @foreach (var cartItem in Model.Carts)
             {
                 <tr>
@@ -63,73 +62,47 @@
                         {
                             if (item.addOnList.Count > 0)
                             {
-                                <td class="font-weight-bold">Add Ons:</td>
+                                var addOnTypes = item.addOnList.Select(a => a.addOnType).Distinct().ToList();
+                                <th class="small font-weight-bold">Add Ons:</th>
 
-
-                                // Add TR for the types and then fill in underneath types
-                                foreach (var addons in item.addOnList)
+                                foreach (var addOnType in addOnTypes)
                                 {
-                                    if (addons != null)
+                                <tr>
+                                    <td class="small">@addOnType</td>
+                                    @foreach (var addons in item.addOnList)
                                     {
-                                        if (addons.addOnType == "Creamer")
+                                        if (addons.addOnType == addOnType)
                                         {
-                                        <tr>
-                                            <td>@addons.addOnDescription</td>
-                                            <td> @addons.UnitPrice</td>
-                                            <td> @addons.Quantity</td>
-                                            <td>@addons.TotalPrice</td>
-                                        </tr>
-                                    }
-                                    if (addons.addOnType == "Sweetner")
-                                    {
-                                        <tr>
-                                            <td>@addons.addOnDescription</td>
-                                            <td> @addons.UnitPrice</td>
-                                            <td> @addons.Quantity</td>
-                                            <td>@addons.TotalPrice</td>
-                                        </tr>
-                                    }
-                                    if (addons.addOnType == "Syrup")
-                                    {
-                                        <tr>
-                                            <td>@addons.addOnDescription</td>
-                                            <td> @addons.UnitPrice</td>
-                                            <td> @addons.Quantity</td>
-                                            <td>@addons.TotalPrice</td>
-                                        </tr>
-                                    }
-                                    if (addons.addOnType == "Espresso")
-                                    {
-                                        <tr>
-                                            <td>@addons.addOnDescription</td>
-                                            <td> @addons.UnitPrice</td>
-                                            <td> @addons.Quantity</td>
-                                            <td>@addons.TotalPrice</td>
-                                        </tr>
+
+                                            <td class="small">@addons.Quantity, @addons.addOnDescription </td>
+                                        }
                                     }
 
-
-
-                                }
+                                </tr>
                             }
+
+
+
+
+
+
+
                         }
 
                     }
                         </tr>
 
                     }
-
-
-
-
-
+                
             }
             <tr>
 
 
 
+
             <tr>
-                <td colspan="6"></td>
+                <th>Totals</th>
+                <td colspan="4"></td>
                 <td colspan="1" id="totalTax">@totalTax.ToString("C")</td>
                 <td colspan="1" id="totalCost">@totalCart.ToString("C")</td>
             </tr>
