@@ -59,27 +59,40 @@
                     <tr>
 
                         @if (item.cartTableId == cartItem.CartId)
-                        {
-                            if (item.addOnList.Count > 0)
                             {
-                                var addOnTypes = item.addOnList.Select(a => a.addOnType).Distinct().ToList();
+                                if (item.addOnList.Count > 0)
+                                {
+                                    var addOnTypes = item.addOnList.Select(a => a.addOnType).Distinct().ToList();
+                                    var syrups = item.addOnList.Where(a => a.addOnType == "Syrup").ToList();
+                                    var totalSyrupCost = syrups.Sum(a => a.TotalPrice);
                                 <th class="small font-weight-bold">Add Ons:</th>
 
                                 foreach (var addOnType in addOnTypes)
                                 {
+                                    
                                 <tr>
                                     <td class="small">@addOnType</td>
                                     @foreach (var addons in item.addOnList)
                                     {
                                         if (addons.addOnType == addOnType)
-                                        {
-
+                                        { 
                                             <td class="small">@addons.Quantity, @addons.addOnDescription </td>
+                                            
                                         }
+                                        
                                     }
-
+                                    @if(addOnType == "Syrup")
+                                        {
+                                                <td class="small font-weight-bold">Total Cost: @totalSyrupCost</td>
+                                        }
+                                     else if(addOnType == "Espresso")
+                                        {
+                                            <td class="small font-weight-bold">Total Cost: @item.addOnList.SingleOrDefault(a => a.addOnDescription == "Espresso Shot").TotalPrice</td>
+                                        }
+                                     else { }
+                                    
                                 </tr>
-                            }
+                                }
 
 
 
@@ -87,7 +100,7 @@
 
 
 
-                        }
+                         }
 
                     }
                         </tr>

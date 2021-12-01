@@ -29,38 +29,54 @@
     <tr>
         @foreach (var orderItem in Model.Items)
         {
+        <tr>
+            <td class="font-weight-bold">@orderItem.ProductDescription</td>
+            <td>@orderItem.sizeDescription</td>
+            <td>@orderItem.unitCost.ToString("C")</td>
+            <td>@orderItem.quantity</td>
+            <td>@orderItem.tax.ToString("C")</td>
+            <td>@orderItem.totalCost.ToString("C")</td>
+        </tr>
+        @if (orderItem.addOnList.Count > 0)
+        {
+            var addOnTypes = orderItem.addOnList.Select(a => a.addOnType).Distinct().ToList();
+            var syrups = orderItem.addOnList.Where(a => a.addOnType == "Syrup").ToList();
+            var totalSyrupCost = syrups.Sum(a => a.TotalPrice);
             <tr>
-                <td>@orderItem.ProductDescription</td>
-                <td>@orderItem.sizeDescription</td>
-                <td>@orderItem.unitCost.ToString("C")</td>
-                <td>@orderItem.quantity</td>
-                <td>@orderItem.tax.ToString("C")</td>
-                <td>@orderItem.totalCost.ToString("C")</td>
+                <th class="small font-weight-bold">Add Ons:</th>
             </tr>
-            @if (orderItem.addOnList.Count > 0)
+
+            foreach (var addOnType in addOnTypes)
             {
+
                 <tr>
-                    <td></td>
-                    <th>Add Ons</th>
-                    @foreach (var addOn in orderItem.addOnList)
+                    <td class="small">@addOnType</td>
+                    @foreach (var addons in orderItem.addOnList)
                     {
-                        <td>
+                        if (addons.addOnType == addOnType)
+                        {
+                            <td class="small">@addons.Quantity, @addons.addOnDescription </td>
 
+                        }
 
-                            @addOn.addOnDescription
-
-                        </td>
-                        <td> @addOn.UnitPrice</td>
-                        <td> @addOn.Quantity</td>
-                        <td>@addOn.TotalPrice</td>
-                        
-                                            
                     }
+                    @if (addOnType == "Syrup")
+                    {
+                        <td class="small font-weight-bold">Total Cost: @totalSyrupCost</td>
+                    }
+                    else if (addOnType == "Espresso")
+                    {
+                        <td class="small font-weight-bold">Total Cost: @orderItem.addOnList.SingleOrDefault(a => a.addOnDescription == "Espresso Shot").TotalPrice</td>
+                    }
+                    else { }
+
                 </tr>
+            }
 
-             }
 
-         }
+        }
+
+    }
 
         <tr>
             <td colspan="4"></td>

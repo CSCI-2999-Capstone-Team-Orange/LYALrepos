@@ -59,17 +59,17 @@
 
 
 <div id="addOn" class="modal bd-example-modal-lg" style="display: none;" >
-    <div style="float: right; right: 0px; top: 0px;" class="w-25 h-100 position-fixed bg-secondary text-light">
+    <div style="float: right; right: 0px; top: 0px; font-size: 14px;" class="w-25 h-100 position-fixed bg-secondary text-light">
         <div class="overlay-content text-center">
-            <br /><br />
-            <h1>Addons</h1>
             <br />
-            <p> Here are the creamer options we have at love you a latte!</p>
-            <br />
+            <h1  class="font-weight-bold" style="font-size: 24px;">Addons</h1>
+         
+            <p style="font-size: 14px;"> Here are the add on options we have at love you a latte!</p>
+           
 
             <form id="addOnForm" method="post" asp-action="addAddOns" asp-controller="cart">
 
-                <h2>Creamers</h2>
+                <h2 style="font-size: 16px;">Creamers (No Cost, Limit 10)</h2>
 
                 @for (int i = 0; i < 5; i++)
                 {
@@ -80,14 +80,15 @@
                         <label>
                             @Model.addOns.addOnList[i].addOnDescription
                         </label>
-                        <span asp-validation-for="@Model.addOns.addOnList[i].Quantity" class="text-danger"></span><br />
+                        <span asp-validation-for="@Model.addOns.addOnList[i].Quantity" class="text-danger font-weight-bold"></span><br />
 
                     </div>
 
 
                 }
+            <br />
 
-                <h2>Sweetners</h2>
+            <h2 style="font-size: 16px;">Sweetners (No Cost, Limit 10)</h2>
 
                 @for (int i = 5; i < 9; i++)
                 {
@@ -96,13 +97,13 @@
                         <label>
                             @Model.addOns.addOnList[i].addOnDescription
                         </label>
-                        <span asp-validation-for="@Model.addOns.addOnList[i].Quantity" class="text-danger"></span><br />
+                        <span asp-validation-for="@Model.addOns.addOnList[i].Quantity" class="text-danger font-weight-bold"></span><br />
 
                     </div>
                 }
 
-
-                <h2>Syrups</h2>
+            <br />
+            <h2 style="font-size: 16px;">Syrups ($0.25 each, Limit 10)</h2>
 
                 @for (int i = 9; i < 13; i++)
                 {
@@ -112,15 +113,15 @@
                         <label>
                             @Model.addOns.addOnList[i].addOnDescription
                         </label>
-                        <span asp-validation-for="@Model.addOns.addOnList[i].Quantity" class="text-danger"></span><br />
+                        <span asp-validation-for="@Model.addOns.addOnList[i].Quantity" class="text-danger font-weight-bold"></span><br />
 
                     </div>
                 }
 
                 @if (Model.CategoryId < 3)
                 {
-
-                    <h2>Espresso Shot</h2>
+            <br />
+            <h2 style="font-size: 16px;">Espresso Shot ($1.50 per shot, Limit 20)</h2>
                     @for (int i = 13; i < Model.addOns.addOnList.Count(); i++)
                     {
 
@@ -129,7 +130,7 @@
                             <label>
                                 @Model.addOns.addOnList[i].addOnDescription
                             </label>
-                            <span asp-validation-for="@Model.addOns.addOnList[i].Quantity" class="text-danger"></span><br />
+                            <span asp-validation-for="@Model.addOns.addOnList[i].Quantity" class="text-danger font-weight-bold"></span><br />
 
                         </div>
                     }
@@ -138,8 +139,10 @@
 
 
                 <br />
-                <input class="btn btn-orange submit" id="addOnSubmit" type="button" value="Add to Drink" /><br /><br />
-                <input class="btn btn-primary submit" type="button" value="No Thank You" />
+                <div class="d-flex justify-content-center">
+                    <input class="btn btn-orange submit m-2" id="addOnSubmit" type="button" value="Add to Drink" /><br /><br />
+                    <input class="btn btn-primary submit m-2" type="button" value="No Thank You" />
+                </div>
             </form>
 
         </div>
