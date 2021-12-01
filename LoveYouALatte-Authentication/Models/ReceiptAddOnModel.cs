@@ -9,5 +9,9 @@ namespace LoveYouALatte_Authentication.Models
     {
         public string addOnType { get; set; }
         public string addOnDescription { get; set; }
+        public int Quantity { get; set; }
+        public decimal UnitPrice { get; set; }
+
+        public decimal TotalPrice { get; set; }
     }
 }

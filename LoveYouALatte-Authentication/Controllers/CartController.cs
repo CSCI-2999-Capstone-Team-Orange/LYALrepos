@@ -24,12 +24,12 @@ namespace LoveYouALatte_Authentication.Controllers
 
         private bool AddAddOns(List<AddOnModel> drinkAddOns, string guestUserId)
         {
-            var addOns = drinkAddOns.Where(a => a.isSelected == true).ToList();
+            var addOns = drinkAddOns.Where(a => a.Quantity > 0).ToList();
             bool result = true;
 
             using (var dbContext = new loveyoualattedbContext())
             {
-
+                var addOnInfo = dbContext.AddOns.ToList();
                 var userId = guestUserId;
                 var cartTable = dbContext.CartTables.Where(a => a.GuestUserId == userId).ToList();
                 var lastCartTableId = cartTable.OrderBy(ct => ct.IdCartTable).LastOrDefault().IdCartTable;
@@ -45,16 +45,28 @@ namespace LoveYouALatte_Authentication.Controllers
                 {
                     newCartItemId.AddOnItemLists.Add(new AddOnItemList()
                     {
-                        AddOnId = addOn.addOnId
+                        AddOnId = addOn.addOnId,
+                        Quantity = addOn.Quantity,
+                        AddOnUnitPrice = addOnInfo.SingleOrDefault(a => a.AddOnId == addOn.addOnId).AddOnUnitPrice,
+                        AddOnTotalPrice = (addOnInfo.SingleOrDefault(a => a.AddOnId == addOn.addOnId).AddOnUnitPrice) * addOn.Quantity
                     });
                 }
 
+                //Save addons to list
                 dbContext.CartAddOnItems.Add(newCartItemId);
                 dbContext.SaveChanges();
 
+                // Calculating Addon Total Cost and AddOn Total Tax
+                var addOnCombinedTotal = (newCartItemId.AddOnItemLists.Sum(a => a.AddOnTotalPrice));
+                var addOnCombinedTotalTax = addOnCombinedTotal * 0.075m;
+
+                // Update CartTable with addon info
                 int cartItemId = newCartItemId.CartAddOnItemId;
                 var lastCartTableItem = dbContext.CartTables.Single(id => id.IdCartTable == lastCartTableId);
                 lastCartTableItem.CartAddOnItem = newCartItemId;
+                lastCartTableItem.LineTax += addOnCombinedTotalTax;
+                lastCartTableItem.LineCost += addOnCombinedTotal + addOnCombinedTotalTax;
+
                 dbContext.SaveChanges();
 
                 if (addOns.Count >= 1)
@@ -172,34 +184,7 @@ namespace LoveYouALatte_Authentication.Controllers
                 }
 
             }
-            //    cmd.CommandText = @"
-            //        SELECT idCartTable, guestUserId, prod.idProduct, quantity, prod.price, lineItemCost, lineTax, lineCost, size.size, drink.drink_name FROM loveyoualattedb.CartTable cart
-            //        Inner JOIN loveyoualattedb.product prod ON cart.idProduct = prod.idProduct
-            //        INNER JOIN loveyoualattedb.drinks drink ON prod.idDrink = drink.idDrinks
-            //        INNER JOIN loveyoualattedb.size size ON prod.idSize = size.idSize
-            //        WHERE idUser = '" + UserID + "'";
-
-            //    using (MySqlDataReader dr = cmd.ExecuteReader())
-            //    {
-            //        while (dr.Read())
-            //        {
-            //            Cart cart = new Cart();
-
-            //            cart.CartId = dr["idCartTable"] as int? ?? default(int);
-            //            cart.IdUser = dr["guestUserId"] as String ?? string.Empty;
-            //            cart.IdProduct = dr["idProduct"] as int? ?? default(int);
-            //            cart.Quantity = dr["quantity"] as int? ?? default(int);
-            //            cart.Price = dr["price"] as decimal? ?? default(decimal);
-            //            cart.TotalPrice = dr["lineItemCost"] as decimal? ?? default(decimal);
-            //            cart.LineTax = dr["lineTax"] as decimal? ?? default(decimal);
-            //            cart.LineCost = dr["lineCost"] as decimal? ?? default(decimal);
-            //            cart.SizeName = dr["size"] as String ?? string.Empty;
-            //            cart.DrinkName = dr["drink_name"] as String ?? string.Empty;
-
-            //            cartList.Add(cart);
-            //        }
-            //    }
-            //}
+            
 
             List<CheckoutItemModel> checkoutItemList = new List<CheckoutItemModel>();
 
@@ -226,7 +211,10 @@ namespace LoveYouALatte_Authentication.Controllers
                         orderAddOns.Add(new ReceiptAddOnModel()
                         {
                             addOnType = addOnItems.Single(a => a.AddOnId == addon.AddOnId).AddOnType,
-                            addOnDescription = addOnItems.Single(a => a.AddOnId == addon.AddOnId).AddOnDescription
+                            addOnDescription = addOnItems.Single(a => a.AddOnId == addon.AddOnId).AddOnDescription,
+                            Quantity = addon.Quantity,
+                            UnitPrice = addon.AddOnUnitPrice,
+                            TotalPrice = addon.AddOnTotalPrice
                         });
 
                     }
@@ -410,10 +398,11 @@ namespace LoveYouALatte_Authentication.Controllers
         [HttpGet]
         public ActionResult Menu(int catid)
         {
+            var categoryId = catid;
 
-            
             MenuViewModel vm = new MenuViewModel();
 
+            vm.CategoryId = categoryId;
             var productList = new List<ProductKG>();
 
             MySqlDatabase db = new MySqlDatabase(connectionString);
@@ -480,63 +469,80 @@ namespace LoveYouALatte_Authentication.Controllers
         [HttpPost]
         public ActionResult addAddOns([FromBody]List<AddOnModel> drinkAddOns) {
 
-            var isLoggedIn = this.User.Identity.IsAuthenticated;
-            if (isLoggedIn)
+            if (ModelState.IsValid)
             {
-
-                var addOns = drinkAddOns.Where(a => a.isSelected == true).ToList();
-                
-
-                using (var dbContext = new loveyoualattedbContext())
+                var isLoggedIn = this.User.Identity.IsAuthenticated;
+                if (isLoggedIn)
                 {
 
-                    var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-                    var cartTable = dbContext.CartTables.Where(a => a.IdUser == userId).ToList();
-                    var lastCartTableId = cartTable.OrderBy(ct => ct.IdCartTable).LastOrDefault().IdCartTable;
+                    var addOns = drinkAddOns.Where(a => a.Quantity > 0).ToList();
 
-                    var newCartItemId = new CartAddOnItem()
+
+                    using (var dbContext = new loveyoualattedbContext())
                     {
-                        IdCartTable = lastCartTableId
-                    };
+                        var addOnInfo = dbContext.AddOns.ToList();
 
+                        var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                        var cartTable = dbContext.CartTables.Where(a => a.IdUser == userId).ToList();
+                        var lastCartTableId = cartTable.OrderBy(ct => ct.IdCartTable).LastOrDefault().IdCartTable;
 
-
-                    foreach (var addOn in addOns)
-                    {
-                        newCartItemId.AddOnItemLists.Add(new AddOnItemList()
+                        var newCartItemId = new CartAddOnItem()
                         {
-                            AddOnId = addOn.addOnId
-                        });
-                    }
+                            IdCartTable = lastCartTableId
+                        };
 
-                    dbContext.CartAddOnItems.Add(newCartItemId);
-                    dbContext.SaveChanges();
 
-                    int cartItemId = newCartItemId.CartAddOnItemId;
-                    var lastCartTableItem = dbContext.CartTables.Single(id => id.IdCartTable == lastCartTableId);
-                    lastCartTableItem.CartAddOnItem = newCartItemId;
-                    dbContext.SaveChanges();
 
-                    if (addOns.Count() == 0)
-                    {
-                        return Json(new { success = true, responseText = "No Addons were added" });
-                    }
-                    else if (addOns.Count > 0)
-                    {
-                        return Json(new { success = true, responseText = "Addons have been added" });
-                    }
-                    else
-                    {
-                        return Content("Error"); ;
-                    }
+                        foreach (var addOn in addOns)
+                        {
+                            newCartItemId.AddOnItemLists.Add(new AddOnItemList()
+                            {
+                                AddOnId = addOn.addOnId,
+                                Quantity = addOn.Quantity,
+                                AddOnUnitPrice = addOnInfo.SingleOrDefault(a => a.AddOnId == addOn.addOnId).AddOnUnitPrice,
+                                AddOnTotalPrice = (addOnInfo.SingleOrDefault(a => a.AddOnId == addOn.addOnId).AddOnUnitPrice) * addOn.Quantity
 
+                            });
+                        }
+
+                        //Save addons to list
+                        dbContext.CartAddOnItems.Add(newCartItemId);
+                        dbContext.SaveChanges();
+
+                        // Calculating Addon Total Cost and AddOn Total Tax
+                        var addOnCombinedTotal = (newCartItemId.AddOnItemLists.Sum(a => a.AddOnTotalPrice));
+                        var addOnCombinedTotalTax = addOnCombinedTotal * 0.075m;
+
+
+                        // Update CartTable with addon info
+                        int cartItemId = newCartItemId.CartAddOnItemId;
+                        var lastCartTableItem = dbContext.CartTables.Single(id => id.IdCartTable == lastCartTableId);
+                        lastCartTableItem.CartAddOnItem = newCartItemId;
+                        lastCartTableItem.LineTax += addOnCombinedTotalTax;
+                        lastCartTableItem.LineCost += addOnCombinedTotal + addOnCombinedTotalTax;
+
+                        dbContext.SaveChanges();
+
+                        if (addOns.Count() == 0)
+                        {
+                            return Json(new { success = true, responseText = "No Addons were added" });
+                        }
+                        else if (addOns.Count > 0)
+                        {
+                            return Json(new { success = true, responseText = "Addons have been added" });
+                        }
+                        else
+                        {
+                            return Content("Error"); ;
+                        }
+
+                    }
                 }
-            }
-            else
-            {
-                var guestUserId = HttpContext.Request.Cookies["guestUserId"];
+                else
+                {
+                    var guestUserId = HttpContext.Request.Cookies["guestUserId"];
 
-                 var confirm = AddAddOns(drinkAddOns, guestUserId);
+                    var confirm = AddAddOns(drinkAddOns, guestUserId);
 
 
                     if (confirm)
@@ -554,6 +560,11 @@ namespace LoveYouALatte_Authentication.Controllers
 
 
                 }
+            }
+            else
+            {
+                return Content("Error,  You have added an invalid or quantity of Add ons");
+            }
             
         } 
 
@@ -593,7 +604,7 @@ namespace LoveYouALatte_Authentication.Controllers
                             Quantity = item.Quantity,
                             Inventory = drinks.Single(d => d.IdDrinkFood == products.Single(a => a.IdProduct == item.IdProduct).IdDrinkFood).Inventory,
                             Price = products.Single(a => a.IdProduct == item.IdProduct).Price,
-                            TotalPrice = item.LineItemCost,
+                            TotalPrice = item.LineCost,
                             LineTax = item.LineTax,
                             LineCost = item.LineCost,
                             SizeName = sizes.SingleOrDefault(s => s.IdSize == products.Single(a => a.IdProduct == item.IdProduct).IdSize)?.Size1 ?? string.Empty,
@@ -643,12 +654,12 @@ namespace LoveYouALatte_Authentication.Controllers
 
                 using (var dbContext = new loveyoualattedbContext())
                 {
-
                     var products = dbContext.Products.ToList();
                     var sizes = dbContext.Sizes.ToList();
                     var drinks = dbContext.DrinkFoods.ToList();
                     var addOnItems = dbContext.AddOns.ToList();
                     var addOnList = dbContext.AddOnItemLists.ToList();
+                    var addOnTypes = addOnItems.Select(a => a.AddOnType).Distinct().ToList(); 
 
                     var cartItems = dbContext.CartTables.Where(a => a.IdUser == UserID).ToList();
 
@@ -667,7 +678,10 @@ namespace LoveYouALatte_Authentication.Controllers
                             orderAddOns.Add(new ReceiptAddOnModel()
                             {
                                 addOnType = addOnItems.Single(a => a.AddOnId == addon.AddOnId).AddOnType,
-                                addOnDescription = addOnItems.Single(a => a.AddOnId == addon.AddOnId).AddOnDescription
+                                addOnDescription = addOnItems.Single(a => a.AddOnId == addon.AddOnId).AddOnDescription,
+                                Quantity = addon.Quantity,
+                                UnitPrice = addon.AddOnUnitPrice,
+                                TotalPrice = addon.AddOnTotalPrice
                             });
 
                         }
@@ -759,9 +773,9 @@ namespace LoveYouALatte_Authentication.Controllers
                                                 ProductId = cartItem.IdProduct,
                                                 Quantity = cartItem.Quantity,
                                                 CartAddOnItemId = cartItem.CartAddOnItemId,
-                                                LineItemCost = (cartItem.LineItemCost / cartItem.Quantity),
-                                                Tax = (cartItem.LineItemCost * 0.075m),
-                                                TotalCost = (cartItem.LineItemCost * 0.075m) + cartItem.LineItemCost,
+                                                LineItemCost = cartItem.LineItemCost,
+                                                Tax = cartItem.LineTax,
+                                                TotalCost = cartItem.LineCost
                                             });
                                     }
                                     else
@@ -771,9 +785,9 @@ namespace LoveYouALatte_Authentication.Controllers
                                             {
                                                 ProductId = cartItem.IdProduct,
                                                 Quantity = cartItem.Quantity,
-                                                LineItemCost = (cartItem.LineItemCost / cartItem.Quantity),
-                                                Tax = (cartItem.LineItemCost * 0.075m),
-                                                TotalCost = (cartItem.LineItemCost * 0.075m) + cartItem.LineItemCost,
+                                                LineItemCost = cartItem.LineItemCost,
+                                                Tax = cartItem.LineTax,
+                                                TotalCost = cartItem.LineCost
                                             });
                                     }
                                 }
@@ -867,9 +881,9 @@ namespace LoveYouALatte_Authentication.Controllers
                                         ProductId = cartItem.IdProduct,
                                         Quantity = cartItem.Quantity,
                                         CartAddOnItemId = cartItem.CartAddOnItemId,
-                                        LineItemCost = (cartItem.LineItemCost / cartItem.Quantity),
-                                        Tax = (cartItem.LineItemCost * 0.075m),
-                                        TotalCost = (cartItem.LineItemCost * 0.075m) + cartItem.LineItemCost,
+                                        LineItemCost = cartItem.LineItemCost,
+                                        Tax = cartItem.LineTax,
+                                        TotalCost = cartItem.LineCost
                                     });
                             }
                             else
@@ -879,9 +893,9 @@ namespace LoveYouALatte_Authentication.Controllers
                                     {
                                         ProductId = cartItem.IdProduct,
                                         Quantity = cartItem.Quantity,
-                                        LineItemCost = (cartItem.LineItemCost / cartItem.Quantity),
-                                        Tax = (cartItem.LineItemCost * 0.075m),
-                                        TotalCost = (cartItem.LineItemCost * 0.075m) + cartItem.LineItemCost,
+                                        LineItemCost = cartItem.LineItemCost,
+                                        Tax = cartItem.LineTax,
+                                        TotalCost = cartItem.LineCost
                                     });
                             }
                         }
@@ -1035,7 +1049,10 @@ namespace LoveYouALatte_Authentication.Controllers
                             {
 
                                 addOnType = addOnItems.Single(a => a.AddOnId == addon.AddOnId).AddOnType,
-                                addOnDescription = addOnItems.Single(a => a.AddOnId == addon.AddOnId).AddOnDescription
+                                addOnDescription = addOnItems.Single(a => a.AddOnId == addon.AddOnId).AddOnDescription,
+                                Quantity = addon.Quantity,
+                                UnitPrice = addon.AddOnUnitPrice,
+                                TotalPrice = addon.AddOnTotalPrice
                             });
 
                         }
@@ -1095,7 +1112,10 @@ namespace LoveYouALatte_Authentication.Controllers
                             {
 
                                 addOnType = addOnItems.Single(a => a.AddOnId == addon.AddOnId).AddOnType,
-                                addOnDescription = addOnItems.Single(a => a.AddOnId == addon.AddOnId).AddOnDescription
+                                addOnDescription = addOnItems.Single(a => a.AddOnId == addon.AddOnId).AddOnDescription,
+                                Quantity = addon.Quantity,
+                                UnitPrice = addon.AddOnUnitPrice,
+                                TotalPrice = addon.AddOnTotalPrice
                             });
 
                         }

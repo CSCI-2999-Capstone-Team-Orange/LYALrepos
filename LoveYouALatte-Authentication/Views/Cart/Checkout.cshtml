@@ -1,8 +1,8 @@
 ﻿@model CheckoutViewModel
 @{
     ViewData["Title"] = "Checkout";
-    var totalTax = Model.Carts.Sum(x => (0.075m * x.TotalPrice));
-    var totalCart = Model.Carts.Sum(x => totalTax + x.TotalPrice);
+    var totalTax = Model.Carts.Sum(x => x.LineTax);
+    var totalCart = Model.Carts.Sum(x => x.LineCost);
 
 }
 <h1>@ViewData["Title"]<i class="fa fa-shopping-cart"></i></h1>
@@ -38,11 +38,10 @@
             </tr>
         </thead>
         <tbody>
-
             @foreach (var cartItem in Model.Carts)
             {
                 <tr>
-                    <td>@cartItem.DrinkName</td>
+                    <th>@cartItem.DrinkName</th>
                     <td>
                         <input data-cartid="@cartItem.CartId" type="number" value="@cartItem.Quantity" class="w-50 quantityNumUpdate" id="quantity_@cartItem.CartId"
                                oninput="validity.valid||(value='');" name="quantity_@cartItem.IdProduct" min="1" max="10" step="1" size="2" />
@@ -73,33 +72,60 @@
                         {
                             if (item.addOnList.Count > 0)
                             {
-                                <td class="font-weight-bold">Add Ons:</td>
+                                var addOnTypes = item.addOnList.Select(a => a.addOnType).Distinct().ToList();
+                                var syrups = item.addOnList.Where(a => a.addOnType == "Syrup").ToList();
+                                var totalSyrupCost = syrups.Sum(a => a.TotalPrice);
+                                <th class="small font-weight-bold">Add Ons:</th>
 
-                                foreach (var addons in item.addOnList)
+                                foreach (var addOnType in addOnTypes)
                                 {
-                                    @if (addons != null)
+
+                                <tr>
+                                    <td class="small">@addOnType</td>
+                                    @foreach (var addons in item.addOnList)
                                     {
-                                        <td>@addons.addOnDescription</td>
+                                        if (addons.addOnType == addOnType)
+                                        {
+                                            <td class="small">@addons.Quantity, @addons.addOnDescription </td>
+
+                                        }
+
                                     }
-                                }
+                                    @if (addOnType == "Syrup")
+                                    {
+                                        <td class="small font-weight-bold">Total Cost: @totalSyrupCost</td>
+                                    }
+                                    else if (addOnType == "Espresso")
+                                    {
+                                        <td class="small font-weight-bold">Total Cost: @item.addOnList.SingleOrDefault(a => a.addOnDescription == "Espresso Shot").TotalPrice</td>
+                                    }
+                                    else { }
+
+                                </tr>
                             }
 
+
+
+
+
+
+
                         }
-                    </tr>
 
-                }
+                    }
+                        </tr>
 
-
-
-
+                    }
 
             }
             <tr>
 
 
 
+
             <tr>
-                <td colspan="6"></td>
+                <th>Totals</th>
+                <td colspan="4"></td>
                 <td colspan="1" id="totalTax">@totalTax.ToString("C")</td>
                 <td colspan="1" id="totalCost">@totalCart.ToString("C")</td>
             </tr>
@@ -180,5 +206,19 @@ else
                 alert('Error: ' + data.statusText);
             }
             });
+    });
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('tr.parent')
+            .css("cursor", "pointer")
+            .attr("title", "Click to expand/collapse")
+            .click(function () {
+                $(this).siblings('.child-' + this.id).toggle();
+            });
+        $('tr[class^=child-]').hide().children('td');
     });
 </script>
