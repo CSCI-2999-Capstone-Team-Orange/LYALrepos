@@ -75,33 +75,39 @@
                                 var addOnTypes = item.addOnList.Select(a => a.addOnType).Distinct().ToList();
                                 var syrups = item.addOnList.Where(a => a.addOnType == "Syrup").ToList();
                                 var totalSyrupCost = syrups.Sum(a => a.TotalPrice);
-                                <th class="small font-weight-bold">Add Ons:</th>
+                                
+                                <tr class="parent" id="@cartItem.CartId" title="Click to expand/collapse" style="cursor: pointer;">
+                                  <td> <button type="button" class="collapsible">Add Ons:</button> </td>
+                                </tr>
+                            
 
                                 foreach (var addOnType in addOnTypes)
                                 {
 
-                                <tr>
-                                    <td class="small">@addOnType</td>
-                                    @foreach (var addons in item.addOnList)
-                                    {
-                                        if (addons.addOnType == addOnType)
-                                        {
-                                            <td class="small">@addons.Quantity, @addons.addOnDescription </td>
+                                   <tr class="child-@cartItem.CartId">
 
-                                        }
+                                   <td class="small">@addOnType</td>
+
+                                @foreach (var addons in item.addOnList)
+                                {
+                                    if (addons.addOnType == addOnType)
+                                    {
+                                        <td class="small">@addons.Quantity, @addons.addOnDescription </td>
 
                                     }
-                                    @if (addOnType == "Syrup")
-                                    {
-                                        <td class="small font-weight-bold">Total Cost: @totalSyrupCost</td>
-                                    }
-                                    else if (addOnType == "Espresso")
-                                    {
-                                        <td class="small font-weight-bold">Total Cost: @item.addOnList.SingleOrDefault(a => a.addOnDescription == "Espresso Shot").TotalPrice</td>
-                                    }
-                                    else { }
 
-                                </tr>
+                                }
+                                @if (addOnType == "Syrup")
+                                {
+                                    <td class="small font-weight-bold">Total Cost: @totalSyrupCost</td>
+                                }
+                                else if (addOnType == "Espresso")
+                                {
+                                    <td class="small font-weight-bold">Total Cost: @item.addOnList.SingleOrDefault(a => a.addOnDescription == "Espresso Shot").TotalPrice</td>
+                                }
+                                else { }
+
+                            </tr>
                             }
 
 
@@ -110,26 +116,26 @@
 
 
 
+                            }
+
+                            }
+                            </tr>
+
                         }
 
                     }
+                        <tr>
+
+
+
+
+                        <tr>
+                            <th>Totals</th>
+                            <td colspan="4"></td>
+                            <td colspan="1" id="totalTax">@totalTax.ToString("C")</td>
+                            <td colspan="1" id="totalCost">@totalCart.ToString("C")</td>
                         </tr>
-
-                    }
-
-            }
-            <tr>
-
-
-
-
-            <tr>
-                <th>Totals</th>
-                <td colspan="4"></td>
-                <td colspan="1" id="totalTax">@totalTax.ToString("C")</td>
-                <td colspan="1" id="totalCost">@totalCart.ToString("C")</td>
-            </tr>
-        </tbody>
+                    </tbody>
     </table>
 </div>
 
