@@ -109,7 +109,9 @@ body {
     background-color: #e5874d;
     border-color: #cc573b;
 }
-
+.text-orange {
+    color: #cc573b;
+}
 /*Give cards subtle box shadow*/
 .card {
     box-shadow: 0px 3px 10px rgba(0,0,0,0.2);
@@ -131,4 +133,24 @@ body {
 
 .outOfStock{
     opacity: 0.5;
+}
+
+@media (min-width: 2000px) {
+    .container {
+        max-width: 1840px;
+    }
+}
+
+.popover-header {
+    background-color: #cc573b;
+    color: white;
+    text-align: center !important;
+}
+
+.bs-popover-bottom .arrow::after {
+    border-bottom-color: #cc573b;
+}
+
+.bs-popover-bottom .popover-header::before {
+    border-bottom: 1px solid #cc573b;
 }

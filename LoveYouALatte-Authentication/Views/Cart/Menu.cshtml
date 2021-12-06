@@ -10,7 +10,7 @@
     var products = Model.Products.GroupBy(x => new { x.DrinkName, x.DrinkDescription, x.Inventory });
     var categories = Model.Products.GroupBy(x => new { x.DrinkCategory });
 }
-<h1>@ViewData["Title"]</h1>
+<button class="btn btn-orange position-absolute mt-2" id="backBtn"><i class="fa fa-arrow-left"> Return to Menu</i></button>
 
 @foreach (var cat in categories)
 {
@@ -20,89 +20,89 @@
     <div class="row">
         @foreach (var prod in products)
         {
-        <div class="col-lg-6">
-            @if (prod.Key.Inventory == 0) //out of stock menu card
-            {
-                <div class="card mb-2">
-                    <img class="card-img-top outOfStock" src="~/Images/@(prod.Key.DrinkName).jpg" alt="@(prod.Key.DrinkName)" />
-                    <div class="card-img-overlay">
-                        <h4 class="card-title text-danger">@(prod.Key.DrinkName) out of stock!</h4>
-                    </div>
-                    <h6 class="card-text text-center outOfStock">@(prod.Key.DrinkDescription)</h6>
+            <div class="col-lg-6">
+                @if (prod.Key.Inventory == 0) //out of stock menu card
+                {
+                    <div class="card mb-2">
+                        <img class="card-img-top outOfStock" src="~/Images/@(prod.Key.DrinkName).jpg" alt="@(prod.Key.DrinkName)" />
+                        <div class="card-img-overlay">
+                            <h4 class="card-title text-danger">@(prod.Key.DrinkName) out of stock!</h4>
+                        </div>
+                        <h6 class="card-text text-center outOfStock">@(prod.Key.DrinkDescription)</h6>
 
 
-                    <ul class="list-group list-group-flush outOfStock">
-                        @foreach (var item in prod)
-                        {
-                        <li class="list-group-item text-center">
-                            @if (item.SizeName == null || item.SizeName == "")
+                        <ul class="list-group list-group-flush outOfStock">
+                            @foreach (var item in prod)
                             {
-                                <h5>$@(item.Price)</h5>
-                            }
-                            else
-                            {
-                                <h5>@(item.SizeName): $@(item.Price)</h5>
-                            }
-                            @*<p hidden id="price_@item.ProductId">@(item.Price)</p>
-                            <p hidden id="size_@item.ProductId">@(item.SizeName)</p>
+                                <li class="list-group-item text-center">
+                                    @if (item.SizeName == null || item.SizeName == "")
+                                    {
+                                        <h5>$@(item.Price)</h5>
+                                    }
+                                    else
+                                    {
+                                        <h5>@(item.SizeName): $@(item.Price)</h5>
+                                    }
+                                    @*<p hidden id="price_@item.ProductId">@(item.Price)</p>
+                                        <p hidden id="size_@item.ProductId">@(item.SizeName)</p>
 
-                            <label for="quantity_@item.ProductId">Quantity: <input data-productid="@item.ProductId" type="number" class="w-50 quantityNum" id="quantity_@item.ProductId" oninput="validity.valid||(value='');" name="quantity_@item.ProductId" min="1" max="10" step="1" size="2" /></label>
-                            <button disabled data-productid="@item.ProductId" class="btn btn-orange btn-add" id="btn_add_@item.ProductId">Add To Cart<i class="fa fa-coffee"></i></button>
-                            <br />*@
-                        </li>
-                        }
-                    </ul>
-                </div>
-            }
-            else //in stock menu card
-            {
-                <div class="card mb-2">
-                    <img class="card-img-top" src="~/Images/@(prod.Key.DrinkName).jpg" alt="@(prod.Key.DrinkName)" />
-                    <div class="card-img-overlay">
-                        <h4 class="card-title">@(prod.Key.DrinkName)</h4>
+                                        <label for="quantity_@item.ProductId">Quantity: <input data-productid="@item.ProductId" type="number" class="w-50 quantityNum" id="quantity_@item.ProductId" oninput="validity.valid||(value='');" name="quantity_@item.ProductId" min="1" max="10" step="1" size="2" /></label>
+                                        <button disabled data-productid="@item.ProductId" class="btn btn-orange btn-add" id="btn_add_@item.ProductId">Add To Cart<i class="fa fa-coffee"></i></button>
+                                        <br />*@
+                                </li>
+                            }
+                        </ul>
                     </div>
-                    <h6 class="card-text text-center">@(prod.Key.DrinkDescription)</h6>
+                }
+                else //in stock menu card
+                {
+                    <div class="card mb-2">
+                        <img class="card-img-top" src="~/Images/@(prod.Key.DrinkName).jpg" alt="@(prod.Key.DrinkName)" />
+                        <div class="card-img-overlay">
+                            <h4 class="card-title">@(prod.Key.DrinkName)</h4>
+                        </div>
+                        <h6 class="card-text text-center">@(prod.Key.DrinkDescription)</h6>
 
 
-                    <ul class="list-group list-group-flush">
-                        @foreach (var item in prod)
-                        {
-                            <li class="list-group-item text-center">
-                                @if (item.SizeName == null || item.SizeName == "")
-                                {
-                                    <h5>$@(item.Price)</h5>
-                                }
-                                else
-                                {
-                                    <h5>@(item.SizeName): $@(item.Price)</h5>
-                                }
-                                <p hidden id="price_@item.ProductId">@(item.Price)</p>
-                                <p hidden id="size_@item.ProductId">@(item.SizeName)</p>
-                                <p hidden id="drinkFood_@item.ProductId">@(item.DrinkId)</p>
+                        <ul class="list-group list-group-flush">
+                            @foreach (var item in prod)
+                            {
+                                <li class="list-group-item text-center">
+                                    @if (item.SizeName == null || item.SizeName == "")
+                                    {
+                                        <h5>$@(item.Price)</h5>
+                                    }
+                                    else
+                                    {
+                                        <h5>@(item.SizeName): $@(item.Price)</h5>
+                                    }
+                                    <p hidden id="price_@item.ProductId">@(item.Price)</p>
+                                    <p hidden id="size_@item.ProductId">@(item.SizeName)</p>
+                                    <p hidden id="drinkFood_@item.ProductId">@(item.DrinkId)</p>
 
-                                <label for="quantity_@item.ProductId">Quantity: <input data-productid="@item.ProductId" type="number" class="w-50 quantityNum" id="quantity_@item.ProductId" oninput="validity.valid||(value='');" name="quantity_@item.ProductId" min="1" max="10" step="1" size="2" /></label>
-                                <button disabled data-productid="@item.ProductId" class="btn btn-orange btn-add" id="btn_add_@item.ProductId">Add To Cart<i class="fa fa-coffee"></i></button>
-                                <br />
-                            </li>
-                        }
-                    </ul>
-                </div>
-            }
-        </div>
+                                    <label for="quantity_@item.ProductId">Quantity: <input data-productid="@item.ProductId" type="number" class="w-50 quantityNum" id="quantity_@item.ProductId" oninput="validity.valid||(value='');" name="quantity_@item.ProductId" min="1" max="10" step="1" size="2" /></label>
+                                    <button disabled data-productid="@item.ProductId" class="btn btn-orange btn-add" id="btn_add_@item.ProductId">Add To Cart<i class="fa fa-coffee"></i></button>
+                                    <br />
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                }
+            </div>
         }
     </div>
 </div>
 
 
 
-<div id="addOn" class="modal bd-example-modal-lg" style="display: none;" >
+<div id="addOn" class="modal bd-example-modal-lg" style="display: none;">
     <div style="float: right; right: 0px; top: 0px; font-size: 14px;" class="w-25 h-100 position-fixed bg-secondary text-light">
         <div class="overlay-content text-center">
             <br />
-            <h1  class="font-weight-bold" style="font-size: 24px;">Addons</h1>
-         
+            <h1 class="font-weight-bold" style="font-size: 24px;">Addons</h1>
+
             <p style="font-size: 14px;"> Here are the add on options we have at love you a latte!</p>
-           
+
 
             <form id="addOnForm" method="post" asp-action="addAddOns" asp-controller="cart">
 
@@ -123,9 +123,9 @@
 
 
                 }
-            <br />
+                <br />
 
-            <h2 style="font-size: 16px;">Sweetners (No Cost, Limit 10)</h2>
+                <h2 style="font-size: 16px;">Sweetners (No Cost, Limit 10)</h2>
 
                 @for (int i = 5; i < 9; i++)
                 {
@@ -139,8 +139,8 @@
                     </div>
                 }
 
-            <br />
-            <h2 style="font-size: 16px;">Syrups ($0.25 each, Limit 10)</h2>
+                <br />
+                <h2 style="font-size: 16px;">Syrups ($0.25 each, Limit 10)</h2>
 
                 @for (int i = 9; i < 13; i++)
                 {
@@ -157,8 +157,8 @@
 
                 @if (Model.CategoryId < 3)
                 {
-            <br />
-            <h2 style="font-size: 16px;">Espresso Shot ($1.50 per shot, Limit 20)</h2>
+                    <br />
+                    <h2 style="font-size: 16px;">Espresso Shot ($1.50 per shot, Limit 20)</h2>
                     @for (int i = 13; i < Model.addOns.addOnList.Count(); i++)
                     {
 
@@ -190,52 +190,54 @@
 
 
 
-    <div id="guestUserLogin" class="modal bd-example-modal-lg" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2 class="modal-title">Continue as Guest?</h2>
-                    <div style="padding:4px;">
-                        <button type="button" class="close" data-dismiss="modal" style="float:right; padding:4px;">x</button>
-                    </div>
+<div id="guestUserLogin" class="modal bd-example-modal-lg" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Continue as Guest?</h2>
+                <div style="padding:4px;">
+                    <button type="button" class="close" data-dismiss="modal" style="float:right; padding:4px;">x</button>
                 </div>
-                <div class="modal-body">
-                    <p>To place an order please either <a asp-area="Identity" asp-page="/Account/Login">login</a> with your account or <a asp-area="Identity" asp-page="/Account/Register">register</a> for a new account. If you would like to checkout as a guest, please provide the information below</p>
+            </div>
+            <div class="modal-body">
+                <p>To place an order please either <a asp-area="Identity" asp-page="/Account/Login">login</a> with your account or <a asp-area="Identity" asp-page="/Account/Register">register</a> for a new account. If you would like to checkout as a guest, please provide the information below</p>
 
-                    <form method="post" id="guestUserSignInForm">
-                        <div class="form-group row">
-                            <label class="col-lg-3" asp-for="NewGuestUser.FirstName"></label>
-                            <input class="form-control col-lg-9" id="guestUserFirstName" asp-for="NewGuestUser.FirstName" /><br />
-                            <span asp-validation-for="NewGuestUser.FirstName" class="text-danger"></span><br />
-                        </div>
-                        <div class="form-group row">
-                            <label class="col-lg-3" asp-for="NewGuestUser.LastName"></label>
-                            <input class="form-control col-lg-9" id="guestUserLastName" asp-for="NewGuestUser.LastName" /><br />
-                            <span asp-validation-for="NewGuestUser.LastName" class="text-danger"></span><br />
-                        </div>
-                        <div class="form-group row">
-                            <label class="col-lg-3" asp-for="NewGuestUser.Email"></label>
-                            <input class="form-control col-lg-9" id="guestUserEmail" asp-for="NewGuestUser.Email" /><br />
-                            <span asp-validation-for="NewGuestUser.Email" class="text-danger"></span><br />
-                        </div>
-                    </form>
-                    <div class="modal-footer">
-                        <button class="btn btn-orange" type="submit" id="guestUserSignInButton">Sign in as Guest</button>
+                <form method="post" id="guestUserSignInForm">
+                    <div class="form-group row">
+                        <label class="col-lg-3" asp-for="NewGuestUser.FirstName"></label>
+                        <input class="form-control col-lg-9" id="guestUserFirstName" asp-for="NewGuestUser.FirstName" /><br />
+                        <span asp-validation-for="NewGuestUser.FirstName" class="text-danger"></span><br />
                     </div>
-
+                    <div class="form-group row">
+                        <label class="col-lg-3" asp-for="NewGuestUser.LastName"></label>
+                        <input class="form-control col-lg-9" id="guestUserLastName" asp-for="NewGuestUser.LastName" /><br />
+                        <span asp-validation-for="NewGuestUser.LastName" class="text-danger"></span><br />
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-lg-3" asp-for="NewGuestUser.Email"></label>
+                        <input class="form-control col-lg-9" id="guestUserEmail" asp-for="NewGuestUser.Email" /><br />
+                        <span asp-validation-for="NewGuestUser.Email" class="text-danger"></span><br />
+                    </div>
+                </form>
+                <div class="modal-footer">
+                    <button class="btn btn-orange" type="submit" id="guestUserSignInButton">Sign in as Guest</button>
                 </div>
 
             </div>
+
         </div>
     </div>
+</div>
 
 
 
 
-    <script>
+<script>
     var $isGuestUser = '@HttpContextAccessor.HttpContext.Request.Cookies["guestUserId"]';
     $(document).ready(function () {
-
+        $("#backBtn").click(function () {
+            window.location.href = '@Url.Action("Category", "Cart")';
+        });
        /*Addon AJAX Query*/
         $('.submit').click(function () {
             var $form = $("#addOnForm");
@@ -243,7 +245,7 @@
             $form.validate();
             if ($form.valid()) {
 
-                
+
                 let warning = true;
 
                 drinkAddOns = [];
@@ -260,7 +262,7 @@
                     window.location.href = '@Url.Action("Menu", "Cart")?catid=' + ID;
                 })
 
-                
+
                 if (drinkAddOns.length > 13)
                 {
                     if (drinkAddOns[13].Quantity > 5) {
@@ -297,7 +299,7 @@
 
                     });
                 }
-                
+
             }
 
        });
@@ -412,8 +414,8 @@
         }
     });
 
-    </script>
+</script>
 
-    @section Scripts {
-        <partial name="_ValidationScriptsPartial" />
-    }
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
