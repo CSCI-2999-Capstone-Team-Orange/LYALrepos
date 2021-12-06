@@ -286,9 +286,14 @@ namespace LoveYouALatte_Authentication.Controllers
                             return Content("Error");
                         }
                     }
+                    else if (inventory - quantity < 0)
+                    {
+                        return Content("Error");
+
+                    }
                     else
                     {
-                        return Content("Out of stock");
+                        return Content("Error");
                     }
                 }
             }
@@ -296,17 +301,36 @@ namespace LoveYouALatte_Authentication.Controllers
             {
                 var guestUserId = HttpContext.Request.Cookies["guestUserId"];
 
-                var result = AddToCartMethod(productid, quantity, totalPrice, lineTax, lineCost, guestUserId);
-                if (result > 0)
+                MySqlDatabase db = new MySqlDatabase(connectionString);
+                using (MySqlConnection conn = db.Connection)
                 {
-                    return Content("Success");
-                }
-                else
-                {
-                    return Content("Error");
-                }
+                    var inv = conn.CreateCommand() as MySqlCommand;
+                    inv.CommandText = @"SELECT inventory FROM loveyoualattedb.drinkFood WHERE idDrinkFood = '" + drinkFoodId + "';";
+                    var inventory = Convert.ToInt32(inv.ExecuteScalar());
 
 
+                    if (inventory > 0)
+                    {
+                        var result = AddToCartMethod(productid, quantity, totalPrice, lineTax, lineCost, guestUserId);
+                        if (result > 0)
+                        {
+                            return Content("Success");
+                        }
+                        else
+                        {
+                            return Content("Error");
+                        }
+                    }
+                    else if (inventory - quantity < 0)
+                    {
+                        return Content("Error");
+
+                    }
+                    else
+                    {
+                        return Content("Error");
+                    }
+                }
 
             }
 
@@ -616,41 +640,7 @@ namespace LoveYouALatte_Authentication.Controllers
 
                 }
 
-                //MySqlDatabase db = new MySqlDatabase(connectionString);
-                //using (MySqlConnection conn = db.Connection)
-                //{
-                //    var cmd = conn.CreateCommand() as MySqlCommand;
-                //    cmd.CommandText = @"
-                //    SELECT idCartTable, idUser, prod.idProduct, quantity, prod.price, lineItemCost, lineTax, lineCost, size.size, drink.drink_name FROM loveyoualattedb.CartTable cart
-                //    Inner JOIN loveyoualattedb.product prod ON cart.idProduct = prod.idProduct
-                //    INNER JOIN loveyoualattedb.drinkFood drink ON prod.idDrinkFood = drink.idDrinkFood
-                //    INNER JOIN loveyoualattedb.size size ON prod.idSize = size.idSize
-                //    WHERE idUser = '" + UserID + "'";
-
-                //    using (MySqlDataReader dr = cmd.ExecuteReader())
-                //    {
-                //        while (dr.Read())
-                //        {
-                //            Cart cart = new Cart();
-
-                //            cart.CartId = dr["idCartTable"] as int? ?? default(int);
-                //            cart.IdUser = dr["idUser"] as String ?? string.Empty;
-                //            cart.IdProduct = dr["idProduct"] as int? ?? default(int);
-                //            cart.Quantity = dr["quantity"] as int? ?? default(int);
-                //            cart.Price = dr["price"] as decimal? ?? default(decimal);
-                //            cart.TotalPrice = dr["lineItemCost"] as decimal? ?? default(decimal);
-                //            cart.LineTax = dr["lineTax"] as decimal? ?? default(decimal);
-                //            cart.LineCost = dr["lineCost"] as decimal? ?? default(decimal);
-                //            cart.SizeName = dr["size"] as String ?? string.Empty;
-                //            cart.DrinkName = dr["drink_name"] as String ?? string.Empty;
-
-                //            cartList.Add(cart);
-                //        }
-                //    }
-                //}
-
                 List<CheckoutItemModel> checkoutItemList = new List<CheckoutItemModel>();
-
 
                 using (var dbContext = new loveyoualattedbContext())
                 {
@@ -800,8 +790,6 @@ namespace LoveYouALatte_Authentication.Controllers
 
                                     TempData["Error"] = "Not enough items in stock. The quantity has been adjusted. Please try again.";
                                     return RedirectToAction("Checkout");
-                                    //return Content("Not enough items in stock. Adjust the quantity and try again.");
-                                    //adjust the quantity here
                                 }
                             }
                             else
@@ -845,7 +833,7 @@ namespace LoveYouALatte_Authentication.Controllers
                     }
                 }
             }
-            else
+            else //TODO: inventory
             {
                 var guestUserId = HttpContext.Request.Cookies["guestUserId"];
 
@@ -870,33 +858,67 @@ namespace LoveYouALatte_Authentication.Controllers
                         };
 
                         var products = dbContext.Products.ToList();
+                        var drinks = dbContext.DrinkFoods.ToList();
 
                         foreach (var cartItem in dbCart)
                         {
-                            if (cartItem.CartAddOnItemId != null)
+                            var product = products.Single(p => p.IdProduct == cartItem.IdProduct);
+
+                            var quantity = cartItem.Quantity;
+                            int inventory = drinks.Single(d => d.IdDrinkFood == product.IdDrinkFood).Inventory;
+
+                            if (inventory != 0)
                             {
-                                newUserOrder.OrderItems.Add(
-                                    new OrderItem()
+                                if ((inventory - quantity) >= 0)
+                                {
+                                    //update inventory
+                                    var inv = dbContext.DrinkFoods.Single(d => d.IdDrinkFood == product.IdDrinkFood);
+                                    inv.Inventory = (inventory - quantity);
+                                    dbContext.SaveChanges();
+
+                                    if (cartItem.CartAddOnItemId != null)
                                     {
-                                        ProductId = cartItem.IdProduct,
-                                        Quantity = cartItem.Quantity,
-                                        CartAddOnItemId = cartItem.CartAddOnItemId,
-                                        LineItemCost = cartItem.LineItemCost,
-                                        Tax = cartItem.LineTax,
-                                        TotalCost = cartItem.LineCost
-                                    });
+                                        newUserOrder.OrderItems.Add(
+                                            new OrderItem()
+                                            {
+                                                ProductId = cartItem.IdProduct,
+                                                Quantity = cartItem.Quantity,
+                                                CartAddOnItemId = cartItem.CartAddOnItemId,
+                                                LineItemCost = cartItem.LineItemCost,
+                                                Tax = cartItem.LineTax,
+                                                TotalCost = cartItem.LineCost
+                                            });
+                                    }
+                                    else
+                                    {
+                                        newUserOrder.OrderItems.Add(
+                                            new OrderItem()
+                                            {
+                                                ProductId = cartItem.IdProduct,
+                                                Quantity = cartItem.Quantity,
+                                                LineItemCost = cartItem.LineItemCost,
+                                                Tax = cartItem.LineTax,
+                                                TotalCost = cartItem.LineCost
+                                            });
+                                    }
+                                }
+                                else
+                                {
+                                    //automatically set the quantity to the amount that is currently in stock.
+                                    cartItem.Quantity = inventory;
+                                    dbContext.SaveChanges();
+
+                                    TempData["Error"] = "Not enough items in stock. The quantity has been adjusted. Please try again.";
+                                    return RedirectToAction("Checkout");
+                                }
                             }
                             else
                             {
-                                newUserOrder.OrderItems.Add(
-                                    new OrderItem()
-                                    {
-                                        ProductId = cartItem.IdProduct,
-                                        Quantity = cartItem.Quantity,
-                                        LineItemCost = cartItem.LineItemCost,
-                                        Tax = cartItem.LineTax,
-                                        TotalCost = cartItem.LineCost
-                                    });
+                                dbContext.CartTables.RemoveRange(cartItem); //remove the cart item that is out of stock
+                                dbContext.SaveChanges();
+
+                                TempData["Error"] = "The item you tried to purchase is no longer in stock and has been removed from your cart. Please try again.";
+                                return RedirectToAction("Checkout");
                             }
                         }
 

@@ -5,9 +5,8 @@
     var totalCart = Model.Carts.Sum(x => x.LineCost);
 
 }
-<h1>@ViewData["Title"]<i class="fa fa-shopping-cart"></i></h1>
+<h1 class="text-center">@ViewData["Title"]<i class="fa fa-shopping-cart text-orange"></i></h1>
 
-<h1>Your Cart: </h1>
 
 
 <P>@ViewBag.ErrorMessage</P>
@@ -22,28 +21,29 @@
     </div>
 }
 
-
-<div class="table-responsive">
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">Item Name</th>
-                <th scope="col">Quantity</th>
-                <th scope="col">Size</th>
-                <th scope="col">Price</th>
-                <th scope="col">Line Price</th>
-                <th scope="col">Tax Amount</th>
-                <th scope="col">Subtotal</th>
-                <th scope="col">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var cartItem in Model.Carts)
-            {
+<div class="accordion" id="accordionExample">
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
                 <tr>
-                    <th>@cartItem.DrinkName</th>
+                    <th scope="col">Item Name</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Size</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Line Price</th>
+                    <th scope="col">Tax Amount</th>
+                    <th scope="col">Subtotal</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var cartItem in Model.Carts)
+                {
+                <tr>
+                    <th>@cartItem.DrinkName      </th>              
+                    
                     <td>
-                        <input data-cartid="@cartItem.CartId" type="number" value="@cartItem.Quantity" class="w-50 quantityNumUpdate" id="quantity_@cartItem.CartId"
+                        <input data-cartid="@cartItem.CartId" type="number" value="@cartItem.Quantity" class="w-50 quantityNumUpdate form-control" id="quantity_@cartItem.CartId"
                                oninput="validity.valid||(value='');" name="quantity_@cartItem.IdProduct" min="1" max="10" step="1" size="2" />
                     </td>
                     @if (cartItem.SizeName == null || cartItem.SizeName == "")
@@ -64,51 +64,50 @@
                         <button data-cartid="@cartItem.CartId" class="btn btn-orange btn-remove" id="btn_quantity_@cartItem.CartId">Remove</button>
                     </td>
                 </tr>
-                @foreach (var item in Model.checkoutItems)
+                    @foreach (var item in Model.checkoutItems)
+                    {
+            <tr>
+
+                @if (item.cartTableId == cartItem.CartId)
                 {
-                    <tr>
+                    if (item.addOnList.Count > 0)
+                    {
+                        var addOnTypes = item.addOnList.Select(a => a.addOnType).Distinct().ToList();
+                        var syrups = item.addOnList.Where(a => a.addOnType == "Syrup").ToList();
+                        var totalSyrupCost = syrups.Sum(a => a.TotalPrice);
 
-                        @if (item.cartTableId == cartItem.CartId)
+                        <th> <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                        Add Ons:</button> </th>
+
+
+                        foreach (var addOnType in addOnTypes)
                         {
-                            if (item.addOnList.Count > 0)
-                            {
-                                var addOnTypes = item.addOnList.Select(a => a.addOnType).Distinct().ToList();
-                                var syrups = item.addOnList.Where(a => a.addOnType == "Syrup").ToList();
-                                var totalSyrupCost = syrups.Sum(a => a.TotalPrice);
+
+                            <tr id="collapseThree" class="collapse" data-parent="#accordionExample">
                                 
-                                <tr class="parent" id="@cartItem.CartId" title="Click to expand/collapse" style="cursor: pointer;">
-                                  <td> <button type="button" class="collapsible">Add Ons:</button> </td>
-                                </tr>
-                            
+                            <td class="small">@addOnType</td>
 
-                                foreach (var addOnType in addOnTypes)
+                            @foreach (var addons in item.addOnList)
+                            {
+                                if (addons.addOnType == addOnType)
                                 {
-
-                                   <tr class="child-@cartItem.CartId">
-
-                                   <td class="small">@addOnType</td>
-
-                                @foreach (var addons in item.addOnList)
-                                {
-                                    if (addons.addOnType == addOnType)
-                                    {
-                                        <td class="small">@addons.Quantity, @addons.addOnDescription </td>
-
-                                    }
+                                    <td class="small">@addons.Quantity, @addons.addOnDescription </td>
 
                                 }
-                                @if (addOnType == "Syrup")
-                                {
-                                    <td class="small font-weight-bold">Total Cost: @totalSyrupCost</td>
-                                }
-                                else if (addOnType == "Espresso")
-                                {
-                                    <td class="small font-weight-bold">Total Cost: @item.addOnList.SingleOrDefault(a => a.addOnDescription == "Espresso Shot").TotalPrice</td>
-                                }
-                                else { }
 
-                            </tr>
                             }
+                            @if (addOnType == "Syrup")
+                            {
+                                <td class="small font-weight-bold">Total Cost: @totalSyrupCost</td>
+                            }
+                            else if (addOnType == "Espresso")
+                            {
+                                <td class="small font-weight-bold">Total Cost: @item.addOnList.SingleOrDefault(a => a.addOnDescription == "Espresso Shot").TotalPrice</td>
+                            }
+                            else { }
+                                
+                        </tr>
+                                }
 
 
 
@@ -118,43 +117,44 @@
 
                             }
 
-                            }
+                        }
                             </tr>
 
                         }
 
-                    }
-                        <tr>
+                }
+                <tr>
 
 
 
 
-                        <tr>
-                            <th>Totals</th>
-                            <td colspan="4"></td>
-                            <td colspan="1" id="totalTax">@totalTax.ToString("C")</td>
-                            <td colspan="1" id="totalCost">@totalCart.ToString("C")</td>
-                        </tr>
-                    </tbody>
-    </table>
-</div>
+                <tr>
+                    <th>Totals</th>
+                    <td colspan="4"></td>
+                    <td colspan="1" id="totalTax">@totalTax.ToString("C")</td>
+                    <td colspan="1" id="totalCost">@totalCart.ToString("C")</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    </div>
 
 
 
-@if (Model.Carts.Count > 0)
-{
-    <form action="" method="post">
-        <input type="submit" value="Clear Cart" name="clear" class="btn btn-orange" asp-controller="Cart"
-               asp-action="ClearCart" />
-        <input type="submit" value="Purchase" name="purchase" class=" btn btn-orange" asp-controller="Cart"
-               asp-action="Purchase" />
-    </form>
-}
-else
-{
-    <h5>You have no items in your cart. Don't forget to visit our <a asp-area="" asp-controller="Cart" asp-action="Category">menu</a> to grab a latte!</h5>
-}
-<script>
+    @if (Model.Carts.Count > 0)
+    {
+        <form action="" method="post">
+            <input type="submit" value="Clear Cart" name="clear" class="btn btn-orange" asp-controller="Cart"
+                   asp-action="ClearCart" />
+            <input type="submit" value="Purchase" name="purchase" class=" btn btn-orange" asp-controller="Cart"
+                   asp-action="Purchase" />
+        </form>
+    }
+    else
+    {
+        <h5>You have no items in your cart. Don't forget to visit our <a asp-area="" asp-controller="Cart" asp-action="Category">menu</a> to grab a latte!</h5>
+    }
+    <script>
     $('.quantityNumUpdate').on('input change mouseup keyup', function () {
         var ID = $(this).data('cartid');
 
@@ -213,18 +213,18 @@ else
             }
             });
     });
-</script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 
-<script type="text/javascript">
+    <script type="text/javascript">
 
-    $(document).ready(function () {
-        $('tr.parent')
-            .css("cursor", "pointer")
-            .attr("title", "Click to expand/collapse")
-            .click(function () {
-                $(this).siblings('.child-' + this.id).toggle();
-            });
-        $('tr[class^=child-]').hide().children('td');
-    });
-</script>
+        $(document).ready(function () {
+            $('tr.parent')
+                .css("cursor", "pointer")
+                .attr("title", "Click to expand/collapse")
+                .click(function () {
+                    $(this).siblings('.child-' + this.id).toggle();
+                });
+            $('tr[class^=child-]').hide().children('td');
+        });
+    </script>
