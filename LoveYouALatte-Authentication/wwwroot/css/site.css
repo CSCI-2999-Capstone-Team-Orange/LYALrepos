@@ -155,6 +155,23 @@ body {
     border-bottom: 1px solid #cc573b;
 }
 
+.overlayStyle {
+    box-shadow: inset 0 0 0 1000px rgba(0,0,0,.3);
+}
+
+.addOnStyle{
+    background-color: white !important;
+}
+
+.alignAddOns {
+    margin-left: auto;
+    margin-right: auto;
+    width: 165px;
+}
+
+hr {
+    border-color: #cc573b;
+=======
 .red .active a,
 .red .active a:hover {
     background-color: red;

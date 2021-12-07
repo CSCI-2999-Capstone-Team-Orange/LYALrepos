@@ -95,23 +95,27 @@
 
 
 
-<div id="addOn" class="modal bd-example-modal-lg" style="display: none;">
-    <div style="float: right; right: 0px; top: 0px; font-size: 14px;" class="w-25 h-100 position-fixed bg-secondary text-light">
-        <div class="overlay-content text-center">
+<div id="addOn" class="modal bd-example-modal-lg overlayStyle" style="display: none;">
+    <div style="float: right; right: 0px; top: 0px; font-size: 14px;" class="w-25 h-100 position-fixed text-dark addOnStyle">
+        <div class="overlay-content">
             <br />
-            <h1 class="font-weight-bold" style="font-size: 24px;">Addons</h1>
+            <h2 class="font-weight-bold text-center text-orange">Addons</h2>
 
-            <p style="font-size: 14px;"> Here are the add on options we have at love you a latte!</p>
+            @*<p style="font-size: 14px;"> Here are the add on options we have at love you a latte!</p>*@
 
 
-            <form id="addOnForm" method="post" asp-action="addAddOns" asp-controller="cart">
+        <form id="addOnForm" method="post" asp-action="addAddOns" asp-controller="cart">
 
-                <h2 style="font-size: 16px;">Creamers (No Cost, Limit 10)</h2>
+            
 
+            <div class="container w-75">
+                <h5 class="text-center">Creamers: $0.00 each - Limit 10</h5>
+
+                <hr />
                 @for (int i = 0; i < 5; i++)
                 {
 
-                    <div>
+                    <div class="alignAddOns">
                         <input asp-for="@Model.addOns.addOnList[i].addOnId" value="@Model.addOns.addOnList[i].addOnId" hidden />
                         <input class="add-on-quantity" data-addOnId='@Model.addOns.addOnList[i].addOnId' asp-for="@Model.addOns.addOnList[i].Quantity" min="0" max="10" />
                         <label>
@@ -125,11 +129,13 @@
                 }
                 <br />
 
-                <h2 style="font-size: 16px;">Sweetners (No Cost, Limit 10)</h2>
+                <h5 class="text-center">Sweetners: $0.00 each - Limit 10</h5>
+
+                <hr />
 
                 @for (int i = 5; i < 9; i++)
                 {
-                    <div>
+                    <div class="alignAddOns">
                         <input class="add-on-quantity" data-addOnId='@Model.addOns.addOnList[i].addOnId' asp-for="@Model.addOns.addOnList[i].Quantity" min="0" max="10" />
                         <label>
                             @Model.addOns.addOnList[i].addOnDescription
@@ -140,12 +146,14 @@
                 }
 
                 <br />
-                <h2 style="font-size: 16px;">Syrups ($0.25 each, Limit 10)</h2>
+                <h5 class="text-center">Syrups: $0.00 each - Limit 10</h5>
+
+                <hr />
 
                 @for (int i = 9; i < 13; i++)
                 {
 
-                    <div>
+                    <div class="alignAddOns">
                         <input class="add-on-quantity" data-addOnId='@Model.addOns.addOnList[i].addOnId' asp-for="@Model.addOns.addOnList[i].Quantity" min="0" max="10" />
                         <label>
                             @Model.addOns.addOnList[i].addOnDescription
@@ -158,11 +166,14 @@
                 @if (Model.CategoryId < 3)
                 {
                     <br />
-                    <h2 style="font-size: 16px;">Espresso Shot ($1.50 per shot, Limit 20)</h2>
+                    <h5 class="text-center">Espresso Shot: $1.50 each - Limit 20</h5>
+
+                    <hr />
+
                     @for (int i = 13; i < Model.addOns.addOnList.Count(); i++)
                     {
 
-                        <div>
+                        <div class="alignAddOns">
                             <input class="add-on-quantity" data-addOnId='@Model.addOns.addOnList[i].addOnId' asp-for="@Model.addOns.addOnList[i].Quantity" min="0" max="25" />
                             <label>
                                 @Model.addOns.addOnList[i].addOnDescription
@@ -172,19 +183,18 @@
                         </div>
                     }
                 }
+            </div>
 
 
-
-                <br />
-                <div class="d-flex justify-content-center">
-                    <input class="btn btn-orange submit m-2" id="addOnSubmit" type="button" value="Add to Drink" /><br /><br />
-                    <input class="btn btn-primary submit m-2" type="button" value="No Thank You" />
-                </div>
-            </form>
+            <br />
+            <div class="d-flex justify-content-center">
+                <input class="btn btn-orange submit m-2" id="addOnSubmit" type="button" value="Add to Drink" /><br /><br />
+                <input class="btn btn-orange submit m-2" type="button" value="No Thank You" />
+            </div>
+        </form>
 
         </div>
-
-    </div>
+        </div>
 </div>
 
 
