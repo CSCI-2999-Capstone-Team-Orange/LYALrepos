@@ -154,3 +154,12 @@ body {
 .bs-popover-bottom .popover-header::before {
     border-bottom: 1px solid #cc573b;
 }
+
+.red .active a,
+.red .active a:hover {
+    background-color: red;
+}
+
+.nav-pills > .active > a, .nav-pills > .active > a:hover {
+    background-color: red;
+}
