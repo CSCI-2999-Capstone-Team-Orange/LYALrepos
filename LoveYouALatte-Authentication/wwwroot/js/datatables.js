@@ -13,6 +13,7 @@
     $("[name='updateProduct.SizeId']", $editRow).val(rowData.sizeId);
     $("[name='updateProduct.SizeName']", $editRow).val(rowData.sizeName);
     $("[name='updateProduct.Price']", $editRow).val(parseFloat(rowData.price).toFixed(2));
+    $("[name='updateProduct.Inventory']", $editRow).val(rowData.inventory);
    
 
     $("#menuTable").find(".updateButton").hide();

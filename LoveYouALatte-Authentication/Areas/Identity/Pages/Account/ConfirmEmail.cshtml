@@ -10,11 +10,20 @@
 @{
     ViewData["Title"] = "Confirm email";
 }
-
+<br />
+<br />
 <h1>@ViewData["Title"]</h1>
+<br />
+<br />
 
 
 <h2>@Model.StatusMessage</h2>
+
+<br />
+<br />
+<div>
+   <a class="h3" asp-area="Identity" asp-page="/Account/Login">Continue To Login</a>
+</div>
 
 @if (this.User.IsInRole("Employee"))
 {

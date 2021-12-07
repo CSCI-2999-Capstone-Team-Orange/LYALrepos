@@ -406,7 +406,7 @@
                 },
                 success: function () {
                     alert("Succesfully added to cart!");
-                    if (size == "") {
+                    if (drinkFoodID > 16 || drinkFoodID == 8) {
                         $(".quantityNum").each(function () {
                             $(this).val("");
                         })
