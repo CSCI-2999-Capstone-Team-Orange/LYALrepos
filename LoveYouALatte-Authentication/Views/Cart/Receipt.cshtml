@@ -42,23 +42,24 @@
             var addOnTypes = orderItem.addOnList.Select(a => a.addOnType).Distinct().ToList();
             var syrups = orderItem.addOnList.Where(a => a.addOnType == "Syrup").ToList();
             var totalSyrupCost = syrups.Sum(a => a.TotalPrice);
+
             <tr>
-                <th class="small font-weight-bold">Add Ons:</th>
+                <th class="small font-weight-bold">Add Ons</th>
             </tr>
 
-            foreach (var addOnType in addOnTypes)
+            @foreach (var addOnType in addOnTypes)
             {
-
-                <tr>
-                    <td class="small">@addOnType</td>
+                <tr class="addOnType">
+                    <th class="small">@addOnType</th>
+                </tr>
+                <tr style="display: none;">
                     @foreach (var addons in orderItem.addOnList)
                     {
-                        if (addons.addOnType == addOnType)
+
+                        @if (addons.addOnType == addOnType)
                         {
                             <td class="small">@addons.Quantity, @addons.addOnDescription </td>
-
                         }
-
                     }
                     @if (addOnType == "Syrup")
                     {
@@ -69,10 +70,8 @@
                         <td class="small font-weight-bold">Total Cost: @orderItem.addOnList.SingleOrDefault(a => a.addOnDescription == "Espresso Shot").TotalPrice</td>
                     }
                     else { }
-
                 </tr>
             }
-
 
         }
 
@@ -89,3 +88,11 @@
 
     </table>
 
+<script>
+
+    $(document).ready(function () {
+        $('.addOnType').click(function () {
+            $(this).next('tr').toggle();
+            });
+    });
+</script>
