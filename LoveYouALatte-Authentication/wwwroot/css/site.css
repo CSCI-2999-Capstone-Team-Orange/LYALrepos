@@ -157,9 +157,15 @@ body {
 
 .addOnType{
     background-color:lightgray;
+    
 }
 
-.addOnType:hover{
+.addOnTypeTD {
+    border: 2px solid darkgray;
+    text-align:center;
+}
+
+.addOnType:hover {
     background-color: darkgray;
 }
 
