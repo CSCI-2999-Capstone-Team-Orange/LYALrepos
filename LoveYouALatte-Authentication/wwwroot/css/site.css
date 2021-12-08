@@ -162,12 +162,20 @@ body {
 
 .addOnTypeTD {
     border: 2px solid darkgray;
-    text-align:center;
+    text-align: center;
+}
+
+
+.addOnType:hover {
+    background-color: darkgray;
+}
+
+
 .overlayStyle {
     box-shadow: inset 0 0 0 1000px rgba(0,0,0,.3);
 }
 
-.addOnStyle{
+.addOnStyle {
     background-color: white !important;
 }
 
@@ -179,13 +187,12 @@ body {
 
 hr {
     border-color: #cc573b;
-=======
-.red .active a,
-.red .active a:hover {
+    ======= .red .active a, .red .active a:hover
+
+{
     background-color: red;
 }
 
-.addOnType:hover {
-    background-color: darkgray;
+.nav-pills > .active > a, .nav-pills > .active > a:hover {
+    background-color: red;
 }
-
