@@ -557,7 +557,10 @@ namespace LoveYouALatte_Authentication.Controllers
                         {
 
                             addOnType = addOnItems.Single(a => a.AddOnId == addon.AddOnId).AddOnType,
-                            addOnDescription = addOnItems.Single(a => a.AddOnId == addon.AddOnId).AddOnDescription
+                            addOnDescription = addOnItems.Single(a => a.AddOnId == addon.AddOnId).AddOnDescription,
+                            Quantity = addon.Quantity,
+                            UnitPrice = addon.AddOnUnitPrice,
+                            TotalPrice = addon.AddOnTotalPrice
                         });
 
                     }
