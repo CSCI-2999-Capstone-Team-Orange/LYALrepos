@@ -155,11 +155,11 @@ body {
     border-bottom: 1px solid #cc573b;
 }
 
-.red .active a,
-.red .active a:hover {
-    background-color: red;
+.addOnType{
+    background-color:lightgray;
 }
 
-.nav-pills > .active > a, .nav-pills > .active > a:hover {
-    background-color: red;
+.addOnType:hover{
+    background-color: darkgray;
 }
+
