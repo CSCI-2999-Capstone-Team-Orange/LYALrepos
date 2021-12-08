@@ -155,11 +155,27 @@ body {
     border-bottom: 1px solid #cc573b;
 }
 
+.addOnType{
+    background-color:lightgray;
+    
+}
+
+.addOnTypeTD {
+    border: 2px solid darkgray;
+    text-align: center;
+}
+
+
+.addOnType:hover {
+    background-color: darkgray;
+}
+
+
 .overlayStyle {
     box-shadow: inset 0 0 0 1000px rgba(0,0,0,.3);
 }
 
-.addOnStyle{
+.addOnStyle {
     background-color: white !important;
 }
 
@@ -171,9 +187,9 @@ body {
 
 hr {
     border-color: #cc573b;
-=======
-.red .active a,
-.red .active a:hover {
+    ======= .red .active a, .red .active a:hover
+
+{
     background-color: red;
 }
 

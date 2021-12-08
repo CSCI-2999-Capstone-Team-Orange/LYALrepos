@@ -63,78 +63,65 @@
                         <button data-cartid="@cartItem.CartId" class="btn btn-orange btn-remove" id="btn_quantity_@cartItem.CartId">Remove</button>
                     </td>
                 </tr>
-                @foreach (var item in Model.checkoutItems)
+                @foreach(var item in Model.checkoutItems)
                 {
-                    <tr>
-
-                        @if (item.cartTableId == cartItem.CartId)
+                    if(item.cartTableId == cartItem.CartId)
+                    {
+                        if(item.addOnList.Count > 0)
                         {
-                            if (item.addOnList.Count > 0)
+
+                            var addOnTypes = item.addOnList.Select(a => a.addOnType).Distinct().ToList();
+                            var syrups = item.addOnList.Where(a => a.addOnType == "Syrup").ToList();
+                            var totalSyrupCost = syrups.Sum(a => a.TotalPrice);
+
+                            <tr>
+                                <th class="small font-weight-bold">Add Ons</th>
+                            </tr>
+
+                            @foreach(var addOnType in addOnTypes)
                             {
-                                var addOnTypes = item.addOnList.Select(a => a.addOnType).Distinct().ToList();
-                                var syrups = item.addOnList.Where(a => a.addOnType == "Syrup").ToList();
-                                var totalSyrupCost = syrups.Sum(a => a.TotalPrice);
-                                
-                                <tr class="parent" id="@cartItem.CartId" title="Click to expand/collapse" style="cursor: pointer;">
-                                  <td> <button type="button" class="collapsible">Add Ons:</button> </td>
+                                <tr class="addOnType" >
+                                    <th class="small  shadow-sm addOnTypeTD">@addOnType</th>
                                 </tr>
-                            
-
-                                foreach (var addOnType in addOnTypes)
-                                {
-
-                                   <tr class="child-@cartItem.CartId">
-
-                                   <td class="small">@addOnType</td>
-
-                                @foreach (var addons in item.addOnList)
-                                {
-                                    if (addons.addOnType == addOnType)
+                                <tr style="display: none;">
+                                    @foreach (var addons in item.addOnList)
                                     {
-                                        <td class="small">@addons.Quantity, @addons.addOnDescription </td>
 
+                                        @if (addons.addOnType == addOnType)
+                                        {
+                                            <td class="small">@addons.Quantity, @addons.addOnDescription </td>
+                                        }
                                     }
-
-                                }
-                                @if (addOnType == "Syrup")
-                                {
-                                    <td class="small font-weight-bold">Total Cost: @totalSyrupCost</td>
-                                }
-                                else if (addOnType == "Espresso")
-                                {
-                                    <td class="small font-weight-bold">Total Cost: @item.addOnList.SingleOrDefault(a => a.addOnDescription == "Espresso Shot").TotalPrice</td>
-                                }
-                                else { }
-
-                            </tr>
+                                    @if (addOnType == "Syrup")
+                                    {
+                                        <td class="small font-weight-bold">Total Cost: @totalSyrupCost</td>
+                                    }
+                                    else if (addOnType == "Espresso")
+                                    {
+                                        <td class="small font-weight-bold">Total Cost: @item.addOnList.SingleOrDefault(a => a.addOnDescription == "Espresso Shot").TotalPrice</td>
+                                    }
+                                    else { }
+                                </tr>
                             }
-
-
-
-
-
-
-
-                            }
-
-                            }
-                            </tr>
-
                         }
-
                     }
-                        <tr>
+                }
+                
+             }
 
 
 
 
-                        <tr>
-                            <th>Totals</th>
-                            <td colspan="4"></td>
-                            <td colspan="1" id="totalTax">@totalTax.ToString("C")</td>
-                            <td colspan="1" id="totalCost">@totalCart.ToString("C")</td>
-                        </tr>
-                    </tbody>
+
+
+
+                <tr>
+                    <th>Totals</th>
+                    <td colspan="4"></td>
+                    <td colspan="1" id="totalTax">@totalTax.ToString("C")</td>
+                    <td colspan="1" id="totalCost">@totalCart.ToString("C")</td>
+                </tr>
+            </tbody>
     </table>
 </div>
 
@@ -215,15 +202,11 @@ else
 </script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 
-<script type="text/javascript">
+<script>
 
     $(document).ready(function () {
-        $('tr.parent')
-            .css("cursor", "pointer")
-            .attr("title", "Click to expand/collapse")
-            .click(function () {
-                $(this).siblings('.child-' + this.id).toggle();
+        $('.addOnType').click(function () {
+            $(this).next('tr').toggle();
             });
-        $('tr[class^=child-]').hide().children('td');
     });
 </script>
